@@ -30,7 +30,6 @@ SOUND_EFFECTS = {"wrong": pygame.mixer.Sound("efekty dźwiękowe\\wrong.mp3"),
 
 def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict, strings: list[str]) -> None:
 
-    # background_image = pygame.image.load("Wisielec\\pliki obrazów\\intro_background.jpg")
     background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"),(resolution))
     screen.blit(background_image, (0, 0))
     clock = pygame.time.Clock()
@@ -374,57 +373,32 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
     button_free = pygame.image.load("pliki obrazów\\button_1.png")
     button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
     button_lock = pygame.image.load("pliki obrazów\\button_3.png")
-    screen.blit(background_image, (0, 0))
-
     description_button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["desk_font"])
     button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["button_font"])
-
-    standard_button_size_1 = pos["settings_menu"]["button_size_1"]
-    standard_button_size_2 = pos["settings_menu"]["button_size_2"]
-    standard_button_size_3 = pos["settings_menu"]["button_size_3"]
-    
-    button_1_text = button_font.render(f"800:600",True,(0,0,0))
-    button_2_text = button_font.render(f"1200:800",True,(0,0,0))
-    button_3_text = button_font.render(f"{strings[13]}",True,(0,0,0))
-    button_4_text = button_font.render(f"1920:1080",True,(0,0,0))
-    button_5_text = button_font.render(f"1280:720",True,(0,0,0))
-    button_6_text = button_font.render(f"{strings[14]}",True,(0,0,0))
-    button_7_text = button_font.render(f"{strings[15]}",True,(0,0,0))
-    button_8_text = button_font.render(f"+",True,(0,0,0))
-    button_9_text = button_font.render(f"-",True,(0,0,0))
-    button_10_text = button_font.render(f"{strings[16]}",True,(0,0,0))
-    button_11_text = button_font.render(f"+",True,(0,0,0))
-    button_12_text = button_font.render(f"-",True,(0,0,0))
-    button_13_text = button_font.render(f"{strings[17]}",True,(0,0,0))
-    button_14_text = button_font.render(f"{strings[18]}",True,(0,0,0))
-    button_15_text = button_font.render(f"{strings[2]}",True,(0,0,0))
-    button_16_text = button_font.render(f"{strings[3]}",True,(0,0,0))
-
-    description_1_text = description_button_font.render(f"{strings[19]}",True,(255,100,0))
-    description_2_text = description_button_font.render(f"{strings[16]}",True,(255,100,0))
-    description_3_text = description_button_font.render(f"{strings[20]}",True,(255,100,0))
-
-    is_mouse_over_button_1 = False
-    is_mouse_over_button_2 = False
-    is_mouse_over_button_3 = False
-    is_mouse_over_button_4 = False
-    is_mouse_over_button_5 = False
-    is_mouse_over_button_6 = False
-    is_mouse_over_button_7 = False
-    is_mouse_over_button_8 = False
-    is_mouse_over_button_9 = False
-    is_mouse_over_button_10 = False
-    is_mouse_over_button_11 = False
-    is_mouse_over_button_12 = False
-    is_mouse_over_button_13 = False
-    is_mouse_over_button_14 = False
-    is_mouse_over_button_15 = False
-    is_mouse_over_button_16 = False
-
     new_settings = settings.copy()
+    is_mouse_over_button = [False] * 16    
+    texts_to_display = ["800:600", "1200:800", f"{strings[13]}", "1920:1080", "1280:720", f"{strings[14]}", f"{strings[15]}", "+", "-", 
+                        f"{strings[16]}", "+", "-",f"{strings[17]}", f"{strings[18]}", f"{strings[2]}", f"{strings[3]}"]
+    rendered_text = [] 
+    button_standards = [1,1,1,1,1,1,3,2,2,3,2,2,3,3,3,3]
+    description_texts= [strings[19],strings[16],strings[20]]
+
+    for text in texts_to_display:
+        text = button_font.render(text,True,(0,0,0))
+        rendered_text.append(text)
+
+    description_button = pygame.transform.scale(button_lock, pos["settings_menu"]["button_size_4"])    
+    
+    screen.blit(background_image, (0, 0))
+    counter = 1
+    for text in description_texts:
+        text = description_button_font.render(f"{text}",True,(255,100,0))
+        screen.blit(description_button, pos["settings_menu"][f"desc_button_{counter}"])
+        screen.blit(text, pos["settings_menu"][f"desc_text_{counter}"])
+        counter += 1
 
     while True:
-    
+        
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
@@ -435,8 +409,8 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
         else:
             sound_volume = f"{strings[21]}" 
 
-        button_7_text = button_font.render(f"{strings[15]}: {music_volume}",True,(0,0,0))
-        button_10_text = button_font.render(f"{strings[16]}: {sound_volume}",True,(0,0,0))
+        rendered_text[6] = button_font.render(f"{strings[15]}: {music_volume}",True,(0,0,0))
+        rendered_text[9] = button_font.render(f"{strings[16]}: {sound_volume}",True,(0,0,0))
 
         if new_settings["play_music"]:
             music_channel.set_volume(new_settings["music_volume"]/200)
@@ -455,35 +429,26 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
 
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
-
-                is_mouse_over_button_1 = check_mouse(pos["settings_menu"]["button_1"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_2 = check_mouse(pos["settings_menu"]["button_2"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_3 = check_mouse(pos["settings_menu"]["button_3"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_4 = check_mouse(pos["settings_menu"]["button_4"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_5 = check_mouse(pos["settings_menu"]["button_5"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_6 = check_mouse(pos["settings_menu"]["button_6"], standard_button_size_1, mouse_pos)
-                is_mouse_over_button_7 = check_mouse(pos["settings_menu"]["button_7"], standard_button_size_3, mouse_pos)
-                is_mouse_over_button_8 = check_mouse(pos["settings_menu"]["button_8"], standard_button_size_2, mouse_pos)
-                is_mouse_over_button_9 = check_mouse(pos["settings_menu"]["button_9"], standard_button_size_2, mouse_pos)
-                is_mouse_over_button_10 = check_mouse(pos["settings_menu"]["button_10"], standard_button_size_3, mouse_pos)
-                is_mouse_over_button_11 = check_mouse(pos["settings_menu"]["button_11"], standard_button_size_2, mouse_pos)
-                is_mouse_over_button_12 = check_mouse(pos["settings_menu"]["button_12"], standard_button_size_2, mouse_pos)
-                is_mouse_over_button_13 = check_mouse(pos["settings_menu"]["button_13"], standard_button_size_3, mouse_pos)
-                is_mouse_over_button_14 = check_mouse(pos["settings_menu"]["button_14"], standard_button_size_3, mouse_pos)
-                is_mouse_over_button_15 = check_mouse(pos["settings_menu"]["button_15"], standard_button_size_3, mouse_pos)
-                is_mouse_over_button_16 = check_mouse(pos["settings_menu"]["button_16"], standard_button_size_3, mouse_pos)
+                counter = 0
+                for mouse_over, standard in zip(is_mouse_over_button, button_standards):
+                    mouse_over = check_mouse(pos["settings_menu"][f"button_{counter+1}"], pos["settings_menu"][f"button_size_{standard}"], mouse_pos)
+                    if mouse_over:
+                        is_mouse_over_button[counter] = True
+                    else:
+                        is_mouse_over_button[counter] = False
+                    counter += 1
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if event.button == 1:
-                    if is_mouse_over_button_1:
+                    if is_mouse_over_button[0]:
                         if new_settings["resolution"] != [800,600]:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["resolution"] = [800,600]
                             new_settings["wide_screen"] = False
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
-                    if is_mouse_over_button_2:
+                    if is_mouse_over_button[1]:
                         if new_settings["resolution"] != [1200,800]:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["resolution"] = [1200,800]
@@ -491,14 +456,14 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_3:
+                    if is_mouse_over_button[2]:
                         if new_settings["fullscreen"] == False:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["fullscreen"] = True
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_4:
+                    if is_mouse_over_button[3]:
                         if new_settings["resolution"] != [1920,1080]:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["resolution"] = [1920,1080]
@@ -506,7 +471,7 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_5:
+                    if is_mouse_over_button[4]:
                         if new_settings["resolution"] != [1280,720]:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["resolution"] = [1280,720]
@@ -514,74 +479,74 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_6:
+                    if is_mouse_over_button[5]:
                         if new_settings["fullscreen"] == True:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["fullscreen"] = False
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_7:
+                    if is_mouse_over_button[6]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         if new_settings["play_music"] == False:
                             new_settings["play_music"] = True
                         elif new_settings["play_music"] == True:
                             new_settings["play_music"] = False
 
-                    if is_mouse_over_button_8:
+                    if is_mouse_over_button[7]:
                         if new_settings["music_volume"] < 100:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["music_volume"] += 10
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_9:
+                    if is_mouse_over_button[8]:
                         if new_settings["music_volume"] > 0:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["music_volume"] -= 10
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_10:
+                    if is_mouse_over_button[9]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         if new_settings["play_sound"] == False:
                             new_settings["play_sound"] = True
                         elif new_settings["play_sound"] == True:
                             new_settings["play_sound"] = False
 
-                    if is_mouse_over_button_11:
+                    if is_mouse_over_button[10]:
                         if new_settings["sound_volume"] < 100:
                             new_settings["sound_volume"] += 10
                             sound_channel.play(SOUND_EFFECTS["beep"])
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_12:
+                    if is_mouse_over_button[11]:
                         if new_settings["sound_volume"] > 0:
                             new_settings["sound_volume"] -= 10
                             sound_channel.play(SOUND_EFFECTS["beep"])
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_13:
+                    if is_mouse_over_button[12]:
                         if new_settings["language"] != "polish":
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["language"] = "polish"
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_14:
+                    if is_mouse_over_button[13]:
                         if new_settings["language"] != "english":
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             new_settings["language"] = "english"
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
 
-                    if is_mouse_over_button_15:
+                    if is_mouse_over_button[14]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         return False
                     
-                    if is_mouse_over_button_16:
+                    if is_mouse_over_button[15]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         try:
                             with open(SETTINGS_FILE, "wb") as stream:
@@ -590,173 +555,60 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
                         except:
                             print("Something went wrong")
 
+        buttons = [None] * 16
         if new_settings["resolution"] == [800,600]:
-            button_1 = button_lock        
-        elif is_mouse_over_button_1:
-            button_1 = button_aimed
-        else:
-            button_1 = button_free
-        button_1 = pygame.transform.scale(button_1, standard_button_size_1)
-        
+            buttons[0] = button_lock   
+
         if new_settings["resolution"] == [1200,800]:
-            button_2 = button_lock  
-        elif is_mouse_over_button_2:
-            button_2 = button_aimed
-        else:
-            button_2 = button_free
-        button_2 = pygame.transform.scale(button_2, standard_button_size_1)
+            buttons[1] = button_lock  
 
         if new_settings["fullscreen"] == True:
-            button_3 = button_lock
-        elif is_mouse_over_button_3:
-            button_3 = button_aimed
-        else:
-            button_3 = button_free
-        button_3 = pygame.transform.scale(button_3, standard_button_size_1)
+            buttons[2] = button_lock
 
         if new_settings["resolution"] == [1920,1080]:
-            button_4 = button_lock  
-        elif is_mouse_over_button_4:
-            button_4 = button_aimed
-        else:
-            button_4 = button_free
-        button_4 = pygame.transform.scale(button_4, standard_button_size_1)
+            buttons[3] = button_lock  
 
         if new_settings["resolution"] == [1280,720]:
-            button_5 = button_lock  
-        elif is_mouse_over_button_5:
-            button_5 = button_aimed
-        else:
-            button_5 = button_free
-        button_5 = pygame.transform.scale(button_5, standard_button_size_1)
+            buttons[4] = button_lock  
 
         if new_settings["fullscreen"] == False:
-            button_6 = button_lock
-        elif is_mouse_over_button_6:
-            button_6 = button_aimed
-        else:
-            button_6 = button_free
-        button_6 = pygame.transform.scale(button_6, standard_button_size_1)
+            buttons[5] = button_lock
 
-        if is_mouse_over_button_7:
-            button_7 = button_aimed
-        elif not new_settings["play_music"]:
-            button_7 = button_lock
-        else:
-            button_7 = button_free
-        button_7 = pygame.transform.scale(button_7, standard_button_size_3)
+        if not new_settings["play_music"]:
+            buttons[6] = button_lock
 
         if new_settings["music_volume"] == 100:
-            button_8 = button_lock
-        elif is_mouse_over_button_8:
-            button_8 = button_aimed
-        else:
-            button_8 = button_free
-        button_8 = pygame.transform.scale(button_8, standard_button_size_2)
+            buttons[7] = button_lock
 
         if new_settings["music_volume"] == 0:
-            button_9 = button_lock
-        elif is_mouse_over_button_9:
-            button_9 = button_aimed
-        else:
-            button_9 = button_free
-        button_9 = pygame.transform.scale(button_9, standard_button_size_2)
+            buttons[8] = button_lock
 
-        if is_mouse_over_button_10:
-            button_10 = button_aimed
-        elif not new_settings["play_sound"]:
-            button_10 = button_lock
-        else:
-            button_10 = button_free
-        button_10 = pygame.transform.scale(button_10, standard_button_size_3)
+        if not new_settings["play_sound"]:
+            buttons[9] = button_lock
 
         if new_settings["sound_volume"] == 100:
-            button_11 = button_lock
-        elif is_mouse_over_button_11:
-            button_11 = button_aimed
-        else:
-            button_11 = button_free
-        button_11 = pygame.transform.scale(button_11, standard_button_size_2)
+            buttons[10] = button_lock
 
         if new_settings["sound_volume"] == 0:
-            button_12 = button_lock
-        elif is_mouse_over_button_12:
-            button_12 = button_aimed
-        else:
-            button_12 = button_free
-        button_12 = pygame.transform.scale(button_12, standard_button_size_2)
+            buttons[11] = button_lock
 
         if new_settings["language"] == "polish":
-            button_13 = button_lock
-        elif is_mouse_over_button_13:
-            button_13 = button_aimed
-        else:
-            button_13 = button_free
-        button_13 = pygame.transform.scale(button_13,standard_button_size_3)
+            buttons[12] = button_lock
         
         if new_settings["language"] == "english":
-            button_14 = button_lock
-        elif is_mouse_over_button_14:
-            button_14 = button_aimed
-        else:
-            button_14 = button_free
-        button_14 = pygame.transform.scale(button_14,standard_button_size_3)
-
-        if is_mouse_over_button_15:
-            button_15 = button_aimed
-        else:
-            button_15 = button_free
-        button_15 = pygame.transform.scale(button_15,standard_button_size_3)
-
-        if is_mouse_over_button_16:
-            button_16 = button_aimed
-        else:
-            button_16 = button_free
-        button_16 = pygame.transform.scale(button_16,standard_button_size_3)
-
-        description_button = pygame.transform.scale(button_lock, pos["settings_menu"]["button_size_4"])
-
-        screen.blit(description_button, pos["settings_menu"]["desc_button_1"])
-        screen.blit(description_button, pos["settings_menu"]["desc_button_2"])
-        screen.blit(description_button, pos["settings_menu"]["desc_button_3"])
-
-        screen.blit(button_1, pos["settings_menu"]["button_1"])
-        screen.blit(button_2, pos["settings_menu"]["button_2"])
-        screen.blit(button_3, pos["settings_menu"]["button_3"])
-        screen.blit(button_4, pos["settings_menu"]["button_4"])
-        screen.blit(button_5, pos["settings_menu"]["button_5"])
-        screen.blit(button_6, pos["settings_menu"]["button_6"])
-        screen.blit(button_7, pos["settings_menu"]["button_7"])
-        screen.blit(button_8, pos["settings_menu"]["button_8"])
-        screen.blit(button_9, pos["settings_menu"]["button_9"])
-        screen.blit(button_10, pos["settings_menu"]["button_10"])
-        screen.blit(button_11, pos["settings_menu"]["button_11"])
-        screen.blit(button_12, pos["settings_menu"]["button_12"])
-        screen.blit(button_13, pos["settings_menu"]["button_13"])
-        screen.blit(button_14, pos["settings_menu"]["button_14"])
-        screen.blit(button_15, pos["settings_menu"]["button_15"])
-        screen.blit(button_16, pos["settings_menu"]["button_16"])
-
-        screen.blit(description_1_text, pos["settings_menu"]["desc_text_1"])
-        screen.blit(description_2_text, pos["settings_menu"]["desc_text_2"])
-        screen.blit(description_3_text, pos["settings_menu"]["desc_text_3"]) 
-
-        screen.blit(button_1_text, pos["settings_menu"]["text_1"])     
-        screen.blit(button_2_text, pos["settings_menu"]["text_2"])
-        screen.blit(button_3_text, pos["settings_menu"]["text_3"])
-        screen.blit(button_4_text, pos["settings_menu"]["text_4"])
-        screen.blit(button_5_text, pos["settings_menu"]["text_5"])
-        screen.blit(button_6_text, pos["settings_menu"]["text_6"])
-        screen.blit(button_7_text, pos["settings_menu"]["text_7"])
-        screen.blit(button_8_text, pos["settings_menu"]["text_8"])
-        screen.blit(button_9_text, pos["settings_menu"]["text_9"])
-        screen.blit(button_10_text, pos["settings_menu"]["text_10"])
-        screen.blit(button_11_text, pos["settings_menu"]["text_11"])
-        screen.blit(button_12_text, pos["settings_menu"]["text_12"])
-        screen.blit(button_13_text, pos["settings_menu"]["text_13"])
-        screen.blit(button_14_text, pos["settings_menu"]["text_14"])
-        screen.blit(button_15_text, pos["settings_menu"]["text_15"])
-        screen.blit(button_16_text, pos["settings_menu"]["text_16"])
+            buttons[13] = button_lock
+        
+        counter = 0
+        for button, mouse_over, standard, text in zip(buttons, is_mouse_over_button, button_standards, rendered_text[:16]):
+            if button == None:
+                if mouse_over:
+                    buttons[counter] = button = button_aimed
+                else:
+                    buttons[counter] = button = button_free
+            button = pygame.transform.scale(button, pos["settings_menu"][f"button_size_{standard}"])
+            screen.blit(button, pos["settings_menu"][f"button_{counter+1}"])
+            screen.blit(text, pos["settings_menu"][f"text_{counter+1}"])
+            counter += 1
 
         pygame.display.flip()
 
