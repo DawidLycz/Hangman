@@ -16,9 +16,7 @@ polish_key_words = [
     ["Części ciała", "głowa", "ręka", "noga", "usta", "oko", "nos", "usta", "szyja", "kolano", "ramię", "brzuch", "plecy"],
     ["Samochody", "audi", "bmw", "ford", "toyota", "honda", "volkswagen", "mercedes", "opel", "fiat", "renault", "peugeot", "nissan"],
     ["Państwa", "usa", "kanada", "meksyk", "brazylia", "japonia", "rosja", "chiny", "indie", "niemcy", "francja", "włochy", "hiszpania"],
-    ["Przedmioty gospodarstwa domowego", "lodówka", "kuchenka", "pralka", "telewizor", "mikrofalówka", "zmywarka", "suszarka", "mikserek", "odkurzacz", "żelazko", "czajnik"],
     ["Języki obce", "angielski", "francuski", "hiszpański", "niemiecki", "włoski", "rosyjski", "japoński", "chiński", "portugalski", "arabski", "holenderski", "szwedzki"],
-    ["Przedmioty codziennego użytku", "telefon", "klucze", "portfel", "okulary", "długopis", "notes", "pudełko", "zegarek", "torebka", "aparat"],
     ["Góry", "tatry", "alpy", "himalaje", "karakorum", "andy", "rockies", "ural", "pireneje", "ande", "australia"],
     ["Przybory kuchenne", "nóż", "patelnia", "garnek", "talerz", "widelec", "łyżka", "sito", "nożyczki", "deska", "wałek", "termometr"],
     ["Przedmioty podróżne", "walizka", "plecak", "paszport", "bagaż", "bilet", "torba", "kompas", "mapa", "wiza", "przewodnik"],
@@ -37,7 +35,6 @@ polish_key_words = [
     ["Czasowniki", "biec", "skakać", "pisać", "czytać", "śpiewać", "tańczyć", "mówić", "gotować", "myć", "budować"],
     ["Przedmioty domowe", "kanapa", "stół", "krzesło", "szafa", "łóżko", "komoda", "lustro", "toaleta", "zlew", "kominek"],
     ["Państwa afrykańskie", "egipt", "kenia", "maroko", "nigeria", "południowa afryka", "tunezja", "algieria", "etiopia", "sudan", "senegal"],
-    ["Słynne postacie literackie", "sherlock holmes", "harry potter", "hamlet", "don kichot", "robinson crusoe", "frankenstein", "oliver twist", "alice in wonderland", "huckleberry finn", "pippi longstocking"]
 ]
 
 
@@ -125,4 +122,8 @@ english_localisation = [english_strings, english_key_words]
 content = [polish_localisation, english_localisation]
 
 with open (STRINGS_FILE,"wb") as stream:
-    pickle.dump(content, stream)
+    try:
+        pickle.dump(content, stream)
+        print ("changed")
+    except:
+        print ("somethings wrong")

@@ -111,16 +111,20 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
                 pygame.quit()
                 exit()
                 
-            elif event.type == pygame.KEYDOWN and len(name_latters) < 11:
+            elif event.type == pygame.KEYDOWN:
+                if len(name_latters) < 11:
                     for key in KEYBOARD_INPUT:
                         if key == event.key:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             name_latters.append(KEYBOARD_INPUT[key][0])
-                    if event.key == pygame.K_BACKSPACE:
-                        try:
-                            del name_latters[-1]
-                        except:
-                            sound_channel.play(SOUND_EFFECTS["error"])
+                if event.key == pygame.K_BACKSPACE:
+                    try:
+                        del name_latters[-1]
+                        sound_channel.play(SOUND_EFFECTS["wrong"])
+                    except:
+                        sound_channel.play(SOUND_EFFECTS["error"])
+                if event.key == pygame.K_ESCAPE:
+                    return None
 
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
@@ -242,7 +246,7 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
     button_size = pos["game_menu"]["button_size"]
     is_mouse_over_button = [False] * 4
     screen.blit(background_image, (0, 0))
- 
+    init, mouse_movement = True, False
     while True:
 
         for event in pygame.event.get():
@@ -250,20 +254,9 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
                 pygame.quit()
                 exit()
 
-            elif event.type == pygame.MOUSEMOTION:
-                mouse_pos = pygame.mouse.get_pos()
-                counter = 0
-                for mouse_over, position, button, button_text in zip(is_mouse_over_button, button_positions, buttons, button_texts):
-                    mouse_over = check_mouse(position, button_size, mouse_pos)
-                    button = button_aimed if mouse_over else button_free
-                    screen.blit(button, position)
-                    screen.blit(button_font.render(f"{button_text[0]}",True,(0,0,0)), button_text[1])
-                    if mouse_over:
-                        is_mouse_over_button[counter] = True
-                        counter += 1
-                    else:
-                        is_mouse_over_button[counter] = False
-                        counter += 1
+            if event.type == pygame.MOUSEMOTION:
+
+                mouse_movement = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -272,6 +265,29 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
                         if button:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             return option
+                elif event.button == 3:
+                    print (mouse_pos)
+                        
+        mouse_pos = pygame.mouse.get_pos()
+        counter = 0
+        if mouse_movement or init:
+            init, mouse_movement = False, False
+            for mouse_over, position, button, button_text in zip(is_mouse_over_button, button_positions, buttons, button_texts):
+                mouse_over = check_mouse(position, button_size, mouse_pos)
+                button = button_aimed if mouse_over else button_free
+                button = pygame.transform.scale(button, button_size)
+                screen.blit(button, position)
+                text = (button_font.render(f"{button_text[0]}",True,(0,0,0)))
+                text_rect = text.get_rect()
+                text_rect.center = (position[0]+(button_size[0]//2), position[1]+(button_size[1]//2))
+                screen.blit(text, text_rect)
+
+                if mouse_over:
+                    is_mouse_over_button[counter] = True
+                    counter += 1
+                else:
+                    is_mouse_over_button[counter] = False
+                    counter += 1
 
         pygame.display.flip()
 
@@ -287,8 +303,8 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
     text_font = pygame.font.Font("font.ttf", pos["leaderboard_menu"]["text_font"])
 
     description_text = description_font.render(f"{strings[10]}",True,(255,100,0))
-    button_1_text = text_font.render(f"{strings[2]}",True,(0,0,0))
-    button_2_text = text_font.render(f"{strings[12]}",True,(0,0,0))
+    button_texts = [text_font.render(f"{strings[2]}",True,(0,0,0)), text_font.render(f"{strings[12]}",True,(0,0,0))]
+
 
     with open(SCOREBOARD_FILE,"rb") as stream:
         scoreboard = pickle.load(stream)
@@ -300,8 +316,8 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
 
     button_size = (pos["leaderboard_menu"]["button_size"])
   
-    is_mouse_over_button_1 = False
-    is_mouse_over_button_2 = False
+    is_mouse_over_button = [False] *2
+    screen.blit(description_text, pos["leaderboard_menu"]["desc_pos"])
 
     while True:
 
@@ -312,33 +328,39 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
 
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
-                is_mouse_over_button_1 = check_mouse(pos["leaderboard_menu"]["button1_pos"], button_size, mouse_pos)
-                is_mouse_over_button_2 = check_mouse(pos["leaderboard_menu"]["button2_pos"], button_size, mouse_pos)
-
+                is_mouse_over_button[0] = check_mouse(pos["leaderboard_menu"]["button1_pos"], button_size, mouse_pos)
+                is_mouse_over_button[1] = check_mouse(pos["leaderboard_menu"]["button2_pos"], button_size, mouse_pos)
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    return None
+                
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
-                    if is_mouse_over_button_1:
+                    if is_mouse_over_button[0]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         return None
-                    if is_mouse_over_button_2:
+                    if is_mouse_over_button[1]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         scoreboard = []
                         with open(SCOREBOARD_FILE,"wb") as stream:
                             pickle.dump(scoreboard, stream)
                         return None
-    
-        button_1 = button_aimed if is_mouse_over_button_1 else button_free
-        button_1 = pygame.transform.scale(button_1, button_size)
-        button_2 = button_aimed if is_mouse_over_button_2 else button_free 
-        button_2 = pygame.transform.scale(button_2, button_size)
+                elif event.button == 3:
+                    print (mouse_pos)
 
-        screen.blit(button_1,pos["leaderboard_menu"]["button1_pos"])
-        screen.blit(button_2,pos["leaderboard_menu"]["button2_pos"])
+        counter = 0
+        for mouse_over, text in zip(is_mouse_over_button, button_texts):
+            button = button_aimed if mouse_over else button_free
+            button = pygame.transform.scale(button, button_size)
+            position = pos["leaderboard_menu"][f"button{counter+1}_pos"]
+            screen.blit(button, position)
+            text_rect = text.get_rect()
+            text_rect.center = (position[0]+(button_size[0]//2), position[1]+(button_size[1]//2))
+            screen.blit(text, text_rect)
+            counter+=1
 
-        screen.blit(button_1_text, pos["leaderboard_menu"]["button1_text_pos"])
-        screen.blit(button_2_text, pos["leaderboard_menu"]["button2_text_pos"])
-        screen.blit(description_text, pos["leaderboard_menu"]["desc_pos"])
-        
         position = 1
         height = pos["leaderboard_menu"]["height"]
         for score in scoreboard_part_1:
@@ -368,6 +390,7 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
 
 def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel: pygame.mixer.Channel, resolution: tuple[int], music_channel: pygame.mixer.Channel, pos: dict, strings: list[str]) -> bool:
 
+    new_settings = settings.copy()
     background_image = pygame.image.load("pliki obrazów\\menu_background.jpg")
     background_image = pygame.transform.scale(background_image,(resolution))
     button_free = pygame.image.load("pliki obrazów\\button_1.png")
@@ -375,7 +398,6 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
     button_lock = pygame.image.load("pliki obrazów\\button_3.png")
     description_button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["desk_font"])
     button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["button_font"])
-    new_settings = settings.copy()
     is_mouse_over_button = [False] * 16    
     texts_to_display = ["800:600", "1200:800", f"{strings[13]}", "1920:1080", "1280:720", f"{strings[14]}", f"{strings[15]}", "+", "-", 
                         f"{strings[16]}", "+", "-",f"{strings[17]}", f"{strings[18]}", f"{strings[2]}", f"{strings[3]}"]
@@ -390,6 +412,7 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
     description_button = pygame.transform.scale(button_lock, pos["settings_menu"]["button_size_4"])    
     
     screen.blit(background_image, (0, 0))
+
     counter = 1
     for text in description_texts:
         text = description_button_font.render(f"{text}",True,(255,100,0))
@@ -426,7 +449,10 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    return None
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
                 counter = 0
@@ -554,6 +580,8 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
                             return True
                         except:
                             print("Something went wrong")
+                elif event.button == 3:
+                    print (mouse_pos)
 
         buttons = [None] * 16
         if new_settings["resolution"] == [800,600]:
@@ -599,15 +627,19 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
             buttons[13] = button_lock
         
         counter = 0
-        for button, mouse_over, standard, text in zip(buttons, is_mouse_over_button, button_standards, rendered_text[:16]):
+        for button, mouse_over, standard, text in zip(buttons, is_mouse_over_button, button_standards, rendered_text):
             if button == None:
                 if mouse_over:
                     buttons[counter] = button = button_aimed
                 else:
                     buttons[counter] = button = button_free
-            button = pygame.transform.scale(button, pos["settings_menu"][f"button_size_{standard}"])
-            screen.blit(button, pos["settings_menu"][f"button_{counter+1}"])
-            screen.blit(text, pos["settings_menu"][f"text_{counter+1}"])
+            current_standard = pos["settings_menu"][f"button_size_{standard}"]
+            position = pos["settings_menu"][f"button_{counter+1}"]
+            button = pygame.transform.scale(button, current_standard)
+            screen.blit(button, position)
+            text_rect = text.get_rect()
+            text_rect.center = (position[0]+(current_standard[0]//2), position[1]+(current_standard[1]//2)+2)
+            screen.blit(text, text_rect)
             counter += 1
 
         pygame.display.flip()
@@ -652,8 +684,7 @@ def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str
                         provided_keys = (KEYBOARD_INPUT[key])
                         provided_keys = [key.upper() for key in provided_keys]
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    exit()
+                    return None
 
         if provided_keys:
             if any(letter.upper() in provided_letters for letter in provided_keys):

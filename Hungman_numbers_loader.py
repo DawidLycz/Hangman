@@ -104,7 +104,7 @@ prime_list = { "intro":
 
 res_800_600 = {
 'intro': 
-    {'text1': (80, 30), 'text2': (20, 380), 'text3': (130, 430), 'font1': 200, 'font2': 39},
+    {'text1': (80, 30), 'text2': (20, 380), 'text3': (20, 430), 'font1': 200, 'font2': 39},
 'outro': 
     {'button_font': 30, 'button_size': (150, 60), 'description_font': 50, 'title_font': 150, 'name_font': 100, 'button1_pos': (30, 530),
     'button2_pos': (620, 530), 'title_pos': (50, 30), 'score_pos': (50, 220), 'desc_pos': (50, 300),
@@ -113,8 +113,8 @@ res_800_600 = {
    {'title': (50, 240.0), 'title_font': 200}, 
 'game_menu': 
     {'button_size': (500, 80), 'button1_pos': (150, 100), 'button2_pos': (150, 200), 'button3_pos': (150, 300),
-    'button4_pos': (150, 400), 'button1_text_pos': (310, 109), 'button2_text_pos': (340, 210), 'button3_text_pos': (250, 310),
-    'button4_text_pos': (330, 410), 'font': (45)},
+    'button4_pos': (150, 400), 'button1_text_pos': (310, 109), 'button2_text_pos': (327, 210), 'button3_text_pos': (247, 310),
+    'button4_text_pos': (335, 410), 'font': (45)},
 'leaderboard_menu': 
     {'desc_font': 45, 'text_font': 30, 'button_size': (150, 60), 'button1_pos': (30, 530), 'button2_pos': (620, 530),
     'button1_text_pos': (50, 540), 'button2_text_pos': (660, 540), 'desc_pos': (250, 10), 'height': 70, 'height_change': 40,
