@@ -29,6 +29,7 @@ SOUND_EFFECTS = {"wrong": pygame.mixer.Sound("efekty dźwiękowe\\wrong.mp3"),
                  "beep": pygame.mixer.Sound("efekty dźwiękowe\\beep.mp3")}
 
 def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict, strings: list[str]) -> None:
+    '''Initial function for whole game. Displays welcome messege in the surface provided in argument'''
 
     background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"),(resolution))
     screen.blit(background_image, (0, 0))
@@ -71,6 +72,19 @@ def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict
         clock.tick(60)
 
 def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int], pos: dict, sound_channel: pygame.mixer.Channel, strings: list[str]) -> None:
+    
+    '''Display the game outro screen and handle user interactions.
+    Parameters:
+        - screen (pygame.surface.Surface): The surface on which the outro screen is displayed.
+        - score (int): The player's score.
+        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
+        - pos (dict): A dictionary containing the positions of elements on the screen.
+        - sound_channel (pygame.mixer.Channel): The sound channel used to play sound effects.
+        - strings (list[str]): A list containing text strings used for displaying texts on the screen.
+    Description:
+        The `play_outro` function is responsible for displaying the game outro screen and handling user interactions on that screen. It displays the background, texts, buttons, and handles events such as key presses, mouse movement, and button clicks.
+        Provides user possibility to save his game score in the "scoreboard.db" file.
+    '''
 
     pygame.mixer.music.load("efekty dźwiękowe\\outro.mp3")
     pygame.mixer.music.play()
@@ -78,14 +92,17 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
     with open(SCOREBOARD_FILE,"rb") as stream:
         scoreboard = pickle.load(stream)
 
-
     button_free = pygame.image.load("pliki obrazów\\button_1.png")
     button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
-
+    button_size = pos["outro"]["button_size"]
     button_font = pygame.font.Font("font.ttf", pos["outro"]["button_font"])  
 
     button_1_text = button_font.render(f"{strings[2]}", True, (0,0,0))
     button_2_text = button_font.render(f"{strings[3]}", True, (0,0,0))
+    button_1_text_rect = button_1_text.get_rect()
+    button_2_text_rect = button_2_text.get_rect()
+    button_1_text_rect.center = (pos["outro"]["button1_pos"][0]+(button_size[0]//2), pos["outro"]["button1_pos"][1]+(button_size[1]//2))
+    button_2_text_rect.center = (pos["outro"]["button2_pos"][0]+(button_size[0]//2), pos["outro"]["button2_pos"][1]+(button_size[1]//2))
 
     background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"),(resolution))
 
@@ -99,7 +116,7 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
     description_score = description_font.render(f"{strings[4]} {score} ",True,(255,255,255))
     description_name = description_font.render(f"{strings[5]}",True,(255,255,255))
 
-    button_size = pos["outro"]["button_size"]
+
 
     name_latters = [] 
     while True:
@@ -153,16 +170,10 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
         name = "".join(name_latters)
         name_title = name_font.render(f"{name.upper()}", True, (0,255,0))
               
-        if is_mouse_over_button[0]:
-            button_1 = button_aimed
-        else:
-            button_1 = button_free
+        
+        button_1 = button_aimed if is_mouse_over_button[0] else button_free
         button_1 = pygame.transform.scale(button_1, button_size)
-
-        if is_mouse_over_button[1]:
-            button_2 = button_aimed
-        else:
-            button_2 = button_free
+        button_2 = button_aimed if is_mouse_over_button[1] else button_free
         button_2 = pygame.transform.scale(button_2, button_size) 
 
 
@@ -174,12 +185,24 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
         screen.blit(description_name, pos["outro"]["desc_pos"])
         screen.blit(name_title, pos["outro"]["name_pos"])
 
-        screen.blit(button_1_text, pos["outro"]["button1_text_pos"])
-        screen.blit(button_2_text, pos["outro"]["button2_text_pos"])        
+        screen.blit(button_1_text, button_1_text_rect)
+        screen.blit(button_2_text, button_2_text_rect)        
     
         pygame.display.flip()
 
 def display_letters(word: str, provided_letters: list[str], screen: pygame.surface.Surface, height: int, resolution: tuple[int]) -> None:
+    
+    '''Render and display letters of a word on the screen.
+    Parameters:
+        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
+        - word (str): The word to be displayed.
+        - provided_letters (set[str]): A set of letters that are already provided.
+        - screen (pygame.surface.Surface): The surface on which the letters are displayed.
+        - height (int): The vertical position at which the letters are displayed.
+
+    Description:
+        The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
+    '''
 
     letter_font = pygame.font.Font("font.ttf",int(resolution[0]*80/800))
     distance = int(10)
@@ -193,7 +216,19 @@ def display_letters(word: str, provided_letters: list[str], screen: pygame.surfa
         distance += int(resolution[0]*60/800)
 
 def victory_failure_display(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel,  pos: dict, success: bool, strings: list[str]) -> None:
+    '''
+    Display victory or failure message on the screen.
 
+    Parameters:
+        - screen (pygame.surface.Surface): The surface on which the message is displayed.
+        - sound_channel (pygame.mixer.Channel): The sound channel used to play sound effects.
+        - pos (dict): A dictionary containing the positions of elements on the screen.
+        - success (bool): A boolean indicating whether it is a victory (True) or failure (False).
+        - strings (list[str]): A list containing text strings used for displaying texts on the screen.
+
+    Description:
+        The `victory_failure_display` function displays a victory or failure message on the screen based on the value of the `success` parameter. It renders the main title text using the specified font and color, plays the corresponding sound effect, blits the text onto the screen, updates the display, waits for a specified duration, and then returns.
+    '''
     title_font = pygame.font.Font("font.ttf", pos["victory_failure_display"]["title_font"])
     if success:
         text, time_to_wait, color = f"{strings[6]}", 3, (0,0,255)
@@ -207,7 +242,21 @@ def victory_failure_display(screen: pygame.surface.Surface, sound_channel: pygam
     time.sleep(time_to_wait)
 
 def check_mouse(position: tuple[int], button_type: tuple [int], mouse_pos: tuple[int]) -> bool:
-    
+    '''
+    Check if the mouse position is within the specified button area.
+
+    Parameters:
+        - position (tuple[int]): The position of the top-left corner of the button area (x, y).
+        - button_type (tuple[int]): The size of the button area (width, height).
+        - mouse_pos (tuple[int]): The current position of the mouse (x, y).
+
+    Returns:
+        bool: True if the mouse position is within the button area, False otherwise.
+
+    Description:
+        The `check_mouse` function checks if the current mouse position is within the specified button area. It compares the x and y coordinates of the mouse position with the boundaries of the button area. If the mouse position is within the button area, it returns True; otherwise, it returns False.
+    '''
+
     x, y = position[0], position[1]
     x_end = x + button_type[0]
     y_end = y + button_type[1]
@@ -217,6 +266,18 @@ def check_mouse(position: tuple[int], button_type: tuple [int], mouse_pos: tuple
         return False
 
 def get_random_word(words_base) -> tuple[str]:
+    '''
+    Get a random word from the given words_base.
+
+    Parameters:
+        - words_base (list[tuple[str]]): A list of word categories, where each category is represented by a list containing the category name as the first element, followed by the words in that category.
+
+    Returns:
+        tuple[str]: A tuple containing the randomly selected word and its category name.
+
+    Description:
+        The `get_random_word` function selects a random word from the given words_base. It first chooses a random category from the words_base and assigns its name to the `category_name` variable. Then, it retrieves the word_base for that category. Finally, it selects a random word from the word_base and returns a tuple containing the randomly selected word and its category name.
+    '''
 
     category = random.choice(words_base)
     category_name = category[0]
@@ -225,6 +286,19 @@ def get_random_word(words_base) -> tuple[str]:
     return the_word, category_name
 
 def create_screen(resolution: tuple[int], fullscreen: bool) -> pygame.surface.Surface:
+    '''
+    Create a Pygame screen surface with the specified resolution and fullscreen mode.
+
+    Parameters:
+        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
+        - fullscreen (bool): A boolean indicating whether the screen should be created in fullscreen mode.
+
+    Returns:
+        pygame.surface.Surface: The new created Pygame screen surface.
+
+    Description:
+        The `create_screen` function creates a Pygame screen surface with the specified resolution and fullscreen mode. If the `fullscreen` parameter is True, it creates the screen in fullscreen mode using `pygame.FULLSCREEN` flag; otherwise, it creates the screen in windowed mode. The function then returns the created screen surface.
+    '''
 
     if fullscreen:
         return pygame.display.set_mode((resolution),pygame.FULLSCREEN)
@@ -232,6 +306,28 @@ def create_screen(resolution: tuple[int], fullscreen: bool) -> pygame.surface.Su
         return pygame.display.set_mode((resolution))
 
 def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> str:
+    '''
+    Display the game menu and handle user interactions.
+
+    Parameters:
+        - screen (pygame.surface.Surface): The Pygame screen surface to display the menu on.
+        - sound_channel (pygame.mixer.Channel): The Pygame mixer channel for playing sound effects.
+        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
+        - pos (dict): A dictionary containing the position coordinates for different elements in the menu.
+        - strings (list[str]): A list of string values for different menu options and texts.
+
+    Returns:
+        str: The selected option from the game menu. One of : "new_game", "settings", "scoreboard", "exit"
+
+    Description:
+        The `game_menu` function displays the game menu on the provided screen surface and handles user interactions. It loads the background image, button images, and button text. It also initializes variables for tracking mouse movements and button states.
+
+        The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements. It handles MOUSEBUTTONDOWN events to check for button clicks. If the left mouse button is clicked on a button, the corresponding option is returned.
+
+        The function updates the button states based on mouse movements and displays the updated buttons on the screen surface. It also displays the button text centered on each button. The function keeps track of which button the mouse is currently over using the `check_mouse` function.
+
+        The function continues this loop until a button option is selected and returned.
+    '''
 
     background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\menu_background.jpg"), resolution)
     button_free = pygame.image.load("pliki obrazów\\button_1.png")
@@ -292,7 +388,24 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
         pygame.display.flip()
 
 def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> None: 
+    '''
+    Display the leaderboard menu and handle user interactions.
 
+    Parameters:
+        - screen (pygame.surface.Surface): The Pygame screen surface to display the menu on.
+        - sound_channel (pygame.mixer.Channel): The Pygame mixer channel for playing sound effects.
+        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
+        - pos (dict): A dictionary containing the position coordinates for different elements in the menu.
+        - strings (list[str]): A list of string values for different menu options and texts.
+
+    Description:
+
+        The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements over buttons. It handles KEYDOWN events to check for the ESCAPE key press, which returns None and exits the menu.
+
+        If the left mouse button is clicked on a button, the corresponding action is performed. Clicking on the first button returns None and exits the menu. Clicking on the second button clears the scoreboard data and returns None, exiting the menu.
+
+        The function continues this loop until an action is performed and the menu is exited.
+    '''
     background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"), resolution)
     screen.blit(background_image, (0, 0))
 
@@ -389,6 +502,24 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
         pygame.display.flip()
 
 def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel: pygame.mixer.Channel, resolution: tuple[int], music_channel: pygame.mixer.Channel, pos: dict, strings: list[str]) -> bool:
+    '''
+    Display and handle the settings menu screen.
+
+    Parameters:
+        - screen (pygame.surface.Surface): The surface representing the game screen.
+        - settings (dict): The current settings of the game.
+        - sound_channel (pygame.mixer.Channel): The sound channel for playing sound effects.
+        - resolution (tuple[int]): The current resolution of the game screen.
+        - music_channel (pygame.mixer.Channel): The music channel for playing background music.
+        - pos (dict): The position dictionary containing the positions of various elements on the screen.
+        - strings (list[str]): The list of strings containing text for localization.
+
+    Returns:
+        bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving, or None if the user pressed the escape key to return to the previous menu.
+
+    Description:
+        Function allows user to change certain parameters of game, i allows to change screen resolution, sound and music volume, language.
+        It works very similar to "game_menu" function'''
 
     new_settings = settings.copy()
     background_image = pygame.image.load("pliki obrazów\\menu_background.jpg")
@@ -645,7 +776,25 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
         pygame.display.flip()
 
 def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str, score: int, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> int:
+    """
+    Run a game round where the player guesses letters to complete a word.
 
+    Parameters:
+        screen (pygame.surface.Surface): The surface representing the game screen.
+        the_word (str): The word to be guessed.
+        category_name (str): The name of the category to which the word belongs.
+        score (int): The current score of the game.
+        sound_channel (pygame.mixer.Channel): The sound channel for playing sound effects.
+        resolution (tuple[int]): The current resolution of the game screen.
+        pos (dict): The position dictionary containing the positions of various elements on the screen.
+        strings (list[str]): The list of strings containing text for localization.
+
+    Returns:
+        int: The score obtained in the game round.
+
+    Description:
+        This function runs a game round where the player guesses letters to complete a word. The player is presented with a word and a gallow image representing the number of incorrect attempts made. The player can enter letters using the keyboard to guess the word. If the player guesses a correct letter, it is displayed in the word. If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
+    """
     background_image = pygame.image.load("pliki obrazów\\background_2.jpg")
     background_image = pygame.transform.scale(background_image, resolution)
     gallow_background_image = pygame.image.load("pliki obrazów\\gallow_background.jpg")
@@ -719,7 +868,7 @@ def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str
 
         for word in password_words:
             display_letters(word, provided_letters, screen, height, resolution)
-            height += 130
+            height += resolution[1] * 130/600
         if set(password_letters) <= correct_letters:
             success = True
             victory_failure_display(screen, sound_channel, pos, success, strings)
@@ -734,13 +883,20 @@ def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str
         clock.tick(60)
 
 def main() -> False:
-    
+    """
+    The main function that serves as the entry point of the program.
+    Whole function is looped in to "while True" loop. 
+    Initially it is loading settings file and assing its content to constant.
+    Next, it is initialize function "play_intro", but only once. 
+    Than it "initialize" game screen with parameters based on constant mentionet above.
+    And at last it enters inner loop. Which is based on "main_menu" function, and based on what this function returns, it runs certain operations.
+    """    
     show_intro = True
     while True:
         with open(SETTINGS_FILE, "rb") as stream:
             settings = pickle.load(stream)
 
-        resolution, wide_resolution = settings["resolution"], settings["wide_screen"]
+        resolution = settings["resolution"]
         resolution_x, resolution_y = (resolution)
         file_with_numbers = f"resolution_{resolution_x}_{resolution_y}.db"
 
