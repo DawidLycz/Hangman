@@ -51,7 +51,7 @@ def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict
   
         if ticks == 55:
             title_font = pygame.font.Font("font.ttf", pos["intro"]["font1"])
-            main_title = title_font.render("Hung Man", True, (0,255,255))
+            main_title = title_font.render("Hangman", True, (0,255,255))
             screen.blit(main_title, pos["intro"]["text1"])
             pygame.display.flip()
         
