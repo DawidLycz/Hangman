@@ -21,21 +21,21 @@ KEYBOARD_INPUT = {
     pygame.K_s: ["s","ś"], pygame.K_t: ["t"], pygame.K_u: ["u"], pygame.K_v: ["v"], pygame.K_w: ["w"], pygame.K_x: ["x"],
     pygame.K_y: ["y"], pygame.K_z: ["z","ź","ż"],}
 
-SOUND_EFFECTS = {"wrong": pygame.mixer.Sound("efekty dźwiękowe\\wrong.mp3"),
-                 "correct": pygame.mixer.Sound("efekty dźwiękowe\\correct.mp3"),
-                 "error": pygame.mixer.Sound("efekty dźwiękowe\\error.mp3"),
-                 "success": pygame.mixer.Sound("efekty dźwiękowe\\success.mp3"),
-                 "failure": pygame.mixer.Sound("efekty dźwiękowe\\game_over.mp3"),
-                 "beep": pygame.mixer.Sound("efekty dźwiękowe\\beep.mp3")}
+SOUND_EFFECTS = {"wrong": pygame.mixer.Sound("soundeffects\\wrong.mp3"),
+                 "correct": pygame.mixer.Sound("soundeffects\\correct.mp3"),
+                 "error": pygame.mixer.Sound("soundeffects\\error.mp3"),
+                 "success": pygame.mixer.Sound("soundeffects\\success.mp3"),
+                 "failure": pygame.mixer.Sound("soundeffects\\game_over.mp3"),
+                 "beep": pygame.mixer.Sound("soundeffects\\beep.mp3")}
 
 def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict, strings: list[str]) -> None:
     '''Initial function for whole game. Displays welcome messege in the surface provided in argument'''
 
-    background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"),(resolution))
+    background_image = pygame.transform.scale(pygame.image.load("images\\intro_background.jpg"),(resolution))
     screen.blit(background_image, (0, 0))
     clock = pygame.time.Clock()
     ticks = 0        
-    pygame.mixer.music.load("efekty dźwiękowe\\intro.mp3")
+    pygame.mixer.music.load("soundeffects\\intro.mp3")
     pygame.mixer.music.play()
     pygame.display.flip()
 
@@ -86,14 +86,14 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
         Provides user possibility to save his game score in the "scoreboard.db" file.
     '''
 
-    pygame.mixer.music.load("efekty dźwiękowe\\outro.mp3")
+    pygame.mixer.music.load("soundeffects\\outro.mp3")
     pygame.mixer.music.play()
 
     with open(SCOREBOARD_FILE,"rb") as stream:
         scoreboard = pickle.load(stream)
 
-    button_free = pygame.image.load("pliki obrazów\\button_1.png")
-    button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
+    button_free = pygame.image.load("images\\button_1.png")
+    button_aimed = pygame.image.load("images\\button_2.png")
     button_size = pos["outro"]["button_size"]
     button_font = pygame.font.Font("font.ttf", pos["outro"]["button_font"])  
 
@@ -104,7 +104,7 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
     button_1_text_rect.center = (pos["outro"]["button1_pos"][0]+(button_size[0]//2), pos["outro"]["button1_pos"][1]+(button_size[1]//2))
     button_2_text_rect.center = (pos["outro"]["button2_pos"][0]+(button_size[0]//2), pos["outro"]["button2_pos"][1]+(button_size[1]//2))
 
-    background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"),(resolution))
+    background_image = pygame.transform.scale(pygame.image.load("images\\intro_background.jpg"),(resolution))
 
     is_mouse_over_button = [False] * 2
 
@@ -321,17 +321,14 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
 
     Description:
         The `game_menu` function displays the game menu on the provided screen surface and handles user interactions. It loads the background image, button images, and button text. It also initializes variables for tracking mouse movements and button states.
-
         The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements. It handles MOUSEBUTTONDOWN events to check for button clicks. If the left mouse button is clicked on a button, the corresponding option is returned.
-
         The function updates the button states based on mouse movements and displays the updated buttons on the screen surface. It also displays the button text centered on each button. The function keeps track of which button the mouse is currently over using the `check_mouse` function.
-
         The function continues this loop until a button option is selected and returned.
     '''
 
-    background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\menu_background.jpg"), resolution)
-    button_free = pygame.image.load("pliki obrazów\\button_1.png")
-    button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
+    background_image = pygame.transform.scale(pygame.image.load("images\\menu_background.jpg"), resolution)
+    button_free = pygame.image.load("images\\button_1.png")
+    button_aimed = pygame.image.load("images\\button_2.png")
     button_font = pygame.font.Font("font.ttf", pos["game_menu"]["font"])    
 
     button_positions = [pos["game_menu"]["button1_pos"],pos["game_menu"]["button2_pos"],pos["game_menu"]["button3_pos"],pos["game_menu"]["button4_pos"]]
@@ -361,8 +358,6 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
                         if button:
                             sound_channel.play(SOUND_EFFECTS["beep"])
                             return option
-                elif event.button == 3:
-                    print (mouse_pos)
                         
         mouse_pos = pygame.mouse.get_pos()
         counter = 0
@@ -401,16 +396,14 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
     Description:
 
         The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements over buttons. It handles KEYDOWN events to check for the ESCAPE key press, which returns None and exits the menu.
-
         If the left mouse button is clicked on a button, the corresponding action is performed. Clicking on the first button returns None and exits the menu. Clicking on the second button clears the scoreboard data and returns None, exiting the menu.
-
         The function continues this loop until an action is performed and the menu is exited.
     '''
-    background_image = pygame.transform.scale(pygame.image.load("pliki obrazów\\intro_background.jpg"), resolution)
+    background_image = pygame.transform.scale(pygame.image.load("images\\intro_background.jpg"), resolution)
     screen.blit(background_image, (0, 0))
 
-    button_free = pygame.image.load("pliki obrazów\\button_1.png")
-    button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
+    button_free = pygame.image.load("images\\button_1.png")
+    button_aimed = pygame.image.load("images\\button_2.png")
 
     description_font = pygame.font.Font("font.ttf", pos["leaderboard_menu"]["desc_font"])
     text_font = pygame.font.Font("font.ttf", pos["leaderboard_menu"]["text_font"])
@@ -522,11 +515,11 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
         It works very similar to "game_menu" function'''
 
     new_settings = settings.copy()
-    background_image = pygame.image.load("pliki obrazów\\menu_background.jpg")
+    background_image = pygame.image.load("images\\menu_background.jpg")
     background_image = pygame.transform.scale(background_image,(resolution))
-    button_free = pygame.image.load("pliki obrazów\\button_1.png")
-    button_aimed = pygame.image.load("pliki obrazów\\button_2.png")
-    button_lock = pygame.image.load("pliki obrazów\\button_3.png")
+    button_free = pygame.image.load("images\\button_1.png")
+    button_aimed = pygame.image.load("images\\button_2.png")
+    button_lock = pygame.image.load("images\\button_3.png")
     description_button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["desk_font"])
     button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["button_font"])
     is_mouse_over_button = [False] * 16    
@@ -795,9 +788,9 @@ def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str
     Description:
         This function runs a game round where the player guesses letters to complete a word. The player is presented with a word and a gallow image representing the number of incorrect attempts made. The player can enter letters using the keyboard to guess the word. If the player guesses a correct letter, it is displayed in the word. If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
     """
-    background_image = pygame.image.load("pliki obrazów\\background_2.jpg")
+    background_image = pygame.image.load("images\\background_2.jpg")
     background_image = pygame.transform.scale(background_image, resolution)
-    gallow_background_image = pygame.image.load("pliki obrazów\\gallow_background.jpg")
+    gallow_background_image = pygame.image.load("images\\gallow_background.jpg")
     gallow_background_image = pygame.transform.scale(gallow_background_image, pos["game_round"]["gallow_background_size"])
 
     screen.blit(background_image, (0, 0))
@@ -856,7 +849,7 @@ def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str
         category = description_font.render(f"{strings[22]} {category_name.upper()}",True,(0,255,0))
         score_description = description_font.render(f"{strings[23]} {score}",True,(0,255,0))
 
-        gallow_image = pygame.image.load(f"pliki obrazów\\gallow_{attempts}.png")
+        gallow_image = pygame.image.load(f"images\\gallow_{attempts}.png")
         gallow_image = pygame.transform.scale(gallow_image, pos["game_round"]["gallow_size"])
 
         screen.blit(gallow_background_image, pos["game_round"]["gallow_background_pos"])
@@ -917,7 +910,7 @@ def main() -> False:
             show_intro = False
 
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound("efekty dźwiękowe\\music.mp3")
+        music = pygame.mixer.Sound("soundeffects\\music.mp3")
         music_channel.set_volume(settings["music_volume"]/200)
         if settings["play_music"] == True:
             music_channel.play(music)

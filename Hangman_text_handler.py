@@ -122,8 +122,4 @@ english_localisation = [english_strings, english_key_words]
 content = [polish_localisation, english_localisation]
 
 with open (STRINGS_FILE,"wb") as stream:
-    try:
-        pickle.dump(content, stream)
-        print ("changed")
-    except:
-        print ("somethings wrong")
+    pickle.dump(content, stream)

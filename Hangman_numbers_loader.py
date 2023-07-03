@@ -236,31 +236,31 @@ with open (RESOLUTION_1280_720_FILENAME, "rb") as stream:
     old_res_1280_720 = pickle.load(stream)
 
 if old_res_800_600 == res_800_600:
-    print ("Nie wprowadzono żadnych zmian w parametrach rozdzielczości 800:600")
+    print("No changes were made to the 800:600 resolution parameters")
 else:
-    print ("Zostały wprowadzone zmiany w parametrach rozdzielczości 800:600")
-    with open (RESOLUTION_800_600_FILENAME, "wb") as stream:
+    print("Changes were made to the 800:600 resolution parameters")
+    with open(RESOLUTION_800_600_FILENAME, "wb") as stream:
         pickle.dump(res_800_600, stream)
 
 if old_res_1200_800 == res_1200_800:
-    print ("Nie wprowadzono żadnych zmian w parametrach rozdzielczości 1200:800")
+    print("No changes were made to the 1200:800 resolution parameters")
 else:
-    print ("Zostały wprowadzone zmiany w parametrach rozdzielczości 1200:800")
-    with open (RESOLUTION_1200_800_FILENAME, "wb") as stream:
+    print("Changes were made to the 1200:800 resolution parameters")
+    with open(RESOLUTION_1200_800_FILENAME, "wb") as stream:
         pickle.dump(res_1200_800, stream)
 
 if old_res_1920_1080 == res_1920_1080:
-    print ("Nie wprowadzono żadnych zmian w parametrach rozdzielczości 1920:1080")
+    print("No changes were made to the 1920:1080 resolution parameters")
 else:
-    print ("Zostały wprowadzone zmiany w parametrach rozdzielczości 1920:1080")
-    with open (RESOLUTION_1920_1080_FILENAME, "wb") as stream:
+    print("Changes were made to the 1920:1080 resolution parameters")
+    with open(RESOLUTION_1920_1080_FILENAME, "wb") as stream:
         pickle.dump(res_1920_1080, stream)
 
 if old_res_1280_720 == res_1280_720:
-    print ("Nie wprowadzono żadnych zmian w parametrach rozdzielczości 1280:720")
+    print("No changes were made to the 1280:720 resolution parameters")
 else:
-    print ("Zostały wprowadzone zmiany w parametrach rozdzielczości 1280:720")
-    with open (RESOLUTION_1280_720_FILENAME, "wb") as stream:
+    print("Changes were made to the 1280:720 resolution parameters")
+    with open(RESOLUTION_1280_720_FILENAME, "wb") as stream:
         pickle.dump(res_1280_720, stream)
 
 
