@@ -409,6 +409,8 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
     text_font = pygame.font.Font("font.ttf", pos["leaderboard_menu"]["text_font"])
 
     description_text = description_font.render(f"{strings[10]}",True,(255,100,0))
+    description_text_rect = description_text.get_rect()
+    description_text_rect.center = (resolution[0] // 2, pos["leaderboard_menu"]["desc_pos"][1] * 3)
     button_texts = [text_font.render(f"{strings[2]}",True,(0,0,0)), text_font.render(f"{strings[12]}",True,(0,0,0))]
 
 
@@ -416,14 +418,12 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
         scoreboard = pickle.load(stream)
     scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
     
-    scoreboard_part_1 = scoreboard[:10]
-    scoreboard_part_2 = scoreboard[10:20]
-    scoreboard_part_3 = scoreboard[20:30]
+    scoreboard_list =  [scoreboard[:10],scoreboard[10:20],scoreboard[20:30]]
 
     button_size = (pos["leaderboard_menu"]["button_size"])
   
     is_mouse_over_button = [False] *2
-    screen.blit(description_text, pos["leaderboard_menu"]["desc_pos"])
+    screen.blit(description_text, description_text_rect)
 
     while True:
 
@@ -466,31 +466,19 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
             text_rect.center = (position[0]+(button_size[0]//2), position[1]+(button_size[1]//2))
             screen.blit(text, text_rect)
             counter+=1
-
+        
+        counter = 0
         position = 1
         height = pos["leaderboard_menu"]["height"]
-        for score in scoreboard_part_1:
-            name = score[0].capitalize()
-            score_text = text_font.render(f"{position:2}. {name:<12}{score[1]}",True,(255,255,255))
-            screen.blit(score_text,(pos["leaderboard_menu"]["score_x1"],height))
-            height += pos["leaderboard_menu"]["height_change"]
-            position += 1
-        
-        height = pos["leaderboard_menu"]["height"]
-        for score in scoreboard_part_2:
-            name = score[0].capitalize()
-            score_text = text_font.render(f"{position:2}. {name:<12}{score[1]}",True,(255,255,255))
-            screen.blit(score_text, (pos["leaderboard_menu"]["score_x2"],height))
-            height += pos["leaderboard_menu"]["height_change"]
-            position += 1
-
-        height = pos["leaderboard_menu"]["height"]
-        for score in scoreboard_part_3:
-            name = score[0].capitalize()
-            score_text = text_font.render(f"{position:2}. {name:<12}{score[1]}",True,(255,255,255))
-            screen.blit(score_text,(pos["leaderboard_menu"]["score_x3"],height))
-            height += pos["leaderboard_menu"]["height_change"]
-            position += 1
+        for token in scoreboard_list:
+            height = pos["leaderboard_menu"]["height"]
+            counter += 1
+            for score in token:
+                name = score[0].capitalize()
+                score_text = text_font.render(f"{position:2}. {name:<12}{score[1]}",True,(255,255,255))
+                screen.blit(score_text,(pos["leaderboard_menu"][f"score_x{counter}"],height))
+                height += pos["leaderboard_menu"]["height_change"]
+                position += 1
 
         pygame.display.flip()
 
