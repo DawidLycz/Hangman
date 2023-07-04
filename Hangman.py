@@ -10,9 +10,9 @@ pygame.init()
 
 TOTAL_ATTEMTPS = 12
 
-SETTINGS_FILE = "settings.db"
-SCOREBOARD_FILE = "scoreboard.db"
-STRINGS_FILE = "strings.db"
+SETTINGS_FILE = "databases\\settings.db"
+SCOREBOARD_FILE = "databases\\scoreboard.db"
+STRINGS_FILE = "databases\\strings.db"
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a","ą"], pygame.K_b: ["b"], pygame.K_c: ["c","ć"], pygame.K_d: ["d"], pygame.K_e: ["e","ę"], pygame.K_f: ["f"],
@@ -879,7 +879,7 @@ def main() -> False:
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = (resolution)
-        file_with_numbers = f"resolution_{resolution_x}_{resolution_y}.db"
+        file_with_numbers = f"databases\\resolution_{resolution_x}_{resolution_y}.db"
 
         with open (file_with_numbers, "rb") as stream:
             pos = pickle.load(stream)

@@ -24,4 +24,8 @@ When the main script is executed, an intro message is displayed, followed by the
 
 4. "Exit": Ends the script altogether.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
+
 I hope this provides a comprehensive overview of the Hangman game and its functionality. Enjoy playing!
