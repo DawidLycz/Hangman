@@ -6,7 +6,7 @@ setup(
     version='0.1',
     packages=find_packages(),
     scripts=['Hangman.py', 'Hangman_text_handler.py', "Hangman_numbers_loader.py"],
-    url='https://github.com/TwojeKonto/NazwaRepozytorium',
+    url='https://github.com/DawidLycz/Hungman',
     license='MIT',
     author='Dawid Lycz',
     author_email='mamnie986@gmail.com',
