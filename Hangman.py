@@ -625,7 +625,7 @@ def settings_menu(
     languages = ["polish", "english"]
 
     language_index = 0
-    
+
     for language in languages:
         if language == new_settings["language"]:
             break
@@ -846,7 +846,6 @@ def settings_menu(
                     #         return True
                     #     except:
                     #         print("Something went wrong")
-
 
         buttons = [None] * 17
         button_lock_condidions = [

@@ -1,1 +1,4 @@
 __pycache__\
+.gitignore.txt
+test_settings.txt
+strings.db
