@@ -119,9 +119,9 @@ def play_outro(
 ) -> None:
     """Display the game outro screen and handle user interactions.
     Parameters:
-        - pos (dict): A dictionary containing the positions of elements on the screen.
-        - sound_channel (pygame.mixer.Channel): The sound channel used to play sound effects.
-        - strings (list[str]): A list containing text strings used for displaying texts on the screen.
+        - pos : A dictionary containing the positions of elements on the screen.
+        - sound_channel : The sound channel used to play sound effects.
+        - strings : A list containing text strings used for displaying texts on the screen.
     Description:
         The `play_outro` function is responsible for displaying the game outro screen and handling user interactions on that screen. It displays the background, texts, buttons, and handles events such as key presses, mouse movement, and button clicks.
         Provides user possibility to save his game score in the "scoreboard.db" file.
@@ -252,9 +252,9 @@ def display_letters(
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
-        - word (str): The word to be displayed.
-        - provided_letters (set[str]): A set of letters that are already provided.
-        - height (int): The vertical position at which the letters are displayed.
+        - word : The word to be displayed.
+        - provided_letters : A set of letters that are already provided.
+        - height : The vertical position at which the letters are displayed.
 
     Description:
         The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
@@ -283,9 +283,9 @@ def victory_failure_display(
     Display victory or failure message on the screen.
 
     Parameters:
-        - pos (dict): A dictionary containing the positions of elements on the screen.
-        - success (bool): A boolean indicating whether it is a victory (True) or failure (False).
-        - strings (list[str]): A list containing text strings used for displaying texts on the screen.
+        - pos : A dictionary containing the positions of elements on the screen.
+        - success : A boolean indicating whether it is a victory (True) or failure (False).
+        - strings : A list containing text strings used for displaying texts on the screen.
 
     Description:
         The `victory_failure_display` function displays a victory or failure message on the screen based on the value of the `success` parameter. It renders the main title text using the specified font and color, plays the corresponding sound effect, blits the text onto the screen, updates the display, waits for a specified duration, and then returns.
@@ -312,9 +312,9 @@ def check_mouse(
     Check if the mouse position is within the specified button area.
 
     Parameters:
-        - position (tuple[int]): The position of the top-left corner of the button area (x, y).
-        - button_type (tuple[int]): The size of the button area (width, height).
-        - mouse_pos (tuple[int]): The current position of the mouse (x, y).
+        - position : The position of the top-left corner of the button area (x, y).
+        - button_type : The size of the button area (width, height).
+        - mouse_pos : The current position of the mouse (x, y).
 
     Returns:
         bool: True if the mouse position is within the button area, False otherwise.
@@ -378,8 +378,8 @@ def game_menu(
     Display the game menu and handle user interactions.
 
     Parameters:
-        - pos (dict): A dictionary containing the position coordinates for different elements in the menu.
-        - strings (list[str]): A list of string values for different menu options and texts.
+        - pos : A dictionary containing the position coordinates for different elements in the menu.
+        - strings : A list of string values for different menu options and texts.
 
     Returns:
         str: The selected option from the game menu. One of : "new_game", "settings", "scoreboard", "exit"
@@ -472,11 +472,10 @@ def leaderboard_menu(
     Display the leaderboard menu and handle user interactions.
 
     Parameters:
-        - screen (pygame.surface.Surface): The Pygame screen surface to display the menu on.
-        - sound_channel (pygame.mixer.Channel): The Pygame mixer channel for playing sound effects.
-        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
-        - pos (dict): A dictionary containing the position coordinates for different elements in the menu.
-        - strings (list[str]): A list of string values for different menu options and texts.
+        - screen : The Pygame screen surface to display the menu on.
+        - resolution : A tuple containing the screen resolution in pixels (width, height).
+        - pos : A dictionary containing the position coordinates for different elements in the menu.
+        - strings : A list of string values for different menu options and texts.
 
     Description:
 
@@ -601,8 +600,8 @@ def settings_menu(
 
     Parameters:
         - settings : The current settings of the game.
-        - pos (dict): The position dictionary containing the positions of various elements on the screen.
-        - strings (list[str]): The list of strings containing text for localization.
+        - pos : The position dictionary containing the positions of various elements on the screen.
+        - strings : The list of strings containing text for localization.
 
     Returns:
         bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving, or None if the user pressed the escape key to return to the previous menu.
@@ -911,10 +910,10 @@ def game_round(
     Run a game round where the player guesses letters to complete a word.
 
     Parameters:
-        the_word (str): The word to be guessed.
-        category_name (str): The name of the category to which the word belongs.
-        pos (dict): The position dictionary containing the positions of various elements on the screen.
-        strings (list[str]): The list of strings containing text for localization.
+        the_word : The word to be guessed.
+        category_name : The name of the category to which the word belongs.
+        pos : The position dictionary containing the positions of various elements on the screen.
+        strings : The list of strings containing text for localization.
 
     Returns:
         int: The score obtained in the game round.
