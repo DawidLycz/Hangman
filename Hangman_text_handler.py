@@ -1,5 +1,5 @@
 import pickle
-STRINGS_FILE = "strings.db"
+STRINGS_FILE = "databases\\strings.db"
 
 polish_key_words = [
     ["Zwierzęta hodowlane", "pies", "kot", "owca", "byk", "kura", "świnia", "baran", "gęś", "królik", "indyk", "kaczka"],
@@ -80,7 +80,7 @@ polish_strings = [
     "OKNO",
     "MUZYKA",
     "DŹWIĘK",
-    "POLSKI",
+    ["POLSKI", "ANGIELSKI"],
     "ANGIELSKI", 
     "ROZDZIELCZOŚĆ", 
     "JĘZYK",
@@ -107,7 +107,7 @@ english_strings = [
     "WINDOW",
     "MUSIC",
     "SOUND",
-    "POLISH",
+    ["POLISH", "ENGLISH"],
     "ENGLISH",
     "RESOLUTION",
     "LANGUAGE",

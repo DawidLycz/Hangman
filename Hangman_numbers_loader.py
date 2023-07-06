@@ -1,9 +1,10 @@
+import json
 import pickle
 
-RESOLUTION_800_600_FILENAME =  "resolution_800_600.db"
-RESOLUTION_1200_800_FILENAME =  "resolution_1200_800.db"
-RESOLUTION_1920_1080_FILENAME =  "resolution_1920_1080.db"
-RESOLUTION_1280_720_FILENAME =  "resolution_1280_720.db"
+RESOLUTION_800_600_FILENAME =  "databases\\resolution_800_600.db"
+RESOLUTION_1200_800_FILENAME =  "databases\\resolution_1200_800.db"
+RESOLUTION_1920_1080_FILENAME =  "databases\\resolution_1920_1080.db"
+RESOLUTION_1280_720_FILENAME =  "databases\\resolution_1280_720.db"
 
 resolution = (1280,720)
 
@@ -124,8 +125,8 @@ res_800_600 = {
     'button_size_4': (600, 50), 'button_1': (100.0, 80.0), 'button_2': (310, 80.0), 'button_3': (520, 80),
     'button_4': (100, 130), 'button_5': (310, 130), 'button_6': (520, 130), 'button_7': (100, 265),
     'button_8': (280, 250), 'button_9': (280, 300), 'button_10': (400, 265), 'button_11': (580, 250),
-    'button_12': (580, 300), 'button_13': (100, 430), 'button_14': (325, 430), 'button_15': (30, 530),
-    'button_16': (620, 530), 'desc_button_1': (100, 20), 'desc_button_2': (100, 180), 'desc_button_3': (100, 360),
+    'button_12': (580, 300), 'button_13': (100, 430), 'button_14': (325, 430), 'button_15': (660, 430), 'button_16': (30, 530),
+    'button_17': (620, 530), 'desc_button_1': (100, 20), 'desc_button_2': (100, 180), 'desc_button_3': (100, 360),
     'desc_text_1': (330, 30), 'desc_text_2': (360, 190), 'desc_text_3': (370, 370), 'text_1': (155, 87), 'text_2': (365, 87),
     'text_3': (550, 87), 'text_4': (155, 137), 'text_5': (365, 137), 'text_6': (575, 137), 'text_7': (120, 280), 
     'text_8': (295, 255), 'text_9': (295, 305), 'text_10': (420, 280), 'text_11': (595, 255), 'text_12': (595, 305),
@@ -155,8 +156,8 @@ res_1200_800 = {
    {'desk_font': 36, 'button_font': 33, 'button_size_1': (270, 53), 'button_size_2': (60, 53), 'button_size_3': (225, 80), 
     'button_size_4': (900, 66), 'button_1': (150, 106), 'button_2': (465, 106), 'button_3': (780, 106), 'button_4': (150, 173), 
     'button_5': (465, 173), 'button_6': (780, 173), 'button_7': (150, 353), 'button_8': (420, 333), 'button_9': (420, 400), 
-    'button_10': (600, 353), 'button_11': (870, 333), 'button_12': (870, 400), 'button_13': (150, 573), 'button_14': (487, 573), 
-    'button_15': (45, 706), 'button_16': (930, 706), 'desc_button_1': (150, 26), 'desc_button_2': (150, 240), 'desc_button_3': (150, 480), 
+    'button_10': (600, 353), 'button_11': (870, 333), 'button_12': (870, 400), 'button_13': (150, 573), 'button_14': (487, 573), 'button_15': (0, 0), 
+    'button_16': (45, 706), 'button_17': (930, 706), 'desc_button_1': (150, 26), 'desc_button_2': (150, 240), 'desc_button_3': (150, 480), 
     'desc_text_1': (495, 40), 'desc_text_2': (540, 253), 'desc_text_3': (555, 493), 'text_1': (232, 116), 'text_2': (547, 116), 
     'text_3': (825, 116), 'text_4': (232, 182), 'text_5': (547, 182), 'text_6': (862, 182), 'text_7': (180, 373), 'text_8': (442, 340), 
     'text_9': (442, 406), 'text_10': (630, 373), 'text_11': (892, 340), 'text_12': (892, 406), 'text_13': (210, 594), 
@@ -186,7 +187,7 @@ res_1920_1080 = {
     'button_size_4': (1440, 90), 'button_1': (240, 144), 'button_2': (744, 144), 'button_3': (1248, 144), 'button_4': (240, 234), 
     'button_5': (744, 234), 'button_6': (1248, 234), 'button_7': (240, 477), 'button_8': (672, 450), 'button_9': (672, 540), 
     'button_10': (960, 477), 'button_11': (1392, 450), 'button_12': (1392, 540), 'button_13': (240, 774), 'button_14': (780, 774), 
-    'button_15': (72, 954), 'button_16': (1488, 954), 'desc_button_1': (240, 36), 'desc_button_2': (240, 324), 'desc_button_3': (240, 648), 
+    'button_15': (0, 0), 'button_16': (72, 954), 'button_17': (1488, 954),  'desc_button_1': (240, 36), 'desc_button_2': (240, 324), 'desc_button_3': (240, 648), 
     'desc_text_1': (792, 49), 'desc_text_2': (864, 337), 'desc_text_3': (888, 661), 'text_1': (372, 150), 'text_2': (876, 151), 
     'text_3': (1320, 151), 'text_4': (372, 241), 'text_5': (876, 241), 'text_6': (1380, 241), 'text_7': (288, 499), 'text_8': (708, 454), 
     'text_9': (708, 544), 'text_10': (1008, 499), 'text_11': (1428, 454), 'text_12': (1428, 544), 'text_13': (336, 797), 
@@ -217,7 +218,7 @@ res_1280_720 = {
      'button_size_4': (960, 60), 'button_1': (160, 96), 'button_2': (496, 96), 'button_3': (832, 96), 'button_4': (160, 156), 
      'button_5': (496, 156), 'button_6': (832, 156), 'button_7': (160, 318), 'button_8': (448, 300), 'button_9': (448, 360), 
      'button_10': (640, 318), 'button_11': (928, 300), 'button_12': (928, 360), 'button_13': (160, 516), 'button_14': (520, 516), 
-     'button_15': (48, 636), 'button_16': (992, 636), 'desc_button_1': (160, 24), 'desc_button_2': (160, 216), 'desc_button_3': (160, 432), 
+     'button_15': (0, 0), 'button_16': (48, 636), 'button_17': (992, 636),  'desc_button_1': (160, 24), 'desc_button_2': (160, 216), 'desc_button_3': (160, 432), 
      'desc_text_1': (528, 31), 'desc_text_2': (576, 223), 'desc_text_3': (592, 439), 'text_1': (248, 99), 'text_2': (584, 99), 
      'text_3': (880, 99), 'text_4': (248, 159), 'text_5': (584, 159), 'text_6': (920, 159), 'text_7': (192, 331), 'text_8': (472, 301), 
      'text_9': (472, 361), 'text_10': (672, 331), 'text_11': (952, 301), 'text_12': (952, 361), 'text_13': (230, 530), 
@@ -262,5 +263,6 @@ else:
     print("Changes were made to the 1280:720 resolution parameters")
     with open(RESOLUTION_1280_720_FILENAME, "wb") as stream:
         pickle.dump(res_1280_720, stream)
+
 
 
