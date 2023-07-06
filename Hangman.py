@@ -28,7 +28,7 @@ SOUND_EFFECTS = {"wrong": pygame.mixer.Sound("soundeffects\\wrong.mp3"),
                  "failure": pygame.mixer.Sound("soundeffects\\game_over.mp3"),
                  "beep": pygame.mixer.Sound("soundeffects\\beep.mp3")}
 
-def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict, strings: list[str]) -> None:
+def play_intro(screen: pygame.surface.Surface, resolution: tuple[int,int], pos: dict[str, dict[str, tuple[int,int]]], strings: list[str]) -> None:
     '''Initial function for whole game. Displays welcome messege in the surface provided in argument'''
 
     background_image = pygame.transform.scale(pygame.image.load("images\\intro_background.jpg"),(resolution))
@@ -71,13 +71,17 @@ def play_intro(screen: pygame.surface.Surface, resolution: tuple[int], pos: dict
             return None
         clock.tick(60)
 
-def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int], pos: dict, sound_channel: pygame.mixer.Channel, strings: list[str]) -> None:
+def play_outro(
+        screen: pygame.surface.Surface,
+        score: int,
+        resolution: tuple[int,int], 
+        pos: dict[str, dict[str, tuple[int,int]]],
+        sound_channel: pygame.mixer.Channel, 
+        strings: list[str]
+        )-> None:
     
     '''Display the game outro screen and handle user interactions.
     Parameters:
-        - screen (pygame.surface.Surface): The surface on which the outro screen is displayed.
-        - score (int): The player's score.
-        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
         - pos (dict): A dictionary containing the positions of elements on the screen.
         - sound_channel (pygame.mixer.Channel): The sound channel used to play sound effects.
         - strings (list[str]): A list containing text strings used for displaying texts on the screen.
@@ -190,14 +194,18 @@ def play_outro(screen: pygame.surface.Surface, score: int, resolution: tuple[int
     
         pygame.display.flip()
 
-def display_letters(word: str, provided_letters: list[str], screen: pygame.surface.Surface, height: int, resolution: tuple[int]) -> None:
+def display_letters(
+    word: str, 
+    provided_letters: list[str], 
+    screen: pygame.surface.Surface, 
+    height: int, 
+    resolution: tuple[int,int]
+    ) -> None:
     
-    '''Render and display letters of a word on the screen.
+    '''Render and display already provided letters of a word on the screen.
     Parameters:
-        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
         - word (str): The word to be displayed.
         - provided_letters (set[str]): A set of letters that are already provided.
-        - screen (pygame.surface.Surface): The surface on which the letters are displayed.
         - height (int): The vertical position at which the letters are displayed.
 
     Description:
@@ -205,7 +213,7 @@ def display_letters(word: str, provided_letters: list[str], screen: pygame.surfa
     '''
 
     letter_font = pygame.font.Font("font.ttf",int(resolution[0]*80/800))
-    distance = int(10)
+    distance = 10
     for letter in word:
         if letter.upper() not in provided_letters:
             letter = "_"
@@ -215,13 +223,17 @@ def display_letters(word: str, provided_letters: list[str], screen: pygame.surfa
         screen.blit(letter_for_print,(int(distance), height))
         distance += int(resolution[0]*60/800)
 
-def victory_failure_display(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel,  pos: dict, success: bool, strings: list[str]) -> None:
+def victory_failure_display(
+    screen: pygame.surface.Surface, 
+    sound_channel: pygame.mixer.Channel,  
+    pos: dict[str, dict[str, tuple[int,int]]], 
+    success: bool, 
+    strings: list[str]
+    ) -> None:
     '''
     Display victory or failure message on the screen.
 
     Parameters:
-        - screen (pygame.surface.Surface): The surface on which the message is displayed.
-        - sound_channel (pygame.mixer.Channel): The sound channel used to play sound effects.
         - pos (dict): A dictionary containing the positions of elements on the screen.
         - success (bool): A boolean indicating whether it is a victory (True) or failure (False).
         - strings (list[str]): A list containing text strings used for displaying texts on the screen.
@@ -241,7 +253,7 @@ def victory_failure_display(screen: pygame.surface.Surface, sound_channel: pygam
     pygame.display.flip()
     time.sleep(time_to_wait)
 
-def check_mouse(position: tuple[int], button_type: tuple [int], mouse_pos: tuple[int]) -> bool:
+def check_mouse(position: tuple[int, int], button_type: tuple [int, int], mouse_pos: tuple[int, int]) -> bool:
     '''
     Check if the mouse position is within the specified button area.
 
@@ -265,7 +277,7 @@ def check_mouse(position: tuple[int], button_type: tuple [int], mouse_pos: tuple
     else:
         return False
 
-def get_random_word(words_base) -> tuple[str]:
+def get_random_word(words_base) -> tuple[str, str]:
     '''
     Get a random word from the given words_base.
 
@@ -285,13 +297,9 @@ def get_random_word(words_base) -> tuple[str]:
     the_word = random.choice(word_base)
     return the_word, category_name
 
-def create_screen(resolution: tuple[int], fullscreen: bool) -> pygame.surface.Surface:
+def create_screen(resolution: tuple[int, int], fullscreen: bool) -> pygame.surface.Surface:
     '''
     Create a Pygame screen surface with the specified resolution and fullscreen mode.
-
-    Parameters:
-        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
-        - fullscreen (bool): A boolean indicating whether the screen should be created in fullscreen mode.
 
     Returns:
         pygame.surface.Surface: The new created Pygame screen surface.
@@ -300,19 +308,19 @@ def create_screen(resolution: tuple[int], fullscreen: bool) -> pygame.surface.Su
         The `create_screen` function creates a Pygame screen surface with the specified resolution and fullscreen mode. If the `fullscreen` parameter is True, it creates the screen in fullscreen mode using `pygame.FULLSCREEN` flag; otherwise, it creates the screen in windowed mode. The function then returns the created screen surface.
     '''
 
-    if fullscreen:
-        return pygame.display.set_mode((resolution),pygame.FULLSCREEN)
-    else:
-        return pygame.display.set_mode((resolution))
+    return pygame.display.set_mode(size=(resolution), flags=pygame.FULLSCREEN if fullscreen else 0)
 
-def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> str:
+def game_menu(
+    screen: pygame.surface.Surface, 
+    sound_channel: pygame.mixer.Channel, 
+    resolution: tuple[int, int], 
+    pos: dict[str, dict[str, tuple[int,int]]], 
+    strings: list[str]
+    ) -> str:
     '''
     Display the game menu and handle user interactions.
 
     Parameters:
-        - screen (pygame.surface.Surface): The Pygame screen surface to display the menu on.
-        - sound_channel (pygame.mixer.Channel): The Pygame mixer channel for playing sound effects.
-        - resolution (tuple[int]): A tuple containing the screen resolution in pixels (width, height).
         - pos (dict): A dictionary containing the position coordinates for different elements in the menu.
         - strings (list[str]): A list of string values for different menu options and texts.
 
@@ -320,9 +328,8 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
         str: The selected option from the game menu. One of : "new_game", "settings", "scoreboard", "exit"
 
     Description:
-        The `game_menu` function displays the game menu on the provided screen surface and handles user interactions. It loads the background image, button images, and button text. It also initializes variables for tracking mouse movements and button states.
-        The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements. It handles MOUSEBUTTONDOWN events to check for button clicks. If the left mouse button is clicked on a button, the corresponding option is returned.
-        The function updates the button states based on mouse movements and displays the updated buttons on the screen surface. It also displays the button text centered on each button. The function keeps track of which button the mouse is currently over using the `check_mouse` function.
+        The `game_menu` function displays the game menu on the provided screen surface and handles user interactions. It handles MOUSEMOTION events to track mouse movements. It handles MOUSEBUTTONDOWN events to check for button clicks. If the left mouse button is clicked on a button, the corresponding option is returned.
+        The function updates the button states based on mouse movements and displays the updated buttons on the screen surface. The function keeps track of which button the mouse is currently over using the `check_mouse` function.
         The function continues this loop until a button option is selected and returned.
     '''
 
@@ -382,7 +389,13 @@ def game_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channe
 
         pygame.display.flip()
 
-def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> None: 
+def leaderboard_menu(
+    screen: pygame.surface.Surface, 
+    sound_channel: pygame.mixer.Channel, 
+    resolution: tuple[int, int], 
+    pos: dict[str, dict[str, tuple[int,int]]], 
+    strings: list[str]
+    ) -> None: 
     '''
     Display the leaderboard menu and handle user interactions.
 
@@ -482,7 +495,14 @@ def leaderboard_menu(screen: pygame.surface.Surface, sound_channel: pygame.mixer
 
         pygame.display.flip()
 
-def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel: pygame.mixer.Channel, resolution: tuple[int], music_channel: pygame.mixer.Channel, pos: dict, strings: list[str]) -> bool:
+def settings_menu(
+    screen: pygame.surface.Surface, 
+    settings: dict, 
+    sound_channel: pygame.mixer.Channel, 
+    resolution: tuple[int, int], 
+    music_channel: pygame.mixer.Channel, 
+    pos: dict[str, dict[str, tuple[int,int]]], 
+    strings: list[str]) -> bool:
     '''
     Display and handle the settings menu screen.
 
@@ -756,17 +776,21 @@ def settings_menu(screen: pygame.surface.Surface, settings: dict, sound_channel:
 
         pygame.display.flip()
 
-def game_round(screen: pygame.surface.Surface, the_word: str, category_name: str, score: int, sound_channel: pygame.mixer.Channel, resolution: tuple[int], pos: dict, strings: list[str]) -> int:
+def game_round(
+    screen: pygame.surface.Surface, 
+    the_word: str, 
+    category_name: str, 
+    score: int, 
+    sound_channel: pygame.mixer.Channel, 
+    resolution: tuple[int,int], 
+    pos: dict[str, dict[str, tuple[int,int]]], 
+    strings: list[str]) -> int:
     """
     Run a game round where the player guesses letters to complete a word.
 
     Parameters:
-        screen (pygame.surface.Surface): The surface representing the game screen.
         the_word (str): The word to be guessed.
         category_name (str): The name of the category to which the word belongs.
-        score (int): The current score of the game.
-        sound_channel (pygame.mixer.Channel): The sound channel for playing sound effects.
-        resolution (tuple[int]): The current resolution of the game screen.
         pos (dict): The position dictionary containing the positions of various elements on the screen.
         strings (list[str]): The list of strings containing text for localization.
 
