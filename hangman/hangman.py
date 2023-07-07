@@ -14,7 +14,6 @@ TOTAL_ATTEMTPS = 12
 
 SETTINGS_FILE = "data\\databases\\settings.db"
 SCOREBOARD_FILE = "data\\databases\\scoreboard.db"
-STRINGS_FILE = "data\\databases\\strings.db"
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
