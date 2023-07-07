@@ -1,4 +1,4 @@
-from hangman import check_mouse
+from hangman.hangman import check_mouse
 
 def test_check_mouse_if_in_button():
     position = (10,10)
