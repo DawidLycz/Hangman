@@ -938,6 +938,7 @@ def game_round(
     attempts = 0
 
     while True:
+        #forms word for print, hides unknown letters
         letters_for_print = []
         for letter in password_letters:
             if letter.upper() not in provided_letters:
@@ -957,7 +958,7 @@ def game_round(
                         provided_keys = [key.upper() for key in provided_keys]
                 if event.key == pygame.K_ESCAPE:
                     return None
-
+        #check is provided letter is in password. If it is, adds it to correct_letters set
         if provided_keys:
             if any(letter.upper() in provided_letters for letter in provided_keys):
                 if any(letter.upper() in password_letters for letter in provided_keys):
@@ -982,8 +983,10 @@ def game_round(
         score_description = description_font.render(
             f"{strings[23]} {score}", True, (0, 255, 0)
         )
-
-        gallow_image = pygame.image.load(f"data\\images\\gallow_{attempts}.png")
+        try:
+            gallow_image = pygame.image.load(f"data\\images\\gallow_{attempts}.png")
+        except FileNotFoundError:
+            gallow_image = pygame.image.load(f"data\\images\\gallow_12.png")
         gallow_image = pygame.transform.scale(
             gallow_image, pos["game_round"]["gallow_size"]
         )
@@ -994,7 +997,8 @@ def game_round(
         screen.blit(category, pos["game_round"]["category_info"])
 
         height = pos["game_round"]["height"]
-
+        
+        #Check win or lose conditions
         for word in password_words:
             display_letters(word, provided_letters, screen, height, resolution, pos)
             height += pos["game_round"]["height"]
