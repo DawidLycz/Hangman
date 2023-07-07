@@ -211,9 +211,8 @@ def play_outro(
                             to_save = (name, score)
                             scoreboard.append(to_save)
                             scoreboard = sorted(
-                                scoreboard, key=lambda x: x[1], reverse=True
+                                scoreboard[:30], key=lambda x: x[1], reverse=True
                             )
-                            del scoreboard[30:]
                             with open(SCOREBOARD_FILE, "wb") as stream:
                                 pickle.dump(scoreboard, stream)
                             return None
@@ -510,8 +509,6 @@ def leaderboard_menu(
         scoreboard = pickle.load(stream)
     scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
 
-    scoreboard_list = [scoreboard[:10], scoreboard[10:20], scoreboard[20:30]]
-
     button_size = pos["leaderboard_menu"]["button_size"]
 
     is_mouse_over_button = [False] * 2
@@ -568,19 +565,22 @@ def leaderboard_menu(
         counter = 0
         position = 1
         height = pos["leaderboard_menu"]["height"]
-        for token in scoreboard_list:
-            height = pos["leaderboard_menu"]["height"]
-            counter += 1
-            for score in token:
-                name = score[0].capitalize()
-                score_text = text_font.render(
-                    f"{position:2}. {name:<12}{score[1]}", True, (255, 255, 255)
-                )
-                screen.blit(
-                    score_text, (pos["leaderboard_menu"][f"score_x{counter}"], height)
-                )
-                height += pos["leaderboard_menu"]["height_change"]
-                position += 1
+
+        height, counter1, counter2 = pos["leaderboard_menu"]["height"], 0, 1
+        for token in scoreboard[:30]:
+            counter1 += 1
+            name, score = token[0].capitalize(), token[1]
+            score_text = text_font.render(f"{counter1:2}. {name:<12}{score}", True, (255, 255, 255))
+            screen.blit(score_text, (pos["leaderboard_menu"][f"score_x{counter2}"], height))
+            height += pos["leaderboard_menu"]["height_change"]
+            if counter1 in [10,20]:
+                counter2 += 1
+                height = pos["leaderboard_menu"]["height"]
+        
+            
+
+
+
 
         pygame.display.flip()
 
@@ -1106,3 +1106,4 @@ def main() -> False:
 
 if __name__ == "__main__":
     main()
+
