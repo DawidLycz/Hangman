@@ -12,9 +12,9 @@ pygame.init()
 
 TOTAL_ATTEMTPS = 12
 
-SETTINGS_FILE = "databases\\settings.db"
-SCOREBOARD_FILE = "databases\\scoreboard.db"
-STRINGS_FILE = "databases\\strings.db"
+SETTINGS_FILE = "data\\databases\\settings.db"
+SCOREBOARD_FILE = "data\\databases\\scoreboard.db"
+STRINGS_FILE = "data\\databases\\strings.db"
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -46,12 +46,12 @@ KEYBOARD_INPUT = {
 }
 
 SOUND_EFFECTS = {
-    "wrong": pygame.mixer.Sound("soundeffects\\wrong.mp3"),
-    "correct": pygame.mixer.Sound("soundeffects\\correct.mp3"),
-    "error": pygame.mixer.Sound("soundeffects\\error.mp3"),
-    "success": pygame.mixer.Sound("soundeffects\\success.mp3"),
-    "failure": pygame.mixer.Sound("soundeffects\\game_over.mp3"),
-    "beep": pygame.mixer.Sound("soundeffects\\beep.mp3"),
+    "wrong": pygame.mixer.Sound("data\\soundeffects\\wrong.mp3"),
+    "correct": pygame.mixer.Sound("data\\soundeffects\\correct.mp3"),
+    "error": pygame.mixer.Sound("data\\soundeffects\\error.mp3"),
+    "success": pygame.mixer.Sound("data\\soundeffects\\success.mp3"),
+    "failure": pygame.mixer.Sound("data\\soundeffects\\game_over.mp3"),
+    "beep": pygame.mixer.Sound("data\\soundeffects\\beep.mp3"),
 }
 
 
@@ -64,12 +64,12 @@ def play_intro(
     """Initial function for whole game. Displays welcome messege in the surface provided in argument"""
 
     background_image = pygame.transform.scale(
-        pygame.image.load("images\\intro_background.jpg"), (resolution)
+        pygame.image.load("data\\images\\intro_background.jpg"), (resolution)
     )
     screen.blit(background_image, (0, 0))
     clock = pygame.time.Clock()
     ticks = 0
-    pygame.mixer.music.load("soundeffects\\intro.mp3")
+    pygame.mixer.music.load("data\\soundeffects\\intro.mp3")
     pygame.mixer.music.play()
     pygame.display.flip()
 
@@ -84,7 +84,7 @@ def play_intro(
                 return None
 
         if ticks == 55:
-            title_font = pygame.font.Font("font.ttf", pos["intro"]["font1"])
+            title_font = pygame.font.Font("data\\fonts\\font.ttf", pos["intro"]["font1"])
             main_title = title_font.render("Hangman", True, (0, 255, 255))
             screen.blit(main_title, pos["intro"]["text1"])
             pygame.display.flip()
@@ -127,16 +127,16 @@ def play_outro(
         Provides user possibility to save his game score in the "scoreboard.db" file.
     """
 
-    pygame.mixer.music.load("soundeffects\\outro.mp3")
+    pygame.mixer.music.load("data\\soundeffects\\outro.mp3")
     pygame.mixer.music.play()
 
     with open(SCOREBOARD_FILE, "rb") as stream:
         scoreboard = pickle.load(stream)
 
-    button_free = pygame.image.load("images\\button_1.png")
-    button_aimed = pygame.image.load("images\\button_2.png")
+    button_free = pygame.image.load("data\\images\\button_1.png")
+    button_aimed = pygame.image.load("data\\images\\button_2.png")
     button_size = pos["outro"]["button_size"]
-    button_font = pygame.font.Font("font.ttf", pos["outro"]["button_font"])
+    button_font = pygame.font.Font("data\\fonts\\font.ttf", pos["outro"]["button_font"])
 
     button_1_text = button_font.render(f"{strings[2]}", True, (0, 0, 0))
     button_2_text = button_font.render(f"{strings[3]}", True, (0, 0, 0))
@@ -152,14 +152,14 @@ def play_outro(
     )
 
     background_image = pygame.transform.scale(
-        pygame.image.load("images\\intro_background.jpg"), (resolution)
+        pygame.image.load("data\\images\\intro_background.jpg"), (resolution)
     )
 
     is_mouse_over_button = [False] * 2
 
-    description_font = pygame.font.Font("font.ttf", pos["outro"]["description_font"])
-    title_font = pygame.font.Font("font.ttf", pos["outro"]["title_font"])
-    name_font = pygame.font.Font("font.ttf", pos["outro"]["name_font"])
+    description_font = pygame.font.Font("data\\fonts\\font.ttf", pos["outro"]["description_font"])
+    title_font = pygame.font.Font("data\\fonts\\font.ttf", pos["outro"]["title_font"])
+    name_font = pygame.font.Font("data\\fonts\\font.ttf", pos["outro"]["name_font"])
 
     main_title = title_font.render(strings[24], True, (0, 0, 255))
     description_score = description_font.render(
@@ -260,7 +260,7 @@ def display_letters(
         The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
     """
 
-    letter_font = pygame.font.Font("font.ttf", int(resolution[0] * 80 / 800))
+    letter_font = pygame.font.Font("data\\fonts\\font.ttf", int(resolution[0] * 80 / 800))
     distance = 10
     for letter in word:
         if letter.upper() not in provided_letters:
@@ -291,7 +291,7 @@ def victory_failure_display(
         The `victory_failure_display` function displays a victory or failure message on the screen based on the value of the `success` parameter. It renders the main title text using the specified font and color, plays the corresponding sound effect, blits the text onto the screen, updates the display, waits for a specified duration, and then returns.
     """
     title_font = pygame.font.Font(
-        "font.ttf", pos["victory_failure_display"]["title_font"]
+        "data\\fonts\\font.ttf", pos["victory_failure_display"]["title_font"]
     )
     if success:
         text, time_to_wait, color = f"{strings[6]}", 3, (0, 0, 255)
@@ -391,11 +391,11 @@ def game_menu(
     """
 
     background_image = pygame.transform.scale(
-        pygame.image.load("images\\menu_background.jpg"), resolution
+        pygame.image.load("data\\images\\menu_background.jpg"), resolution
     )
-    button_free = pygame.image.load("images\\button_1.png")
-    button_aimed = pygame.image.load("images\\button_2.png")
-    button_font = pygame.font.Font("font.ttf", pos["game_menu"]["font"])
+    button_free = pygame.image.load("data\\images\\button_1.png")
+    button_aimed = pygame.image.load("data\\images\\button_2.png")
+    button_font = pygame.font.Font("data\\fonts\\font.ttf", pos["game_menu"]["font"])
 
     button_positions = [
         pos["game_menu"]["button1_pos"],
@@ -484,17 +484,17 @@ def leaderboard_menu(
         The function continues this loop until an action is performed and the menu is exited.
     """
     background_image = pygame.transform.scale(
-        pygame.image.load("images\\intro_background.jpg"), resolution
+        pygame.image.load("data\\images\\intro_background.jpg"), resolution
     )
     screen.blit(background_image, (0, 0))
 
-    button_free = pygame.image.load("images\\button_1.png")
-    button_aimed = pygame.image.load("images\\button_2.png")
+    button_free = pygame.image.load("data\\images\\button_1.png")
+    button_aimed = pygame.image.load("data\\images\\button_2.png")
 
     description_font = pygame.font.Font(
-        "font.ttf", pos["leaderboard_menu"]["desc_font"]
+        "data\\fonts\\font.ttf", pos["leaderboard_menu"]["desc_font"]
     )
-    text_font = pygame.font.Font("font.ttf", pos["leaderboard_menu"]["text_font"])
+    text_font = pygame.font.Font("data\\fonts\\font.ttf", pos["leaderboard_menu"]["text_font"])
 
     description_text = description_font.render(f"{strings[10]}", True, (255, 100, 0))
     description_text_rect = description_text.get_rect()
@@ -611,15 +611,15 @@ def settings_menu(
         It works very similar to "game_menu" function"""
 
     new_settings = settings.copy()
-    background_image = pygame.image.load("images\\menu_background.jpg")
+    background_image = pygame.image.load("data\\images\\menu_background.jpg")
     background_image = pygame.transform.scale(background_image, (resolution))
-    button_free = pygame.image.load("images\\button_1.png")
-    button_aimed = pygame.image.load("images\\button_2.png")
-    button_lock = pygame.image.load("images\\button_3.png")
+    button_free = pygame.image.load("data\\images\\button_1.png")
+    button_aimed = pygame.image.load("data\\images\\button_2.png")
+    button_lock = pygame.image.load("data\\images\\button_3.png")
     description_button_font = pygame.font.Font(
-        "font.ttf", pos["settings_menu"]["desk_font"]
+        "data\\fonts\\font.ttf", pos["settings_menu"]["desk_font"]
     )
-    button_font = pygame.font.Font("font.ttf", pos["settings_menu"]["button_font"])
+    button_font = pygame.font.Font("data\\fonts\\font.ttf", pos["settings_menu"]["button_font"])
     is_mouse_over_button = [False] * 17
     languages = ["polish", "english"]
 
@@ -921,9 +921,9 @@ def game_round(
     Description:
         This function runs a game round where the player guesses letters to complete a word. The player is presented with a word and a gallow image representing the number of incorrect attempts made. The player can enter letters using the keyboard to guess the word. If the player guesses a correct letter, it is displayed in the word. If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
     """
-    background_image = pygame.image.load("images\\background_2.jpg")
+    background_image = pygame.image.load("data\\images\\background_2.jpg")
     background_image = pygame.transform.scale(background_image, resolution)
-    gallow_background_image = pygame.image.load("images\\gallow_background.jpg")
+    gallow_background_image = pygame.image.load("data\\images\\gallow_background.jpg")
     gallow_background_image = pygame.transform.scale(
         gallow_background_image, pos["game_round"]["gallow_background_size"]
     )
@@ -979,7 +979,7 @@ def game_round(
                     attempts += 1
                 provided_letters.update(provided_keys)
 
-        description_font = pygame.font.Font("font.ttf", int(resolution[0] * 36 / 800))
+        description_font = pygame.font.Font("data\\fonts\\font.ttf", int(resolution[0] * 36 / 800))
         category = description_font.render(
             f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
         )
@@ -987,7 +987,7 @@ def game_round(
             f"{strings[23]} {score}", True, (0, 255, 0)
         )
 
-        gallow_image = pygame.image.load(f"images\\gallow_{attempts}.png")
+        gallow_image = pygame.image.load(f"data\\images\\gallow_{attempts}.png")
         gallow_image = pygame.transform.scale(
             gallow_image, pos["game_round"]["gallow_size"]
         )
@@ -1032,18 +1032,15 @@ def main() -> False:
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
-        file_with_numbers = f"databases\\resolution_{resolution_x}_{resolution_y}.db"
+        file_with_numbers = f"data\\resolutions\\{resolution_x}_{resolution_y}.json"
 
-        with open(file_with_numbers, "rb") as stream:
-            pos = pickle.load(stream)
-        with open(STRINGS_FILE, "rb") as stream:
-            strings_pack = pickle.load(stream)
-        if settings["language"] == "polish":
-            strings = strings_pack[0][0]
-            words_base = strings_pack[0][1]
-        if settings["language"] == "english":
-            strings = strings_pack[1][0]
-            words_base = strings_pack[1][1]
+        with open(file_with_numbers, "r") as stream:
+            pos = json.load(stream)
+        language = settings["language"]
+        with open(f"data\\text\\{language}_strings.json", "r", encoding="utf-8") as stream:
+            strings = json.load(stream)
+        with open(f"data\\text\\{language}_key_words.json", "r", encoding="utf-8") as stream:
+            words_base = json.load(stream)
 
         screen = create_screen(resolution, settings["fullscreen"])
         if show_intro:
@@ -1051,7 +1048,7 @@ def main() -> False:
             show_intro = False
 
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound("soundeffects\\music.mp3")
+        music = pygame.mixer.Sound("data\\soundeffects\\music.mp3")
         music_channel.set_volume(settings["music_volume"] / 200)
         if settings["play_music"] == True:
             music_channel.play(music)

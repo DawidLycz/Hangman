@@ -1,4 +1,5 @@
 import pickle
+import json
 STRINGS_FILE = "databases\\strings.db"
 
 polish_key_words = [
@@ -121,5 +122,12 @@ english_localisation = [english_strings, english_key_words]
 
 content = [polish_localisation, english_localisation]
 
-with open (STRINGS_FILE,"wb") as stream:
-    pickle.dump(content, stream)
+# with open (STRINGS_FILE,"wb") as stream:
+#     pickle.dump(content, stream)
+
+# with open ("data\\text\\polish_strings.json", "w", encoding="utf-8") as stream:
+#     json.dump(polish_strings, stream)
+
+with open ("data\\text\\polish_strings.json", "r", encoding="utf-8") as stream:
+    text = json.load (stream)
+    print (text)
