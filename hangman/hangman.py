@@ -11,7 +11,7 @@ import pygame
 pygame.init()
 
 TOTAL_ATTEMTPS = 12
-
+TOTAL_SCORES_FOR_DISPLAY  = 30
 SETTINGS_FILE = "data\\databases\\settings.db"
 SCOREBOARD_FILE = "data\\databases\\scoreboard.db"
 
@@ -247,6 +247,7 @@ def display_letters(
     screen: pygame.surface.Surface,
     height: int,
     resolution: tuple[int, int],
+    pos: dict[str, dict[str, tuple[int, int]]]
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
@@ -258,7 +259,7 @@ def display_letters(
         The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
     """
 
-    letter_font = pygame.font.Font("data\\fonts\\font.ttf", int(resolution[0] * 80 / 800))
+    letter_font = pygame.font.Font("data\\fonts\\font.ttf", pos["display_letters"]["font"])
     distance = 10
     for letter in word:
         if letter.upper() not in provided_letters:
@@ -267,7 +268,7 @@ def display_letters(
             letter = "-"
         letter_for_print = letter_font.render(f"{letter.upper()}", True, (0, 255, 0))
         screen.blit(letter_for_print, (int(distance), height))
-        distance += int(resolution[0] * 60 / 800)
+        distance += pos["display_letters"]["distance"]
 
 
 def victory_failure_display(
@@ -562,12 +563,8 @@ def leaderboard_menu(
             screen.blit(text, text_rect)
             counter += 1
 
-        counter = 0
-        position = 1
-        height = pos["leaderboard_menu"]["height"]
-
         height, counter1, counter2 = pos["leaderboard_menu"]["height"], 0, 1
-        for token in scoreboard[:30]:
+        for token in scoreboard[:TOTAL_SCORES_FOR_DISPLAY]:
             counter1 += 1
             name, score = token[0].capitalize(), token[1]
             score_text = text_font.render(f"{counter1:2}. {name:<12}{score}", True, (255, 255, 255))
@@ -978,7 +975,7 @@ def game_round(
                     attempts += 1
                 provided_letters.update(provided_keys)
 
-        description_font = pygame.font.Font("data\\fonts\\font.ttf", int(resolution[0] * 36 / 800))
+        description_font = pygame.font.Font("data\\fonts\\font.ttf", pos["game_round"]["font"])
         category = description_font.render(
             f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
         )
@@ -999,8 +996,8 @@ def game_round(
         height = pos["game_round"]["height"]
 
         for word in password_words:
-            display_letters(word, provided_letters, screen, height, resolution)
-            height += resolution[1] * 130 / 600
+            display_letters(word, provided_letters, screen, height, resolution, pos)
+            height += pos["game_round"]["height"]
         if set(password_letters) <= correct_letters:
             success = True
             victory_failure_display(screen, sound_channel, pos, success, strings)
