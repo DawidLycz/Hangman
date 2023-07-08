@@ -52,7 +52,18 @@ SOUND_EFFECTS = {
     "failure": pygame.mixer.Sound("data\\soundeffects\\game_over.mp3"),
     "beep": pygame.mixer.Sound("data\\soundeffects\\beep.mp3"),
 }
-
+def skip_leave_action(event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None) -> bool: 
+    match event.type:
+        case (pygame.QUIT):
+            pygame.quit()
+            exit()
+        case (pygame.KEYDOWN):
+            if event.key == pygame.K_ESCAPE:
+                if sound_channel:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                return False
+        case _:
+            return True
 
 def play_intro(
     screen: pygame.surface.Surface,
@@ -71,10 +82,11 @@ def play_intro(
     pygame.mixer.music.load("data\\soundeffects\\intro.mp3")
     pygame.mixer.music.play()
     pygame.display.flip()
-
+    running = True
     while True:
         ticks += 1
         for event in pygame.event.get():
+            skip_leave_action(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -167,15 +179,14 @@ def play_outro(
     description_name = description_font.render(f"{strings[5]}", True, (255, 255, 255))
 
     name_latters = []
-    while True:
+    running  = True
+    while running:
         screen.blit(background_image, (0, 0))
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
 
-            elif event.type == pygame.KEYDOWN:
+            running = skip_leave_action(event, sound_channel)
+            if event.type == pygame.KEYDOWN:
                 if len(name_latters) < 11:
                     for key in KEYBOARD_INPUT:
                         if key == event.key:
@@ -187,8 +198,6 @@ def play_outro(
                         sound_channel.play(SOUND_EFFECTS["wrong"])
                     except:
                         sound_channel.play(SOUND_EFFECTS["error"])
-                if event.key == pygame.K_ESCAPE:
-                    return None
 
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
@@ -246,7 +255,6 @@ def display_letters(
     provided_letters: list[str],
     screen: pygame.surface.Surface,
     height: int,
-    resolution: tuple[int, int],
     pos: dict[str, dict[str, tuple[int, int]]]
 ) -> None:
     """Render and display already provided letters of a word on the screen.
@@ -414,11 +422,12 @@ def game_menu(
     is_mouse_over_button = [False] * 4
     screen.blit(background_image, (0, 0))
     init, mouse_movement = True, False
-    while True:
+    running = True
+    while running:
         for event in pygame.event.get():
+            running = skip_leave_action(event)
             if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                pass
 
             if event.type == pygame.MOUSEMOTION:
                 mouse_movement = True
@@ -514,14 +523,13 @@ def leaderboard_menu(
 
     is_mouse_over_button = [False] * 2
     screen.blit(description_text, description_text_rect)
-
-    while True:
+    
+    running = True
+    while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-
-            elif event.type == pygame.MOUSEMOTION:
+            running = skip_leave_action(event, sound_channel)
+                
+            if event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
                 is_mouse_over_button[0] = check_mouse(
                     pos["leaderboard_menu"]["button1_pos"], button_size, mouse_pos
@@ -530,24 +538,17 @@ def leaderboard_menu(
                     pos["leaderboard_menu"]["button2_pos"], button_size, mouse_pos
                 )
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    return None
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if is_mouse_over_button[0]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
-                        return None
+                        running = False
                     if is_mouse_over_button[1]:
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         scoreboard = []
                         with open(SCOREBOARD_FILE, "wb") as stream:
                             pickle.dump(scoreboard, stream)
-                        return None
-                elif event.button == 3:
-                    print(mouse_pos)
+                        running = False
 
         counter = 0
         for mouse_over, text in zip(is_mouse_over_button, button_texts):
@@ -574,11 +575,6 @@ def leaderboard_menu(
                 counter2 += 1
                 height = pos["leaderboard_menu"]["height"]
         
-            
-
-
-
-
         pygame.display.flip()
 
 
@@ -667,8 +663,9 @@ def settings_menu(
         screen.blit(description_button, pos["settings_menu"][f"desc_button_{counter}"])
         screen.blit(text, pos["settings_menu"][f"desc_text_{counter}"])
         counter += 1
-
-    while True:
+    
+    running = True
+    while running:
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
@@ -697,15 +694,9 @@ def settings_menu(
             sound_channel.set_volume(0)
 
         for event in pygame.event.get():
+            running = skip_leave_action(event, sound_channel)
             mouse_pos = pygame.mouse.get_pos()
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    return False
-            elif event.type == pygame.MOUSEMOTION:
+            if event.type == pygame.MOUSEMOTION:
                 counter = 0
                 for mouse_over, standard in zip(is_mouse_over_button, button_standards):
                     mouse_over = check_mouse(
@@ -833,15 +824,6 @@ def settings_menu(
                         except:
                             print("Something went wrong")
 
-                    # if is_mouse_over_button[16]:
-                    #     sound_channel.play(SOUND_EFFECTS["beep"])
-                    #     try:
-                    #         with open(SETTINGS_FILE, "w") as stream:
-                    #             json.dump(new_settings, stream)
-                    #         return True
-                    #     except:
-                    #         print("Something went wrong")
-
         buttons = [None] * 17
         button_lock_condidions = [
             (new_settings["resolution"] == [800, 600]),
@@ -936,9 +918,9 @@ def game_round(
         correct_letters.add(" ")
     clock = pygame.time.Clock()
     attempts = 0
-
-    while True:
-        #forms word for print, hides unknown letters
+    running = True
+    while running:
+        #Forms word for print, hides unknown letters
         letters_for_print = []
         for letter in password_letters:
             if letter.upper() not in provided_letters:
@@ -948,17 +930,13 @@ def game_round(
 
         provided_keys = False
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+            running = skip_leave_action(event)
             if event.type == pygame.KEYDOWN:
                 for key in KEYBOARD_INPUT:
                     if key == event.key:
                         provided_keys = KEYBOARD_INPUT[key]
                         provided_keys = [key.upper() for key in provided_keys]
-                if event.key == pygame.K_ESCAPE:
-                    return None
-        #check is provided letter is in password. If it is, adds it to correct_letters set
+        #Check if provided letter is in password. If it is, adds it to correct_letters set
         if provided_keys:
             if any(letter.upper() in provided_letters for letter in provided_keys):
                 if any(letter.upper() in password_letters for letter in provided_keys):
@@ -975,7 +953,7 @@ def game_round(
                     incorrect_letters.update(provided_keys)
                     attempts += 1
                 provided_letters.update(provided_keys)
-
+        #Display content on screen
         description_font = pygame.font.Font("data\\fonts\\font.ttf", pos["game_round"]["font"])
         category = description_font.render(
             f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
@@ -1000,7 +978,7 @@ def game_round(
         
         #Check win or lose conditions
         for word in password_words:
-            display_letters(word, provided_letters, screen, height, resolution, pos)
+            display_letters(word, provided_letters, screen, height, pos)
             height += pos["game_round"]["height"]
         if set(password_letters) <= correct_letters:
             success = True
