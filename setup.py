@@ -5,7 +5,6 @@ setup(
     name='Hangman',
     version='0.1',
     packages=find_packages(),
-    scripts=['hangman.py'],
     url='https://github.com/DawidLycz/Hungman',
     license='MIT',
     author='Dawid Lycz',
