@@ -11,7 +11,7 @@ setup(
         'hangman': list(glob.glob('hangman/data/**/*', recursive=True))
     },
      data_files=[
-    ('data', [
+    ('hangman/data', [
     'hangman/data/databases/scoreboard.db', 
     'hangman/data/databases/settings.db',
     'hangman/data/fonts/font.ttf',
