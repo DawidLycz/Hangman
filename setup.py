@@ -2,8 +2,10 @@ from setuptools import setup, find_packages
 import glob
 
 package_data={
-        'hangman': list(glob.glob('hangman/data/**/*', recursive=True))
+        'hangman': list(glob.glob('hangman\\data\\**\\*', recursive=True))
     },
+
+print (package_data)
 
 setup(
     description='Simple but popular game in hangman',
