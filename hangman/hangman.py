@@ -15,6 +15,12 @@ TOTAL_SCORES_FOR_DISPLAY  = 30
 SETTINGS_FILE = "hangman\\data\\databases\\settings.db"
 SCOREBOARD_FILE = "hangman\\data\\databases\\scoreboard.db"
 
+json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'text', 'polish_strings.json')
+with open (json_file_path, "r") as stream:
+    text = json.load(stream)
+    print (text)
+# Przetwarzanie pliku dźwiękowego...
+
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
     pygame.K_b: ["b"],
