@@ -10,9 +10,6 @@ setup(
     packages=find_packages(),
     url='https://github.com/DawidLycz/Hungman',
     package_data={
-        'hangman': list(glob.glob('hangman/data/**/*', recursive=True))
-    },
-     data_files={
     'hangman': [
     'hangman/data/databases/scoreboard.db', 
     'hangman/data/databases/settings.db',
