@@ -1,12 +1,6 @@
 from setuptools import setup, find_packages
 import glob
 
-package_data={
-        'hangman': list(glob.glob('hangman\\data\\**\\*', recursive=True))
-    },
-
-print (package_data)
-
 setup(
     description='Simple but popular game in hangman',
     name='Hangman',
@@ -18,47 +12,6 @@ setup(
     },
      data_files=[
     ('data', [
-    'databases/scoreboard.db', 
-    'databases/settings.db',
-    'fonts/font.ttf',
-    'images/background.jpg',
-    'images/background_2.jpg',
-    'images/button_1.png', 
-    'images/button_2.png',
-    'images/button_3.png', 
-    'images/gallow_0.png',
-    'images/gallow_1.png', 
-    'images/gallow_10.png',
-    'images/gallow_11.png', 
-    'images/gallow_12.png',
-    'images/gallow_2.png', 
-    'images/gallow_3.png',
-    'images/gallow_4.png', 
-    'images/gallow_5.png',
-    'images/gallow_6.png', 
-    'images/gallow_7.png',
-    'images/gallow_8.png', 
-    'images/gallow_9.png',
-    'images/gallow_background.jpg', 
-    'images/intro_background.jpg',
-    'images/menu_background.jpg',
-    'resolutions/1200_800.json', 
-    'resolutions/1280_720.json',
-    'resolutions/1920_1080.json', 
-    'resolutions/800_600.json',
-    'soundeffects/beep.mp3', 
-    'soundeffects/correct.mp3',
-    'soundeffects/error.mp3', 
-    'soundeffects/game_over.mp3',
-    'soundeffects/intro.mp3', 
-    'soundeffects/music.mp3',
-    'soundeffects/outro.mp3', 
-    'soundeffects/success.mp3',
-    'soundeffects/wrong.mp3',
-    'text/english_key_words.json', 
-    'text/english_strings.json',
-    'text/polish_key_words.json', 
-    'text/polish_strings.json'
     'hangman/data/databases/scoreboard.db', 
     'hangman/data/databases/settings.db',
     'hangman/data/fonts/font.ttf',
