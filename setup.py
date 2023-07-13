@@ -2,13 +2,14 @@ from setuptools import setup, find_packages
 import glob
 
 print ('hangman', list(glob.glob('hangman/data/**/*', recursive=True)))
-
+print (find_packages())
 setup(
     description='Simple but popular game in hangman',
     name='hangman',
     version='0.1',
     packages=find_packages(),
     url='https://github.com/DawidLycz/Hungman',
+    include_package_data=True,
     package_data={
     'hangman': [
     'hangman/data/databases/scoreboard.db', 
