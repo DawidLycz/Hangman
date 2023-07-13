@@ -1,17 +1,19 @@
 from setuptools import setup, find_packages
 import glob
 
+print ('hangman', list(glob.glob('hangman/data/**/*', recursive=True)))
+
 setup(
     description='Simple but popular game in hangman',
-    name='Hangman',
+    name='hangman',
     version='0.1',
     packages=find_packages(),
     url='https://github.com/DawidLycz/Hungman',
     package_data={
         'hangman': list(glob.glob('hangman/data/**/*', recursive=True))
     },
-     data_files=[
-    ('hangman/data', [
+     data_files={
+    'hangman': [
     'hangman/data/databases/scoreboard.db', 
     'hangman/data/databases/settings.db',
     'hangman/data/fonts/font.ttf',
@@ -53,7 +55,7 @@ setup(
     'hangman/data/text/english_strings.json',
     'hangman/data/text/polish_key_words.json', 
     'hangman/data/text/polish_strings.json'
-    ])],
+    ]},
     license='MIT',
     author='Dawid Lycz',
     author_email='mamnie986@gmail.com',
