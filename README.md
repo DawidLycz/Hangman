@@ -12,7 +12,7 @@ To download the game, please click on the link below:
 ## [DOWNLOAD](https://github.com/DawidLycz/Hangman/raw/main/hangman_setup.exe)
 Once the download is complete, run the installation file. To install the game, follow the on-screen instructions.
 
-## User guidance
+## User tips
 
 When game is runned, an intro message is displayed, followed by the main menu. The menu offers four options:
 
