@@ -4,7 +4,9 @@
 
 The game utilizes Pygame, an open-source library for creating video games and multimedia applications in Python. Pygame provides functionality for handling graphics, sound, and user input, making it a powerful tool for game development.
 
-You can find more information about Pygame at: [pygame.org](https://www.pygame.org/wiki/about)
+You can find more information about Pygame at: 
+
+## [pygame.org](https://www.pygame.org/wiki/about)
 
 The main script is "hangman.py", which consists of 12 functions that are described in detail in the script's documentation.
 
