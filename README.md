@@ -6,15 +6,15 @@ The game utilizes Pygame, an open-source library for creating video games and mu
 
 You can find more information about Pygame at: [pygame.org](https://www.pygame.org/wiki/about)
 
-The main script is "hangman.py", which consists of 12 functions that are described in detail in the script's documentation.
+## Instalation
 
-The files starting with "resolution" contain coordinates for each surface to be displayed on the screen. These files can be reviewed and modified using "Hangman_numbers_loader.py". To make changes, update the specific data directly in the code and run the script to overwrite the database file. The resolution of the game window is based on certain settings.
+To download the game, please click on the link below:
+## [DOWNLOAD](https://github.com/DawidLycz/Hangman/raw/main/hangman_setup.exe)
+Once the download is complete, run the installation file. To install the game, follow the on-screen instructions.
 
-The "strings.db" file works similarly, containing lists of words that could appear as passwords in the game. It also includes every string that appears in the game. The reason for using a database file is to support two possible languages: English and Polish. You can review and modify the file using "Hangman_text_handler.py". Again, make changes directly in the code. The language used in the game is based on specific settings.
+## User guidance
 
-The "settings.db" file is a dictionary that contains various settings. Users can modify these settings directly in the main script under the "settings" section.
-
-When the main script is executed, an intro message is displayed, followed by the main menu. The menu offers four options:
+When game is runned, an intro message is displayed, followed by the main menu. The menu offers four options:
 
 1. "New Game": Starts a new game where the user must provide letters (via the keyboard) to guess the password. Incorrect letters result in the loss of an attempt, and when the user reaches 12 unsuccessful attempts, they lose the game. If the user correctly guesses all the letters in the password, they win the round, and the remaining attempts are converted into points that are added to the total score. A new round begins. The game continues until the user loses or presses the "ESC" key. After the game ends, the option to save the score appears on the screen. Users can provide their name to save the score to the leaderboard or skip this step. Finally, the main menu appears again.
 
@@ -23,6 +23,19 @@ When the main script is executed, an intro message is displayed, followed by the
 3. "Top Scores": Displays the leaderboard by loading the "scoreboard.db" file. The leaderboard shows the contents of "scoreboard.db" sorted by score. There is also an option to reset the leaderboard, which simply overwrites "scoreboard.db" with an empty file.
 
 4. "Exit": Ends the script altogether.
+
+## Code description
+
+Game is already exported to executive file, but python scrip can still be found in reposytory.
+
+The main script is "hangman.py", which consists of 13 functions that are described in detail in the script's documentation.
+
+The files in "resolution" directory contain coordinates for each surface to be displayed on the screen. These files can be reviewed and modified using text editor.
+
+The files in "text" direcotory contain every string used in game in multiple languages. These files can also be reviewed and modified using text editor.
+
+The "settings.db" file is a dictionary that contains various settings. Users can modify these settings directly in game menu under the "settings" section.
+
 
 ## License
 

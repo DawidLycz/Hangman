@@ -1,17 +1,15 @@
 import json
 import pickle
 import random
-import os
-import sys
 import time
-
+from typing import Dict, Tuple
 
 import pygame
 
 pygame.init()
 
 TOTAL_ATTEMTPS = 12
-TOTAL_SCORES_FOR_DISPLAY  = 30
+TOTAL_SCORES_FOR_DISPLAY = 30
 SETTINGS_FILE = "hangman\\data\\databases\\settings.db"
 SCOREBOARD_FILE = "hangman\\data\\databases\\scoreboard.db"
 
@@ -52,7 +50,24 @@ SOUND_EFFECTS = {
     "failure": pygame.mixer.Sound("hangman\\data\\soundeffects\\game_over.mp3"),
     "beep": pygame.mixer.Sound("hangman\\data\\soundeffects\\beep.mp3"),
 }
-def skip_leave_action(event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None) -> bool: 
+
+
+Coodrinates = Tuple[int, int]
+Position = Dict[str, Coodrinates]
+Scene = Dict[str, Position]
+
+
+def skip_leave_action(
+    event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None
+) -> bool:
+    '''Function to handle skip or leave actions in a game.
+    Parameters:
+        event : The event object representing the user input event.
+        sound_channel : The sound channel to play sound effects. Defaults to None.
+    Returns:
+        bool: Returns True if the action should be continued, or False if the action should be skipped or exited.
+
+    '''
     match event.type:
         case (pygame.QUIT):
             pygame.quit()
@@ -66,6 +81,7 @@ def skip_leave_action(event: pygame.event.Event, sound_channel: pygame.mixer.Cha
                 return True
         case _:
             return True
+
 
 def play_intro(
     screen: pygame.surface.Surface,
@@ -91,7 +107,9 @@ def play_intro(
             running = skip_leave_action(event)
 
         if ticks == 55:
-            title_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["intro"]["font1"])
+            title_font = pygame.font.Font(
+                "hangman\\data\\fonts\\font.ttf", pos["intro"]["font1"]
+            )
             main_title = title_font.render("Hangman", True, (0, 255, 255))
             screen.blit(main_title, pos["intro"]["text1"])
             pygame.display.flip()
@@ -121,7 +139,7 @@ def play_outro(
     screen: pygame.surface.Surface,
     score: int,
     resolution: tuple[int, int],
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     sound_channel: pygame.mixer.Channel,
     strings: list[str],
 ) -> None:
@@ -144,7 +162,9 @@ def play_outro(
     button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
     button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
     button_size = pos["outro"]["button_size"]
-    button_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["outro"]["button_font"])
+    button_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["outro"]["button_font"]
+    )
 
     button_1_text = button_font.render(f"{strings[2]}", True, (0, 0, 0))
     button_2_text = button_font.render(f"{strings[3]}", True, (0, 0, 0))
@@ -165,9 +185,15 @@ def play_outro(
 
     is_mouse_over_button = [False] * 2
 
-    description_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["outro"]["description_font"])
-    title_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["outro"]["title_font"])
-    name_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["outro"]["name_font"])
+    description_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["outro"]["description_font"]
+    )
+    title_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["outro"]["title_font"]
+    )
+    name_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["outro"]["name_font"]
+    )
 
     main_title = title_font.render(strings[24], True, (0, 0, 255))
     description_score = description_font.render(
@@ -176,12 +202,11 @@ def play_outro(
     description_name = description_font.render(f"{strings[5]}", True, (255, 255, 255))
 
     name_latters = []
-    running  = True
+    running = True
     while running:
         screen.blit(background_image, (0, 0))
 
         for event in pygame.event.get():
-
             running = skip_leave_action(event, sound_channel)
             if event.type == pygame.KEYDOWN:
                 if len(name_latters) < 11:
@@ -252,7 +277,7 @@ def display_letters(
     provided_letters: list[str],
     screen: pygame.surface.Surface,
     height: int,
-    pos: dict[str, dict[str, tuple[int, int]]]
+    pos: Scene,
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
@@ -264,7 +289,9 @@ def display_letters(
         The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
     """
 
-    letter_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["display_letters"]["font"])
+    letter_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["display_letters"]["font"]
+    )
     distance = 10
     for letter in word:
         if letter.upper() not in provided_letters:
@@ -279,7 +306,7 @@ def display_letters(
 def victory_failure_display(
     screen: pygame.surface.Surface,
     sound_channel: pygame.mixer.Channel,
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     success: bool,
     strings: list[str],
 ) -> None:
@@ -298,15 +325,26 @@ def victory_failure_display(
         "hangman\\data\\fonts\\font.ttf", pos["victory_failure_display"]["title_font"]
     )
     if success:
-        text, time_to_wait, color = f"{strings[6]}", 3, (0, 0, 255)
+        text, ticks_to_wait, color = f"{strings[6]}", 4000, (0, 0, 255)
         sound_channel.play(SOUND_EFFECTS["success"])
     else:
-        text, time_to_wait, color = f"{strings[7]}", 9, (255, 0, 0)
+        text, ticks_to_wait, color = f"{strings[7]}", 10000, (255, 0, 0)
         sound_channel.play(SOUND_EFFECTS["failure"]),
     main_title = title_font.render(text, True, color)
-    screen.blit(main_title, (pos["victory_failure_display"]["title"]))
-    pygame.display.flip()
-    time.sleep(time_to_wait)
+    running = True
+    ticks = 0
+    while running:
+        skip_leave_action
+        for event in pygame.event.get():
+            skip_leave_action(event, sound_channel)
+            if event.type == pygame.KEYDOWN:
+                running = False
+                sound_channel.stop()
+        ticks += 1
+        screen.blit(main_title, (pos["victory_failure_display"]["title"]))
+        pygame.display.flip()
+        if ticks == ticks_to_wait:
+            running = False
 
 
 def check_mouse(
@@ -375,7 +413,7 @@ def game_menu(
     screen: pygame.surface.Surface,
     sound_channel: pygame.mixer.Channel,
     resolution: tuple[int, int],
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     strings: list[str],
 ) -> str:
     """
@@ -399,7 +437,9 @@ def game_menu(
     )
     button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
     button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
-    button_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["game_menu"]["font"])
+    button_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["game_menu"]["font"]
+    )
 
     button_positions = [
         pos["game_menu"]["button1_pos"],
@@ -470,7 +510,7 @@ def leaderboard_menu(
     screen: pygame.surface.Surface,
     sound_channel: pygame.mixer.Channel,
     resolution: tuple[int, int],
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     strings: list[str],
 ) -> None:
     """
@@ -499,7 +539,9 @@ def leaderboard_menu(
     description_font = pygame.font.Font(
         "hangman\\data\\fonts\\font.ttf", pos["leaderboard_menu"]["desc_font"]
     )
-    text_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["leaderboard_menu"]["text_font"])
+    text_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["leaderboard_menu"]["text_font"]
+    )
 
     description_text = description_font.render(f"{strings[10]}", True, (255, 100, 0))
     description_text_rect = description_text.get_rect()
@@ -520,12 +562,12 @@ def leaderboard_menu(
 
     is_mouse_over_button = [False] * 2
     screen.blit(description_text, description_text_rect)
-    
+
     running = True
     while running:
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
-                
+
             if event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
                 is_mouse_over_button[0] = check_mouse(
@@ -565,13 +607,17 @@ def leaderboard_menu(
         for token in scoreboard[:TOTAL_SCORES_FOR_DISPLAY]:
             counter1 += 1
             name, score = token[0].capitalize(), token[1]
-            score_text = text_font.render(f"{counter1:2}. {name:<12}{score}", True, (255, 255, 255))
-            screen.blit(score_text, (pos["leaderboard_menu"][f"score_x{counter2}"], height))
+            score_text = text_font.render(
+                f"{counter1:2}. {name:<12}{score}", True, (255, 255, 255)
+            )
+            screen.blit(
+                score_text, (pos["leaderboard_menu"][f"score_x{counter2}"], height)
+            )
             height += pos["leaderboard_menu"]["height_change"]
-            if counter1 in [10,20]:
+            if counter1 in [10, 20]:
                 counter2 += 1
                 height = pos["leaderboard_menu"]["height"]
-        
+
         pygame.display.flip()
 
 
@@ -581,7 +627,7 @@ def settings_menu(
     sound_channel: pygame.mixer.Channel,
     resolution: tuple[int, int],
     music_channel: pygame.mixer.Channel,
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     strings: list[str],
 ) -> bool:
     """
@@ -608,7 +654,9 @@ def settings_menu(
     description_button_font = pygame.font.Font(
         "hangman\\data\\fonts\\font.ttf", pos["settings_menu"]["desk_font"]
     )
-    button_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["settings_menu"]["button_font"])
+    button_font = pygame.font.Font(
+        "hangman\\data\\fonts\\font.ttf", pos["settings_menu"]["button_font"]
+    )
     is_mouse_over_button = [False] * 17
     languages = ["polish", "english"]
 
@@ -619,8 +667,6 @@ def settings_menu(
             break
         else:
             language_index += 1
-
-
 
     texts_to_display = [
         "800:600",
@@ -660,7 +706,7 @@ def settings_menu(
         screen.blit(description_button, pos["settings_menu"][f"desc_button_{counter}"])
         screen.blit(text, pos["settings_menu"][f"desc_text_{counter}"])
         counter += 1
-    
+
     running = True
     while running:
         if new_settings["play_music"] == True:
@@ -792,10 +838,10 @@ def settings_menu(
                     if is_mouse_over_button[12]:
                         if language_index > 0:
                             sound_channel.play(SOUND_EFFECTS["beep"])
-                            language_index -=1
+                            language_index -= 1
                             new_settings["language"] = languages[language_index]
                         else:
-                            sound_channel.play(SOUND_EFFECTS["error"]) 
+                            sound_channel.play(SOUND_EFFECTS["error"])
 
                     if is_mouse_over_button[13]:
                         pass
@@ -803,7 +849,7 @@ def settings_menu(
                     if is_mouse_over_button[14]:
                         if language_index < len(languages) - 1:
                             sound_channel.play(SOUND_EFFECTS["beep"])
-                            language_index +=1
+                            language_index += 1
                             new_settings["language"] = languages[language_index]
                         else:
                             sound_channel.play(SOUND_EFFECTS["error"])
@@ -816,7 +862,7 @@ def settings_menu(
                         sound_channel.play(SOUND_EFFECTS["beep"])
                         try:
                             with open(SETTINGS_FILE, "wb") as stream:
-                                pickle.dump(new_settings,stream)
+                                pickle.dump(new_settings, stream)
                             return True
                         except:
                             print("Something went wrong")
@@ -838,15 +884,17 @@ def settings_menu(
             (language_index == 0),
             (True),
             (language_index == len(languages) - 1),
-            ]
-        
+        ]
+
         counter = 0
         for condition in button_lock_condidions:
             if condition:
                 buttons[counter] = button_lock
             counter += 1
 
-        rendered_text[13] = button_font.render(strings[17][language_index], True, (0, 0, 0))
+        rendered_text[13] = button_font.render(
+            strings[17][language_index], True, (0, 0, 0)
+        )
         counter = 0
         for button, mouse_over, standard, text in zip(
             buttons, is_mouse_over_button, button_standards, rendered_text
@@ -878,7 +926,7 @@ def game_round(
     score: int,
     sound_channel: pygame.mixer.Channel,
     resolution: tuple[int, int],
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     strings: list[str],
 ) -> int:
     """
@@ -898,7 +946,9 @@ def game_round(
     """
     background_image = pygame.image.load("hangman\\data\\images\\background_2.jpg")
     background_image = pygame.transform.scale(background_image, resolution)
-    gallow_background_image = pygame.image.load("hangman\\data\\images\\gallow_background.jpg")
+    gallow_background_image = pygame.image.load(
+        "hangman\\data\\images\\gallow_background.jpg"
+    )
     gallow_background_image = pygame.transform.scale(
         gallow_background_image, pos["game_round"]["gallow_background_size"]
     )
@@ -917,7 +967,7 @@ def game_round(
     attempts = 0
     running = True
     while running:
-        #Forms word for print, hides unknown letters
+        # Forms word for print, hides unknown letters
         letters_for_print = []
         for letter in password_letters:
             if letter.upper() not in provided_letters:
@@ -933,7 +983,7 @@ def game_round(
                     if key == event.key:
                         provided_keys = KEYBOARD_INPUT[key]
                         provided_keys = [key.upper() for key in provided_keys]
-        #Check if provided letter is in password. If it is, adds it to correct_letters set
+        # Check if provided letter is in password. If it is, adds it to correct_letters set
         if provided_keys:
             if any(letter.upper() in provided_letters for letter in provided_keys):
                 if any(letter.upper() in password_letters for letter in provided_keys):
@@ -950,8 +1000,10 @@ def game_round(
                     incorrect_letters.update(provided_keys)
                     attempts += 1
                 provided_letters.update(provided_keys)
-        #Display content on screen
-        description_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["game_round"]["font"])
+        # Display content on screen
+        description_font = pygame.font.Font(
+            "hangman\\data\\fonts\\font.ttf", pos["game_round"]["font"]
+        )
         category = description_font.render(
             f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
         )
@@ -959,7 +1011,9 @@ def game_round(
             f"{strings[23]} {score}", True, (0, 255, 0)
         )
         try:
-            gallow_image = pygame.image.load(f"hangman\\data\\images\\gallow_{attempts}.png")
+            gallow_image = pygame.image.load(
+                f"hangman\\data\\images\\gallow_{attempts}.png"
+            )
         except FileNotFoundError:
             gallow_image = pygame.image.load(f"hangman\\data\\images\\gallow_12.png")
         gallow_image = pygame.transform.scale(
@@ -972,8 +1026,8 @@ def game_round(
         screen.blit(category, pos["game_round"]["category_info"])
 
         height = pos["game_round"]["height"]
-        
-        #Check win or lose conditions
+
+        # Check win or lose conditions
         for word in password_words:
             display_letters(word, provided_letters, screen, height, pos)
             height += pos["game_round"]["height"]
@@ -1007,14 +1061,20 @@ def main() -> False:
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
-        file_with_numbers = f"hangman\\data\\resolutions\\{resolution_x}_{resolution_y}.json"
+        file_with_numbers = (
+            f"hangman\\data\\resolutions\\{resolution_x}_{resolution_y}.json"
+        )
 
         with open(file_with_numbers, "r") as stream:
             pos = json.load(stream)
         language = settings["language"]
-        with open(f"hangman\\data\\text\\{language}_strings.json", "r", encoding="utf-8") as stream:
+        with open(
+            f"hangman\\data\\text\\{language}_strings.json", "r", encoding="utf-8"
+        ) as stream:
             strings = json.load(stream)
-        with open(f"hangman\\data\\text\\{language}_key_words.json", "r", encoding="utf-8") as stream:
+        with open(
+            f"hangman\\data\\text\\{language}_key_words.json", "r", encoding="utf-8"
+        ) as stream:
             words_base = json.load(stream)
 
         screen = create_screen(resolution, settings["fullscreen"])
@@ -1082,4 +1142,3 @@ def main() -> False:
 
 if __name__ == "__main__":
     main()
-
