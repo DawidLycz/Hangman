@@ -15,12 +15,6 @@ TOTAL_SCORES_FOR_DISPLAY  = 30
 SETTINGS_FILE = "hangman\\data\\databases\\settings.db"
 SCOREBOARD_FILE = "hangman\\data\\databases\\scoreboard.db"
 
-json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'text', 'polish_strings.json')
-with open (json_file_path, "r") as stream:
-    text = json.load(stream)
-    print (text)
-# Przetwarzanie pliku dźwiękowego...
-
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
     pygame.K_b: ["b"],
@@ -68,6 +62,8 @@ def skip_leave_action(event: pygame.event.Event, sound_channel: pygame.mixer.Cha
                 if sound_channel:
                     sound_channel.play(SOUND_EFFECTS["beep"])
                 return False
+            else:
+                return True
         case _:
             return True
 
@@ -89,16 +85,10 @@ def play_intro(
     pygame.mixer.music.play()
     pygame.display.flip()
     running = True
-    while True:
+    while running:
         ticks += 1
         for event in pygame.event.get():
-            skip_leave_action(event)
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                pygame.mixer.music.stop()
-                return None
+            running = skip_leave_action(event)
 
         if ticks == 55:
             title_font = pygame.font.Font("hangman\\data\\fonts\\font.ttf", pos["intro"]["font1"])
@@ -124,6 +114,7 @@ def play_intro(
         if ticks == 500:
             return None
         clock.tick(60)
+    pygame.mixer.music.stop()
 
 
 def play_outro(
