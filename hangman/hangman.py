@@ -371,12 +371,9 @@ def check_mouse(
     return int(x) <= mouse_pos[0] <= x_end and int(y) <= mouse_pos[1] <= y_end
 
 
-def get_random_word(words_base) -> tuple[str, str]:
+def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
     """
     Get a random word from the given words_base.
-
-    Parameters:
-        - words_base (list[tuple[str]]): A list of word categories, where each category is represented by a list containing the category name as the first element, followed by the words in that category.
 
     Returns:
         tuple[str]: A tuple containing the randomly selected word and its category name.
