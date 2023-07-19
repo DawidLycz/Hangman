@@ -1,17 +1,34 @@
 import json
+import os
 import pickle
 import random
+import sys
 import time
 from typing import Dict, Tuple
+
 
 import pygame
 
 pygame.init()
+json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'text', 'polish_strings.json')
 
 TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
-SETTINGS_FILE = "hangman\\data\\databases\\settings.db"
-SCOREBOARD_FILE = "hangman\\data\\databases\\scoreboard.db"
+
+SETTINGS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'databases', 'settings.db')
+SCOREBOARD_FILE = os.path.join(os.path.dirname(__file__), 'data', 'databases', 'scoreboard.db')
+
+BUTTON_TYPE_FREE = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_1.png'))
+BUTTON_TYPE_AIMED = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_2.png'))
+BUTTON_TYPE_LOCKED = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_3.png'))
+
+BACKGROUND_1 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'intro_background.jpg'))
+BACKGROUND_2 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'menu_background.jpg'))
+BACKGROUND_3 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'background.jpg'))
+BACKGROUND_4 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'background_2.jpg'))
+BACKGROUND_5 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'gallow_background.jpg'))
+
+COMMON_FONT_PATH = os.path.join(os.path.dirname(__file__), 'data', 'fonts', 'font.ttf')
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -43,18 +60,21 @@ KEYBOARD_INPUT = {
 }
 
 SOUND_EFFECTS = {
-    "wrong": pygame.mixer.Sound("hangman\\data\\soundeffects\\wrong.mp3"),
-    "correct": pygame.mixer.Sound("hangman\\data\\soundeffects\\correct.mp3"),
-    "error": pygame.mixer.Sound("hangman\\data\\soundeffects\\error.mp3"),
-    "success": pygame.mixer.Sound("hangman\\data\\soundeffects\\success.mp3"),
-    "failure": pygame.mixer.Sound("hangman\\data\\soundeffects\\game_over.mp3"),
-    "beep": pygame.mixer.Sound("hangman\\data\\soundeffects\\beep.mp3"),
+    "wrong": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'wrong.mp3')),
+    "correct": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'correct.mp3')),
+    "error": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'error.mp3')),
+    "success": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'success.mp3')),
+    "failure": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'game_over.mp3')),
+    "beep": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'beep.mp3')),
+    "intro": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'intro.mp3')),
+    "outro": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'outro.mp3')),
 }
 
 
-Coodrinates = Tuple[int, int]
-Position = Dict[str, Coodrinates]
+Coordinates = Tuple[int, int]
+Position = Dict[str, Coordinates]
 Scene = Dict[str, Position]
+
 
 
 def skip_leave_action(
@@ -69,9 +89,9 @@ def skip_leave_action(
 
     '''
     match event.type:
-        case (pygame.QUIT):
+        case pygame.QUIT:
             pygame.quit()
-            exit()
+            sys.exit()
         case (pygame.KEYDOWN):
             if event.key == pygame.K_ESCAPE:
                 if sound_channel:
@@ -86,20 +106,18 @@ def skip_leave_action(
 def play_intro(
     screen: pygame.surface.Surface,
     resolution: tuple[int, int],
-    pos: dict[str, dict[str, tuple[int, int]]],
+    pos: Scene,
     strings: list[str],
+    sound_channel: pygame.mixer.Channel,
 ) -> None:
     """Initial function for whole game. Displays welcome messege in the surface provided in argument"""
 
-    background_image = pygame.transform.scale(
-        pygame.image.load("hangman\\data\\images\\intro_background.jpg"), (resolution)
+    background_image = pygame.transform.scale(BACKGROUND_1, (resolution)
     )
     screen.blit(background_image, (0, 0))
     clock = pygame.time.Clock()
     ticks = 0
-    pygame.mixer.music.load("hangman\\data\\soundeffects\\intro.mp3")
-    pygame.mixer.music.play()
-    pygame.display.flip()
+    sound_channel.play(SOUND_EFFECTS["intro"])
     running = True
     while running:
         ticks += 1
@@ -107,12 +125,9 @@ def play_intro(
             running = skip_leave_action(event)
 
         if ticks == 55:
-            title_font = pygame.font.Font(
-                "hangman\\data\\fonts\\font.ttf", pos["intro"]["font1"]
-            )
+            title_font = pygame.font.Font(COMMON_FONT_PATH, pos["intro"]["font1"])
             main_title = title_font.render("Hangman", True, (0, 255, 255))
             screen.blit(main_title, pos["intro"]["text1"])
-            pygame.display.flip()
 
         if ticks == 110:
             description_font = pygame.font.Font(None, pos["intro"]["font2"])
@@ -120,18 +135,18 @@ def play_intro(
                 f"{strings[0]}", True, (255, 255, 255)
             )
             screen.blit(description_text_1, pos["intro"]["text2"])
-            pygame.display.flip()
 
         if ticks == 160:
             description_text_2 = description_font.render(
                 f"{strings[1]}", True, (255, 255, 255)
             )
             screen.blit(description_text_2, pos["intro"]["text3"])
-            pygame.display.flip()
+            
 
         if ticks == 500:
             return None
         clock.tick(60)
+        pygame.display.flip()
     pygame.mixer.music.stop()
 
 
@@ -153,18 +168,16 @@ def play_outro(
         Provides user possibility to save his game score in the "scoreboard.db" file.
     """
 
-    pygame.mixer.music.load("hangman\\data\\soundeffects\\outro.mp3")
+    pygame.mixer.music.load(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'outro.mp3'))
     pygame.mixer.music.play()
 
     with open(SCOREBOARD_FILE, "rb") as stream:
         scoreboard = pickle.load(stream)
 
-    button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
-    button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
+    button_free = BUTTON_TYPE_FREE
+    button_aimed = BUTTON_TYPE_AIMED
     button_size = pos["outro"]["button_size"]
-    button_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["outro"]["button_font"]
-    )
+    button_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["button_font"])
 
     button_1_text = button_font.render(f"{strings[2]}", True, (0, 0, 0))
     button_2_text = button_font.render(f"{strings[3]}", True, (0, 0, 0))
@@ -179,20 +192,18 @@ def play_outro(
         pos["outro"]["button2_pos"][1] + (button_size[1] // 2),
     )
 
-    background_image = pygame.transform.scale(
-        pygame.image.load("hangman\\data\\images\\intro_background.jpg"), (resolution)
-    )
+    background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
 
     is_mouse_over_button = [False] * 2
 
     description_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["outro"]["description_font"]
+        COMMON_FONT_PATH, pos["outro"]["description_font"]
     )
     title_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["outro"]["title_font"]
+        COMMON_FONT_PATH, pos["outro"]["title_font"]
     )
     name_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["outro"]["name_font"]
+        COMMON_FONT_PATH, pos["outro"]["name_font"]
     )
 
     main_title = title_font.render(strings[24], True, (0, 0, 255))
@@ -290,7 +301,7 @@ def display_letters(
     """
 
     letter_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["display_letters"]["font"]
+        COMMON_FONT_PATH, pos["display_letters"]["font"]
     )
     distance = 10
     for letter in word:
@@ -322,7 +333,7 @@ def victory_failure_display(
         The `victory_failure_display` function displays a victory or failure message on the screen based on the value of the `success` parameter. It renders the main title text using the specified font and color, plays the corresponding sound effect, blits the text onto the screen, updates the display, waits for a specified duration, and then returns.
     """
     title_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["victory_failure_display"]["title_font"]
+        COMMON_FONT_PATH, pos["victory_failure_display"]["title_font"]
     )
     if success:
         text, ticks_to_wait, color = f"{strings[6]}", 4000, (0, 0, 255)
@@ -334,7 +345,6 @@ def victory_failure_display(
     running = True
     ticks = 0
     while running:
-        skip_leave_action
         for event in pygame.event.get():
             skip_leave_action(event, sound_channel)
             if event.type == pygame.KEYDOWN:
@@ -430,12 +440,12 @@ def game_menu(
     """
 
     background_image = pygame.transform.scale(
-        pygame.image.load("hangman\\data\\images\\menu_background.jpg"), resolution
+        BACKGROUND_2, resolution
     )
-    button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
-    button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
+    button_free = BUTTON_TYPE_FREE
+    button_aimed = BUTTON_TYPE_AIMED
     button_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["game_menu"]["font"]
+        COMMON_FONT_PATH, pos["game_menu"]["font"]
     )
 
     button_positions = [
@@ -526,18 +536,18 @@ def leaderboard_menu(
         The function continues this loop until an action is performed and the menu is exited.
     """
     background_image = pygame.transform.scale(
-        pygame.image.load("hangman\\data\\images\\intro_background.jpg"), resolution
+        BACKGROUND_1, resolution
     )
     screen.blit(background_image, (0, 0))
 
-    button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
-    button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
+    button_free = BUTTON_TYPE_FREE
+    button_aimed = BUTTON_TYPE_AIMED
 
     description_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["leaderboard_menu"]["desc_font"]
+        COMMON_FONT_PATH, pos["leaderboard_menu"]["desc_font"]
     )
     text_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["leaderboard_menu"]["text_font"]
+        COMMON_FONT_PATH, pos["leaderboard_menu"]["text_font"]
     )
 
     description_text = description_font.render(f"{strings[10]}", True, (255, 100, 0))
@@ -643,16 +653,15 @@ def settings_menu(
         It works very similar to "game_menu" function"""
 
     new_settings = settings.copy()
-    background_image = pygame.image.load("hangman\\data\\images\\menu_background.jpg")
-    background_image = pygame.transform.scale(background_image, (resolution))
-    button_free = pygame.image.load("hangman\\data\\images\\button_1.png")
-    button_aimed = pygame.image.load("hangman\\data\\images\\button_2.png")
-    button_lock = pygame.image.load("hangman\\data\\images\\button_3.png")
+    background_image = pygame.transform.scale(BACKGROUND_2, (resolution))
+    button_free = BUTTON_TYPE_FREE
+    button_aimed = BUTTON_TYPE_AIMED
+    button_lock = BUTTON_TYPE_LOCKED
     description_button_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["settings_menu"]["desk_font"]
+        COMMON_FONT_PATH, pos["settings_menu"]["desk_font"]
     )
     button_font = pygame.font.Font(
-        "hangman\\data\\fonts\\font.ttf", pos["settings_menu"]["button_font"]
+        COMMON_FONT_PATH, pos["settings_menu"]["button_font"]
     )
     is_mouse_over_button = [False] * 17
     languages = ["polish", "english"]
@@ -941,13 +950,10 @@ def game_round(
     Description:
         This function runs a game round where the player guesses letters to complete a word. The player is presented with a word and a gallow image representing the number of incorrect attempts made. The player can enter letters using the keyboard to guess the word. If the player guesses a correct letter, it is displayed in the word. If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
     """
-    background_image = pygame.image.load("hangman\\data\\images\\background_2.jpg")
-    background_image = pygame.transform.scale(background_image, resolution)
-    gallow_background_image = pygame.image.load(
-        "hangman\\data\\images\\gallow_background.jpg"
-    )
+    background_image = pygame.transform.scale(BACKGROUND_4, resolution)
+
     gallow_background_image = pygame.transform.scale(
-        gallow_background_image, pos["game_round"]["gallow_background_size"]
+        BACKGROUND_5, pos["game_round"]["gallow_background_size"]
     )
 
     screen.blit(background_image, (0, 0))
@@ -999,7 +1005,7 @@ def game_round(
                 provided_letters.update(provided_keys)
         # Display content on screen
         description_font = pygame.font.Font(
-            "hangman\\data\\fonts\\font.ttf", pos["game_round"]["font"]
+            COMMON_FONT_PATH, pos["game_round"]["font"]
         )
         category = description_font.render(
             f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
@@ -1009,10 +1015,10 @@ def game_round(
         )
         try:
             gallow_image = pygame.image.load(
-                f"hangman\\data\\images\\gallow_{attempts}.png"
+                os.path.join(os.path.dirname(__file__), 'data', 'images', f'gallow_{attempts}.png')
             )
         except FileNotFoundError:
-            gallow_image = pygame.image.load(f"hangman\\data\\images\\gallow_12.png")
+            gallow_image = os.path.join(os.path.dirname(__file__), 'data', 'images', f'gallow_12.png')
         gallow_image = pygame.transform.scale(
             gallow_image, pos["game_round"]["gallow_size"]
         )
@@ -1059,41 +1065,40 @@ def main() -> False:
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
         file_with_numbers = (
-            f"hangman\\data\\resolutions\\{resolution_x}_{resolution_y}.json"
+            os.path.join(os.path.dirname(__file__), 'data', 'resolutions', f'{resolution_x}_{resolution_y}.json')
         )
 
         with open(file_with_numbers, "r") as stream:
             pos = json.load(stream)
         language = settings["language"]
         with open(
-            f"hangman\\data\\text\\{language}_strings.json", "r", encoding="utf-8"
+            os.path.join(os.path.dirname(__file__), 'data', 'text', f'{language}_strings.json'), "r", encoding="utf-8"
         ) as stream:
             strings = json.load(stream)
         with open(
-            f"hangman\\data\\text\\{language}_key_words.json", "r", encoding="utf-8"
+            os.path.join(os.path.dirname(__file__), 'data', 'text', f'{language}_key_words.json'), "r", encoding="utf-8"
         ) as stream:
             words_base = json.load(stream)
 
         screen = create_screen(resolution, settings["fullscreen"])
-        if show_intro:
-            play_intro(screen, resolution, pos, strings)
-            show_intro = False
-
+        
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound("hangman\\data\\soundeffects\\music.mp3")
+        music = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'music.mp3'))
         music_channel.set_volume(settings["music_volume"] / 200)
-        if settings["play_music"] == True:
-            music_channel.play(music)
-        else:
-            music_channel.stop()
 
         sound_channel = pygame.mixer.Channel(1)
         if settings["play_sound"] == True:
             sound_channel.set_volume(settings["sound_volume"] / 100)
         else:
             sound_channel.set_volume(0)
-
+        if show_intro:
+            play_intro(screen, resolution, pos, strings, sound_channel)
+            show_intro = False
         while True:
+            if settings["play_music"] == True:
+                music_channel.play(music)
+            else:
+                music_channel.stop()
             clicked = game_menu(screen, sound_channel, resolution, pos, strings)
             if clicked == "new_game":
                 score = 0
@@ -1135,7 +1140,6 @@ def main() -> False:
         if clicked == "exit":
             time.sleep(0.7)
             break
-
 
 if __name__ == "__main__":
     main()
