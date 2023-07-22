@@ -1,1 +1,347 @@
-{"intro": {"text1": [120, 40], "text2": [30, 506], "text3": [195, 573], "font1": 300, "font2": 58}, "outro": {"button_font": 45, "button_size": [225, 80], "description_font": 75, "title_font": 225, "name_font": 150, "button1_pos": [45, 706], "button2_pos": [930, 706], "title_pos": [75, 40], "score_pos": [75, 293], "desc_pos": [75, 400], "name_pos": [75, 480], "button1_text_pos": [75, 720], "button2_text_pos": [990, 720]}, "victory_failure_display": {"title": [75, 320.0], "title_font": 300}, "game_menu": {"button_size": [750, 106], "button1_pos": [225, 133], "button2_pos": [225, 266], "button3_pos": [225, 400], "button4_pos": [225, 533], "button1_text_pos": [465, 146], "button2_text_pos": [510, 280], "button3_text_pos": [375, 413], "button4_text_pos": [495, 546], "font": 60}, "leaderboard_menu": {"desc_font": 67, "text_font": 45, "button_size": [225, 80], "button1_pos": [45, 706], "button2_pos": [930, 706], "button1_text_pos": [75, 720], "button2_text_pos": [990, 720], "desc_pos": [375, 13], "height": 93, "height_change": 53, "score_x1": 75, "score_x2": 450, "score_x3": 825}, "settings_menu": {"desk_font": 36, "button_font": 33, "button_size_1": [270, 53], "button_size_2": [60, 53], "button_size_3": [225, 80], "button_size_4": [900, 66], "button_1": [150, 106], "button_2": [465, 106], "button_3": [780, 106], "button_4": [150, 173], "button_5": [465, 173], "button_6": [780, 173], "button_7": [150, 353], "button_8": [420, 333], "button_9": [420, 400], "button_10": [600, 353], "button_11": [870, 333], "button_12": [870, 400], "button_13": [150, 573], "button_14": [487, 573], "button_15": [990, 573], "button_16": [45, 706], "button_17": [930, 706], "desc_button_1": [150, 26], "desc_button_2": [150, 240], "desc_button_3": [150, 480], "desc_text_1": [495, 40], "desc_text_2": [540, 253], "desc_text_3": [555, 493], "text_1": [232, 116], "text_2": [547, 116], "text_3": [825, 116], "text_4": [232, 182], "text_5": [547, 182], "text_6": [862, 182], "text_7": [180, 373], "text_8": [442, 340], "text_9": [442, 406], "text_10": [630, 373], "text_11": [892, 340], "text_12": [892, 406], "text_13": [210, 594], "text_14": [540, 594], "text_15": [97, 726], "text_16": [997, 726]}, "game_round": {"gallow_background_size": [270, 333], "gallow_background_pos": [930, 466], "gallow_size": [264, 328], "gallow_pos": [933, 469], "font": 54, "height": 173, "category_info": [30, 26], "score_info": [885, 26]},"display_letters" : {"font": 120, "distance": 90}}
+{
+    "intro": {
+        "text1": [
+            120,
+            40
+        ],
+        "text2": [
+            30,
+            506
+        ],
+        "text3": [
+            195,
+            573
+        ],
+        "font1": 300,
+        "font2": 58
+    },
+    "outro": {
+        "button_font": 45,
+        "button_size": [
+            225,
+            80
+        ],
+        "description_font": 75,
+        "title_font": 225,
+        "name_font": 150,
+        "button1_pos": [
+            45,
+            706
+        ],
+        "button2_pos": [
+            930,
+            706
+        ],
+        "title_pos": [
+            75,
+            40
+        ],
+        "score_pos": [
+            75,
+            293
+        ],
+        "desc_pos": [
+            75,
+            400
+        ],
+        "name_pos": [
+            75,
+            480
+        ],
+        "button1_text_pos": [
+            75,
+            720
+        ],
+        "button2_text_pos": [
+            990,
+            720
+        ]
+    },
+    "victory_failure_display": {
+        "title": [
+            75,
+            320.0
+        ],
+        "title_font": 300
+    },
+    "game_menu": {
+        "button_size": [
+            750,
+            106
+        ],
+        "button1_pos": [
+            225,
+            133
+        ],
+        "button2_pos": [
+            225,
+            266
+        ],
+        "button3_pos": [
+            225,
+            400
+        ],
+        "button4_pos": [
+            225,
+            533
+        ],
+        "button1_text_pos": [
+            465,
+            146
+        ],
+        "button2_text_pos": [
+            510,
+            280
+        ],
+        "button3_text_pos": [
+            375,
+            413
+        ],
+        "button4_text_pos": [
+            495,
+            546
+        ],
+        "font": 60
+    },
+    "leaderboard_menu": {
+        "desc_font": 67,
+        "text_font": 45,
+        "button_size": [
+            225,
+            80
+        ],
+        "button1_pos": [
+            45,
+            706
+        ],
+        "button2_pos": [
+            930,
+            706
+        ],
+        "button1_text_pos": [
+            75,
+            720
+        ],
+        "button2_text_pos": [
+            990,
+            720
+        ],
+        "desc_pos": [
+            375,
+            13
+        ],
+        "height": 93,
+        "height_change": 53,
+        "score_x1": 75,
+        "score_x2": 450,
+        "score_x3": 825
+    },
+    "settings_menu": {
+        "desk_font": 36,
+        "button_font": 33,
+        "button_size_1": [
+            270,
+            53
+        ],
+        "button_size_2": [
+            60,
+            53
+        ],
+        "button_size_3": [
+            225,
+            80
+        ],
+        "button_size_4": [
+            900,
+            66
+        ],
+        "button_1": [
+            150,
+            106
+        ],
+        "button_2": [
+            465,
+            106
+        ],
+        "button_3": [
+            780,
+            106
+        ],
+        "button_4": [
+            150,
+            173
+        ],
+        "button_5": [
+            465,
+            173
+        ],
+        "button_6": [
+            780,
+            173
+        ],
+        "button_7": [
+            150,
+            353
+        ],
+        "button_8": [
+            420,
+            333
+        ],
+        "button_9": [
+            420,
+            400
+        ],
+        "button_10": [
+            600,
+            353
+        ],
+        "button_11": [
+            870,
+            333
+        ],
+        "button_12": [
+            870,
+            400
+        ],
+        "button_13": [
+            150,
+            573
+        ],
+        "button_14": [
+            487,
+            573
+        ],
+        "button_15": [
+            990,
+            573
+        ],
+        "button_16": [
+            45,
+            706
+        ],
+        "button_17": [
+            930,
+            706
+        ],
+        "desc_button_1": [
+            150,
+            26
+        ],
+        "desc_button_2": [
+            150,
+            240
+        ],
+        "desc_button_3": [
+            150,
+            480
+        ],
+        "desc_text_1": [
+            495,
+            40
+        ],
+        "desc_text_2": [
+            540,
+            253
+        ],
+        "desc_text_3": [
+            555,
+            493
+        ],
+        "text_1": [
+            232,
+            116
+        ],
+        "text_2": [
+            547,
+            116
+        ],
+        "text_3": [
+            825,
+            116
+        ],
+        "text_4": [
+            232,
+            182
+        ],
+        "text_5": [
+            547,
+            182
+        ],
+        "text_6": [
+            862,
+            182
+        ],
+        "text_7": [
+            180,
+            373
+        ],
+        "text_8": [
+            442,
+            340
+        ],
+        "text_9": [
+            442,
+            406
+        ],
+        "text_10": [
+            630,
+            373
+        ],
+        "text_11": [
+            892,
+            340
+        ],
+        "text_12": [
+            892,
+            406
+        ],
+        "text_13": [
+            210,
+            594
+        ],
+        "text_14": [
+            540,
+            594
+        ],
+        "text_15": [
+            97,
+            726
+        ],
+        "text_16": [
+            997,
+            726
+        ]
+    },
+    "game_round": {
+        "gallow_background_size": [
+            270,
+            333
+        ],
+        "gallow_background_pos": [
+            930,
+            466
+        ],
+        "gallow_size": [
+            264,
+            328
+        ],
+        "gallow_pos": [
+            933,
+            469
+        ],
+        "font": 54,
+        "height": 173,
+        "category_info": [
+            30,
+            26
+        ],
+        "score_info": [
+            885,
+            26
+        ]
+    },
+    "display_letters": {
+        "font": 120,
+        "distance": 90
+    }
+}
