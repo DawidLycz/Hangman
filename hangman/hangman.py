@@ -10,7 +10,6 @@ from typing import Dict, Tuple
 import pygame
 
 pygame.init()
-json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'text', 'polish_strings.json')
 
 TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
@@ -83,16 +82,15 @@ def skip_leave_action(
     '''Function to handle skip or leave actions in a game.
     Parameters:
         event : The event object representing the user input event.
-        sound_channel : The sound channel to play sound effects. Defaults to None.
     Returns:
-        bool: Returns True if the action should be continued, or False if the action should be skipped or exited.
+        bool: Returns True if the action should be continued, or False if the loop should be exited.
 
     '''
     match event.type:
         case pygame.QUIT:
             pygame.quit()
             sys.exit()
-        case (pygame.KEYDOWN):
+        case pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 if sound_channel:
                     sound_channel.play(SOUND_EFFECTS["beep"])
@@ -105,7 +103,7 @@ def skip_leave_action(
 
 def play_intro(
     screen: pygame.surface.Surface,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     pos: Scene,
     strings: list[str],
     sound_channel: pygame.mixer.Channel,
@@ -153,19 +151,16 @@ def play_intro(
 def play_outro(
     screen: pygame.surface.Surface,
     score: int,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     pos: Scene,
     sound_channel: pygame.mixer.Channel,
     strings: list[str],
 ) -> None:
     """Display the game outro screen and handle user interactions.
     Parameters:
-        - pos : A dictionary containing the positions of elements on the screen.
-        - sound_channel : The sound channel used to play sound effects.
         - strings : A list containing text strings used for displaying texts on the screen.
     Description:
-        The `play_outro` function is responsible for displaying the game outro screen and handling user interactions on that screen. It displays the background, texts, buttons, and handles events such as key presses, mouse movement, and button clicks.
-        Provides user possibility to save his game score in the "scoreboard.db" file.
+        Displays outro, and provides user possibility to save his game score in the "scoreboard.db" file.
     """
 
     pygame.mixer.music.load(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'outro.mp3'))
@@ -287,17 +282,16 @@ def display_letters(
     word: str,
     provided_letters: list[str],
     screen: pygame.surface.Surface,
-    height: int,
     pos: Scene,
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
         - word : The word to be displayed.
         - provided_letters : A set of letters that are already provided.
-        - height : The vertical position at which the letters are displayed.
 
     Description:
-        The code iterates over each letter in the word. If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). If the letter is a space, it is replaced with a hyphen ('-'). The letter is then rendered using the specified font and displayed on the screen at the current distance and height. The distance is incremented based on the screen resolution, ensuring proper spacing between letters.
+        If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). 
+        If the letter is a space, it is replaced with a ('-').
     """
 
     letter_font = pygame.font.Font(
@@ -310,7 +304,7 @@ def display_letters(
         if letter == " ":
             letter = "-"
         letter_for_print = letter_font.render(f"{letter.upper()}", True, (0, 255, 0))
-        screen.blit(letter_for_print, (int(distance), height))
+        screen.blit(letter_for_print, (int(distance), pos["game_round"]["height"]))
         distance += pos["display_letters"]["distance"]
 
 
@@ -325,12 +319,9 @@ def victory_failure_display(
     Display victory or failure message on the screen.
 
     Parameters:
-        - pos : A dictionary containing the positions of elements on the screen.
         - success : A boolean indicating whether it is a victory (True) or failure (False).
         - strings : A list containing text strings used for displaying texts on the screen.
 
-    Description:
-        The `victory_failure_display` function displays a victory or failure message on the screen based on the value of the `success` parameter. It renders the main title text using the specified font and color, plays the corresponding sound effect, blits the text onto the screen, updates the display, waits for a specified duration, and then returns.
     """
     title_font = pygame.font.Font(
         COMMON_FONT_PATH, pos["victory_failure_display"]["title_font"]
@@ -358,7 +349,7 @@ def victory_failure_display(
 
 
 def check_mouse(
-    position: tuple[int, int], button_type: tuple[int, int], mouse_pos: tuple[int, int]
+    position: Coordinates, button_type: Coordinates, mouse_pos: Coordinates
 ) -> bool:
     """
     Check if the mouse position is within the specified button area.
@@ -371,8 +362,6 @@ def check_mouse(
     Returns:
         bool: True if the mouse position is within the button area, False otherwise.
 
-    Description:
-        The `check_mouse` function checks if the current mouse position is within the specified button area. It compares the x and y coordinates of the mouse position with the boundaries of the button area. If the mouse position is within the button area, it returns True; otherwise, it returns False.
     """
 
     x, y = position[0], position[1]
@@ -388,8 +377,6 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
     Returns:
         tuple[str]: A tuple containing the randomly selected word and its category name.
 
-    Description:
-        The `get_random_word` function selects a random word from the given words_base. It first chooses a random category from the words_base and assigns its name to the `category_name` variable. Then, it retrieves the word_base for that category. Finally, it selects a random word from the word_base and returns a tuple containing the randomly selected word and its category name.
     """
 
     category = random.choice(words_base)
@@ -399,17 +386,8 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
 
 
 def create_screen(
-    resolution: tuple[int, int], fullscreen: bool
+    resolution: Coordinates, fullscreen: bool
 ) -> pygame.surface.Surface:
-    """
-    Create a Pygame screen surface with the specified resolution and fullscreen mode.
-
-    Returns:
-        pygame.surface.Surface: The new created Pygame screen surface.
-
-    Description:
-        The `create_screen` function creates a Pygame screen surface with the specified resolution and fullscreen mode. If the `fullscreen` parameter is True, it creates the screen in fullscreen mode using `pygame.FULLSCREEN` flag; otherwise, it creates the screen in windowed mode. The function then returns the created screen surface.
-    """
 
     return pygame.display.set_mode(
         size=(resolution), flags=pygame.FULLSCREEN if fullscreen else 0
@@ -419,7 +397,7 @@ def create_screen(
 def game_menu(
     screen: pygame.surface.Surface,
     sound_channel: pygame.mixer.Channel,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     pos: Scene,
     strings: list[str],
 ) -> str:
@@ -427,16 +405,13 @@ def game_menu(
     Display the game menu and handle user interactions.
 
     Parameters:
-        - pos : A dictionary containing the position coordinates for different elements in the menu.
         - strings : A list of string values for different menu options and texts.
 
     Returns:
         str: The selected option from the game menu. One of : "new_game", "settings", "scoreboard", "exit"
 
     Description:
-        The `game_menu` function displays the game menu on the provided screen surface and handles user interactions. It handles MOUSEMOTION events to track mouse movements. It handles MOUSEBUTTONDOWN events to check for button clicks. If the left mouse button is clicked on a button, the corresponding option is returned.
-        The function updates the button states based on mouse movements and displays the updated buttons on the screen surface. The function keeps track of which button the mouse is currently over using the `check_mouse` function.
-        The function continues this loop until a button option is selected and returned.
+        The function continues this loop until a button option is selected.
     """
 
     background_image = pygame.transform.scale(
@@ -470,8 +445,6 @@ def game_menu(
     while running:
         for event in pygame.event.get():
             running = skip_leave_action(event)
-            if event.type == pygame.QUIT:
-                pass
 
             if event.type == pygame.MOUSEMOTION:
                 mouse_movement = True
@@ -516,7 +489,7 @@ def game_menu(
 def leaderboard_menu(
     screen: pygame.surface.Surface,
     sound_channel: pygame.mixer.Channel,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     pos: Scene,
     strings: list[str],
 ) -> None:
@@ -524,16 +497,11 @@ def leaderboard_menu(
     Display the leaderboard menu and handle user interactions.
 
     Parameters:
-        - screen : The Pygame screen surface to display the menu on.
-        - resolution : A tuple containing the screen resolution in pixels (width, height).
-        - pos : A dictionary containing the position coordinates for different elements in the menu.
         - strings : A list of string values for different menu options and texts.
 
     Description:
 
-        The function enters a loop where it continuously checks for user events. It handles the QUIT event to exit the game if the user closes the window. It handles MOUSEMOTION events to track mouse movements over buttons. It handles KEYDOWN events to check for the ESCAPE key press, which returns None and exits the menu.
-        If the left mouse button is clicked on a button, the corresponding action is performed. Clicking on the first button returns None and exits the menu. Clicking on the second button clears the scoreboard data and returns None, exiting the menu.
-        The function continues this loop until an action is performed and the menu is exited.
+        Displays to user content of "scoreboard.db" file and allows to clean it. 
     """
     background_image = pygame.transform.scale(
         BACKGROUND_1, resolution
@@ -630,9 +598,9 @@ def leaderboard_menu(
 
 def settings_menu(
     screen: pygame.surface.Surface,
-    settings: dict[str, dict[str, tuple[int, int]]],
+    settings: Scene,
     sound_channel: pygame.mixer.Channel,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     music_channel: pygame.mixer.Channel,
     pos: Scene,
     strings: list[str],
@@ -642,15 +610,13 @@ def settings_menu(
 
     Parameters:
         - settings : The current settings of the game.
-        - pos : The position dictionary containing the positions of various elements on the screen.
         - strings : The list of strings containing text for localization.
 
     Returns:
-        bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving, or None if the user pressed the escape key to return to the previous menu.
+        bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving.
 
     Description:
-        Function allows user to change certain parameters of game, i allows to change screen resolution, sound and music volume, language.
-        It works very similar to "game_menu" function"""
+        Function allows user to edit "settings.db" via game interface."""
 
     new_settings = settings.copy()
     background_image = pygame.transform.scale(BACKGROUND_2, (resolution))
@@ -931,7 +897,7 @@ def game_round(
     category_name: str,
     score: int,
     sound_channel: pygame.mixer.Channel,
-    resolution: tuple[int, int],
+    resolution: Coordinates,
     pos: Scene,
     strings: list[str],
 ) -> int:
@@ -939,16 +905,14 @@ def game_round(
     Run a game round where the player guesses letters to complete a word.
 
     Parameters:
-        the_word : The word to be guessed.
-        category_name : The name of the category to which the word belongs.
-        pos : The position dictionary containing the positions of various elements on the screen.
         strings : The list of strings containing text for localization.
 
     Returns:
         int: The score obtained in the game round.
 
     Description:
-        This function runs a game round where the player guesses letters to complete a word. The player is presented with a word and a gallow image representing the number of incorrect attempts made. The player can enter letters using the keyboard to guess the word. If the player guesses a correct letter, it is displayed in the word. If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
+        This function runs a game round where the player guesses letters to complete a word. 
+        If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
     """
     background_image = pygame.transform.scale(BACKGROUND_4, resolution)
 
@@ -1053,7 +1017,7 @@ def main() -> False:
     The main function that serves as the entry point of the program.
     Whole function is looped in to "while True" loop.
     Initially it is loading settings file and assing its content to constant.
-    Next, it is initialize function "play_intro", but only once.
+    Next, it is initialize function "play_intro".
     Than it "initialize" game screen with parameters based on constant mentionet above.
     And at last it enters inner loop. Which is based on "main_menu" function, and based on what this function returns, it runs certain operations.
     """
@@ -1131,14 +1095,14 @@ def main() -> False:
                 )
                 if save_changes:
                     pygame.display.quit()
-                    time.sleep(0.8)
+                    time.sleep(SOUND_EFFECTS["beep"].get_length())
                     break
             elif clicked == "scoreboard":
                 leaderboard_menu(screen, sound_channel, resolution, pos, strings)
             elif clicked == "exit":
                 break
         if clicked == "exit":
-            time.sleep(0.7)
+            time.sleep(SOUND_EFFECTS["beep"].get_length())
             break
 
 if __name__ == "__main__":
