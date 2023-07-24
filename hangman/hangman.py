@@ -1,3 +1,4 @@
+from enum import Enum, auto
 import json
 import os
 import pickle
@@ -15,20 +16,40 @@ TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
 CLOCK = 60
 
-SETTINGS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'databases', 'settings.db')
-SCOREBOARD_FILE = os.path.join(os.path.dirname(__file__), 'data', 'databases', 'scoreboard.db')
+SETTINGS_FILE = os.path.join(
+    os.path.dirname(__file__), "data", "databases", "settings.db"
+)
+SCOREBOARD_FILE = os.path.join(
+    os.path.dirname(__file__), "data", "databases", "scoreboard.db"
+)
 
-BUTTON_TYPE_FREE = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_1.png'))
-BUTTON_TYPE_AIMED = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_2.png'))
-BUTTON_TYPE_LOCKED = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'button_3.png'))
+BUTTON_TYPE_FREE = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "button_1.png")
+)
+BUTTON_TYPE_AIMED = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "button_2.png")
+)
+BUTTON_TYPE_LOCKED = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "button_3.png")
+)
 
-BACKGROUND_1 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'intro_background.jpg'))
-BACKGROUND_2 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'menu_background.jpg'))
-BACKGROUND_3 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'background.jpg'))
-BACKGROUND_4 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'background_2.jpg'))
-BACKGROUND_5 = pygame.image.load(os.path.join(os.path.dirname(__file__), 'data', 'images', 'gallow_background.jpg'))
+BACKGROUND_1 = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "intro_background.jpg")
+)
+BACKGROUND_2 = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "menu_background.jpg")
+)
+BACKGROUND_3 = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "background.jpg")
+)
+BACKGROUND_4 = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "background_2.jpg")
+)
+BACKGROUND_5 = pygame.image.load(
+    os.path.join(os.path.dirname(__file__), "data", "images", "gallow_background.jpg")
+)
 
-COMMON_FONT_PATH = os.path.join(os.path.dirname(__file__), 'data', 'fonts', 'font.ttf')
+COMMON_FONT_PATH = os.path.join(os.path.dirname(__file__), "data", "fonts", "font.ttf")
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -60,24 +81,40 @@ KEYBOARD_INPUT = {
 }
 
 SOUND_EFFECTS = {
-    "wrong": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'wrong.mp3')),
-    "correct": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'correct.mp3')),
-    "error": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'error.mp3')),
-    "success": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'success.mp3')),
-    "failure": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'game_over.mp3')),
-    "beep": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'beep.mp3')),
-    "intro": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'intro.mp3')),
-    "outro": pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'outro.mp3')),
+    "wrong": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "wrong.mp3")
+    ),
+    "correct": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "correct.mp3")
+    ),
+    "error": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "error.mp3")
+    ),
+    "success": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "success.mp3")
+    ),
+    "failure": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "game_over.mp3")
+    ),
+    "beep": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "beep.mp3")
+    ),
+    "intro": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "intro.mp3")
+    ),
+    "outro": pygame.mixer.Sound(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "outro.mp3")
+    ),
 }
 
 RGB_COLORS = {
-    "cyan" : (0, 255, 255),
-    "white" : (255, 255, 255),
-    "black" : (0, 0, 0),
-    "green" : (0, 255, 0),
-    "blue" : (0, 0, 255),
-    "red" : (255, 0, 0),
-    "orange" : (255, 100, 0)
+    "cyan": (0, 255, 255),
+    "white": (255, 255, 255),
+    "black": (0, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+    "red": (255, 0, 0),
+    "orange": (255, 100, 0),
 }
 
 
@@ -85,18 +122,75 @@ Coordinates = Tuple[int, int]
 Position = Dict[str, Coordinates]
 Scene = Dict[str, Position]
 
+class Button:
+    def __init__(
+        self,
+        button_name: str,
+        button_list: list[any],
+        position: Coordinates,
+        size: Coordinates,
+        mouse_over: bool,
+        screen: pygame.surface.Surface,
+        lock:  bool,
+        text: str,
+        text_color: tuple[int, int, int],
+        font_size: int
+    ):
+        self.button_name = button_name
+        self.position = position
+        self.size = size
+        self.mouse_over = mouse_over
+        self.screen = screen
+        self.lock = lock
+        self.text = text
+        self.text_color = text_color
+        self.font_size = font_size
+        
+        button_list.append(self)
+        font = pygame.font.Font(COMMON_FONT_PATH, font_size)
+        rendered_text = font.render(text, True, text_color)
+        self.rendered_text = rendered_text
+
+    def check_mouse_over(self, mouse_position):
+        if (
+            self.position[0] <= mouse_position[0] <= self.position[0] + self.size[0]
+            and self.position[1] <= mouse_position[1] <= self.position[1] + self.size[1]
+        ):
+            return True
+        return False
+    
+    def react(self):
+        if self.mouse_over:
+            return self.button_name
+
+    def draw(self):
+        if self.lock:
+            image = BUTTON_TYPE_LOCKED
+        else:
+            if self.mouse_over:
+                image = BUTTON_TYPE_AIMED
+            else:
+                image = BUTTON_TYPE_FREE
+        image = pygame.transform.scale(image, (self.size))
+        text_rect = self.rendered_text.get_rect()
+        text_rect.center = (
+                    self.position[0] + (self.size[0] // 2),
+                    self.position[1] + (self.size[1] // 2),
+                )
+        self.screen.blit(image, self.position,)
+        self.screen.blit(self.rendered_text, text_rect)
 
 
 def skip_leave_action(
     event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None
 ) -> bool:
-    '''Function to handle skip or leave actions in a game.
+    """Function to handle skip or leave actions in a game.
     Parameters:
         event : The event object representing the user input event.
     Returns:
         bool: Returns True if the action should be continued, or False if the loop should be exited.
 
-    '''
+    """
     match event.type:
         case pygame.QUIT:
             pygame.quit()
@@ -104,6 +198,7 @@ def skip_leave_action(
         case pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 if sound_channel:
+                    sound_channel.stop()
                     sound_channel.play(SOUND_EFFECTS["beep"])
                 return False
             else:
@@ -121,8 +216,7 @@ def play_intro(
 ) -> None:
     """Initial function for whole game. Displays welcome messege in the surface provided in argument"""
 
-    background_image = pygame.transform.scale(BACKGROUND_1, (resolution)
-    )
+    background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
     screen.blit(background_image, (0, 0))
     clock = pygame.time.Clock()
     ticks = 0
@@ -131,7 +225,7 @@ def play_intro(
     while running:
         ticks += 1
         for event in pygame.event.get():
-            running = skip_leave_action(event)
+            running = skip_leave_action(event, sound_channel)
 
         if ticks == 55:
             title_font = pygame.font.Font(COMMON_FONT_PATH, pos["intro"]["font1"])
@@ -141,7 +235,8 @@ def play_intro(
         if ticks == 110:
             description_font = pygame.font.Font(None, pos["intro"]["font2"])
             description_text_1 = description_font.render(
-                f"{strings['welcome_1']}", True, RGB_COLORS["white"])
+                f"{strings['welcome_1']}", True, RGB_COLORS["white"]
+            )
             screen.blit(description_text_1, pos["intro"]["text2"])
 
         if ticks == 160:
@@ -149,7 +244,6 @@ def play_intro(
                 f"{strings['welcome_2']}", True, RGB_COLORS["white"]
             )
             screen.blit(description_text_2, pos["intro"]["text3"])
-            
 
         if ticks == 500:
             return None
@@ -164,127 +258,114 @@ def play_outro(
     resolution: Coordinates,
     pos: Scene,
     sound_channel: pygame.mixer.Channel,
-    strings: list[str],
+    strings: dict[str, str],
 ) -> None:
     """Display the game outro screen and handle user interactions.
     Parameters:
-        - strings : A list containing text strings used for displaying texts on the screen.
+        - strings : A dictionary containing text strings used for displaying texts on the screen.
     Description:
         Displays outro, and provides user possibility to save his game score in the "scoreboard.db" file.
     """
-    
+
     clock = pygame.time.Clock()
-    pygame.mixer.music.load(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'outro.mp3'))
+    pygame.mixer.music.load(
+        os.path.join(os.path.dirname(__file__), "data", "soundeffects", "outro.mp3")
+    )
     pygame.mixer.music.play()
 
     with open(SCOREBOARD_FILE, "rb") as stream:
         scoreboard = pickle.load(stream)
 
-    button_free = BUTTON_TYPE_FREE
-    button_aimed = BUTTON_TYPE_AIMED
-    button_size = pos["outro"]["button_size"]
-    button_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["button_font"])
-
-    button_1_text = button_font.render(f"{strings['back']}", True, RGB_COLORS["black"])
-    button_2_text = button_font.render(f"{strings['save']}", True, RGB_COLORS["black"])
-    button_1_text_rect = button_1_text.get_rect()
-    button_2_text_rect = button_2_text.get_rect()
-    button_1_text_rect.center = (
-        pos["outro"]["button1_pos"][0] + (button_size[0] // 2),
-        pos["outro"]["button1_pos"][1] + (button_size[1] // 2),
-    )
-    button_2_text_rect.center = (
-        pos["outro"]["button2_pos"][0] + (button_size[0] // 2),
-        pos["outro"]["button2_pos"][1] + (button_size[1] // 2),
-    )
-
     background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
+    screen.blit(background_image, (0, 0))
 
-    is_mouse_over_button = [False] * 2
+    description_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["description_font"])
+    title_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["title_font"])
+    name_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["name_font"])
 
-    description_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["outro"]["description_font"]
-    )
-    title_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["outro"]["title_font"]
-    )
-    name_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["outro"]["name_font"]
-    )
-
-    main_title = title_font.render(strings['game_over'], True, RGB_COLORS["blue"])
+    main_title = title_font.render(strings["game_over"], True, RGB_COLORS["blue"])
     description_score = description_font.render(
         f"{strings['congrats']} {score} ", True, RGB_COLORS["white"]
     )
-    description_name = description_font.render(f"{strings['enter name']}", True, RGB_COLORS["white"])
+    description_name = description_font.render(
+        f"{strings['enter_name']}", True, RGB_COLORS["white"]
+    )
+    button_list = []
+    button_elements = ["back", "save",]
+    counter = 1
+    for name in button_elements:
+        Button(button_name=name, 
+                button_list=button_list, 
+                position=pos["outro"][f"button{counter}_pos"],
+                size=pos["outro"]["button_size"], 
+                mouse_over=False,
+                screen=screen,
+                lock=False, 
+                text=strings[name], 
+                text_color=RGB_COLORS["black"], 
+                font_size=pos["outro"]["button_font"])
+        counter += 1
 
     name_latters = []
     running = True
     while running:
-        screen.blit(background_image, (0, 0))
-
+        clicked = None
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
-            if event.type == pygame.KEYDOWN:
-                if len(name_latters) < 11:
-                    for key in KEYBOARD_INPUT:
-                        if key == event.key:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            name_latters.append(KEYBOARD_INPUT[key][0])
-                if event.key == pygame.K_BACKSPACE:
-                    try:
-                        del name_latters[-1]
-                        sound_channel.play(SOUND_EFFECTS["wrong"])
-                    except:
-                        sound_channel.play(SOUND_EFFECTS["error"])
-
-            elif event.type == pygame.MOUSEMOTION:
-                mouse_pos = pygame.mouse.get_pos()
-                is_mouse_over_button[0] = check_mouse(
-                    pos["outro"]["button1_pos"], button_size, mouse_pos
-                )
-                is_mouse_over_button[1] = check_mouse(
-                    pos["outro"]["button2_pos"], button_size, mouse_pos
-                )
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                if event.button == 1:
-                    if is_mouse_over_button[0]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        return None
-                    if is_mouse_over_button[1]:
-                        if len(name_latters) > 0:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            to_save = (name, score)
-                            scoreboard.append(to_save)
-                            scoreboard = sorted(
-                                scoreboard[:30], key=lambda x: x[1], reverse=True
-                            )
-                            with open(SCOREBOARD_FILE, "wb") as stream:
-                                pickle.dump(scoreboard, stream)
-                            return None
-                        else:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            match event.type:
+                case pygame.KEYDOWN:
+                    if len(name_latters) < 11:
+                        for key in KEYBOARD_INPUT:
+                            if key == event.key:
+                                sound_channel.play(SOUND_EFFECTS["beep"])
+                                name_latters.append(KEYBOARD_INPUT[key][0])
+                    if event.key == pygame.K_BACKSPACE:
+                        try:
+                            del name_latters[-1]
+                            sound_channel.play(SOUND_EFFECTS["wrong"])
+                        except:
                             sound_channel.play(SOUND_EFFECTS["error"])
+
+                case pygame.MOUSEMOTION:
+                    for button in button_list:
+                        button.mouse_over = button.check_mouse_over(mouse_pos)
+
+                case pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for button in button_list:
+                            clicked = button.react()
+                            if clicked:
+                                break
+
+        match clicked:
+            case "back":
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                running = False
+            case "save":
+                if len(name_latters) > 0:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    to_save = (name, score)
+                    scoreboard.append(to_save)
+                    scoreboard = sorted(
+                        scoreboard[:30], key=lambda x: x[1], reverse=True
+                    )
+                    with open(SCOREBOARD_FILE, "wb") as stream:
+                        pickle.dump(scoreboard, stream)
+                    return None
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
 
         name = "".join(name_latters)
         name_title = name_font.render(f"{name.upper()}", True, RGB_COLORS["green"])
 
-        button_1 = button_aimed if is_mouse_over_button[0] else button_free
-        button_1 = pygame.transform.scale(button_1, button_size)
-        button_2 = button_aimed if is_mouse_over_button[1] else button_free
-        button_2 = pygame.transform.scale(button_2, button_size)
-
-        screen.blit(button_1, pos["outro"]["button1_pos"])
-        screen.blit(button_2, pos["outro"]["button2_pos"])
-
+        for button in button_list:
+            button.draw()
         screen.blit(main_title, pos["outro"]["title_pos"])
         screen.blit(description_score, pos["outro"]["score_pos"])
         screen.blit(description_name, pos["outro"]["desc_pos"])
         screen.blit(name_title, pos["outro"]["name_pos"])
-
-        screen.blit(button_1_text, button_1_text_rect)
-        screen.blit(button_2_text, button_2_text_rect)
 
         pygame.display.flip()
         clock.tick(CLOCK)
@@ -295,7 +376,7 @@ def display_letters(
     provided_letters: list[str],
     screen: pygame.surface.Surface,
     pos: Scene,
-    height: int
+    height: int,
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
@@ -304,20 +385,20 @@ def display_letters(
         - height : level on which letters suppose to be displayed on the screen
 
     Description:
-        If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). 
+        If the letter is not in the provided_letters set, it is replaced with an underscore ('_').
         If the letter is a space, it is replaced with a ('-').
     """
 
-    letter_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["display_letters"]["font"]
-    )
+    letter_font = pygame.font.Font(COMMON_FONT_PATH, pos["display_letters"]["font"])
     distance = 10
     for letter in word:
         if letter.upper() not in provided_letters:
             letter = "_"
         if letter == " ":
             letter = "-"
-        letter_for_print = letter_font.render(f"{letter.upper()}", True, RGB_COLORS["green"])
+        letter_for_print = letter_font.render(
+            f"{letter.upper()}", True, RGB_COLORS["green"]
+        )
         screen.blit(letter_for_print, (int(distance), height))
         distance += pos["display_letters"]["distance"]
 
@@ -362,7 +443,7 @@ def victory_failure_display(
         if ticks == ticks_to_wait:
             running = False
         clock.tick(CLOCK)
-        print (ticks)
+        print(ticks)
 
 
 def check_mouse(
@@ -402,10 +483,7 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
     return the_word, category_name
 
 
-def create_screen(
-    resolution: Coordinates, fullscreen: bool
-) -> pygame.surface.Surface:
-
+def create_screen(resolution: Coordinates, fullscreen: bool) -> pygame.surface.Surface:
     return pygame.display.set_mode(
         size=(resolution), flags=pygame.FULLSCREEN if fullscreen else 0
     )
@@ -432,74 +510,48 @@ def game_menu(
     """
     clock = pygame.time.Clock()
 
-    background_image = pygame.transform.scale(
-        BACKGROUND_2, resolution
-    )
-    button_free = BUTTON_TYPE_FREE
-    button_aimed = BUTTON_TYPE_AIMED
-    button_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["game_menu"]["font"]
-    )
-
-    button_positions = [
-        pos["game_menu"]["button1_pos"],
-        pos["game_menu"]["button2_pos"],
-        pos["game_menu"]["button3_pos"],
-        pos["game_menu"]["button4_pos"],
-    ]
-    buttons = [button_free] * 4
-    button_texts = [
-        (strings['new game'], pos["game_menu"]["button1_text_pos"]),
-        (strings['options'], pos["game_menu"]["button2_text_pos"]),
-        (strings['top scores'], pos["game_menu"]["button3_text_pos"]),
-        (strings['exit'], pos["game_menu"]["button4_text_pos"]),
-    ]
-    options = ["new_game", "settings", "scoreboard", "exit"]
-    button_size = pos["game_menu"]["button_size"]
-    is_mouse_over_button = [False] * 4
+    background_image = pygame.transform.scale(BACKGROUND_2, resolution)
     screen.blit(background_image, (0, 0))
-    init, mouse_movement = True, False
+    button_elements = ["new_game", "options", "top_scores", "exit"]
+    button_list = []
+    counter = 1
+    for name in button_elements:
+        Button(button_name=name, 
+                button_list=button_list, 
+                position=pos["game_menu"][f"button{counter}_pos"],
+                size=pos["game_menu"]["button_size"], 
+                mouse_over=False,
+                screen=screen,
+                lock=False, 
+                text=strings[name], 
+                text_color=RGB_COLORS["black"], 
+                font_size=pos["game_menu"]["font"])
+        counter += 1
     running = True
     while running:
+        clicked = None
+        
+        mouse_pos = pygame.mouse.get_pos()
+        
         for event in pygame.event.get():
             running = skip_leave_action(event)
+            match event.type:
+                case pygame.MOUSEMOTION:
+                    for button in button_list:
+                        button.mouse_over = button.check_mouse_over(mouse_pos)
 
-            if event.type == pygame.MOUSEMOTION:
-                mouse_movement = True
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                if event.button == 1:
-                    for button, option in zip(is_mouse_over_button, options):
-                        if button:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            return option
-
-        mouse_pos = pygame.mouse.get_pos()
-        counter = 0
-        if mouse_movement or init:
-            init, mouse_movement = False, False
-            for mouse_over, position, button, button_text in zip(
-                is_mouse_over_button, button_positions, buttons, button_texts
-            ):
-                mouse_over = check_mouse(position, button_size, mouse_pos)
-                button = button_aimed if mouse_over else button_free
-                button = pygame.transform.scale(button, button_size)
-                screen.blit(button, position)
-                text = button_font.render(f"{button_text[0]}", True, RGB_COLORS["black"])
-                text_rect = text.get_rect()
-                text_rect.center = (
-                    position[0] + (button_size[0] // 2),
-                    position[1] + (button_size[1] // 2),
-                )
-                screen.blit(text, text_rect)
-
-                if mouse_over:
-                    is_mouse_over_button[counter] = True
-                    counter += 1
-                else:
-                    is_mouse_over_button[counter] = False
-                    counter += 1
+                case pygame.MOUSEBUTTONDOWN:
+                    
+                    if event.button == 1:
+                        for button in button_list:
+                            clicked = button.react()
+                            if clicked:
+                                break
+        if clicked:
+            sound_channel.play(SOUND_EFFECTS["beep"])
+            return clicked
+        for button in button_list:
+            button.draw()
 
         pygame.display.flip()
         clock.tick(CLOCK)
@@ -520,90 +572,82 @@ def leaderboard_menu(
 
     Description:
 
-        Displays to user content of "scoreboard.db" file and allows to clean it. 
+        Displays to user content of "scoreboard.db" file and allows to clean it.
     """
-    clock = pygame.time.Clock()
-    background_image = pygame.transform.scale(
-        BACKGROUND_1, resolution
-    )
-    screen.blit(background_image, (0, 0))
+    with open(SCOREBOARD_FILE, "rb") as stream:
+        scoreboard = pickle.load(stream)
+    scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
 
-    button_free = BUTTON_TYPE_FREE
-    button_aimed = BUTTON_TYPE_AIMED
+    clock = pygame.time.Clock()
+    background_image = pygame.transform.scale(BACKGROUND_1, resolution)
+    screen.blit(background_image, (0, 0))
 
     description_font = pygame.font.Font(
         COMMON_FONT_PATH, pos["leaderboard_menu"]["desc_font"]
     )
-    text_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["leaderboard_menu"]["text_font"]
-    )
+    text_font = pygame.font.Font(COMMON_FONT_PATH, pos["leaderboard_menu"]["text_font"])
 
-    description_text = description_font.render(f"{strings['top scores']}", True, RGB_COLORS["orange"])
+    description_text = description_font.render(
+        f"{strings['top_scores']}", True, RGB_COLORS["orange"]
+    )
     description_text_rect = description_text.get_rect()
     description_text_rect.center = (
         resolution[0] // 2,
         pos["leaderboard_menu"]["desc_pos"][1] * 3,
     )
-    button_texts = [
-        text_font.render(f"{strings['back']}", True, RGB_COLORS["black"]),
-        text_font.render(f"{strings['reset']}", True, RGB_COLORS["black"]),
-    ]
 
-    with open(SCOREBOARD_FILE, "rb") as stream:
-        scoreboard = pickle.load(stream)
-    scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
-
-    button_size = pos["leaderboard_menu"]["button_size"]
-
-    is_mouse_over_button = [False] * 2
     screen.blit(description_text, description_text_rect)
+    button_list = []
+    button_elements = ["back", "reset",]
+    counter = 1
+    for name in button_elements:
+        Button(button_name=name, 
+                button_list=button_list, 
+                position=pos["leaderboard_menu"][f"button{counter}_pos"],
+                size=pos["leaderboard_menu"]["button_size"], 
+                mouse_over=False,
+                screen=screen,
+                lock=False, 
+                text=strings[name], 
+                text_color=RGB_COLORS["black"], 
+                font_size=pos["leaderboard_menu"]["text_font"])
+        counter += 1
 
     running = True
     while running:
+        clicked = None
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
+            mouse_pos = pygame.mouse.get_pos()
+            match event.type:
 
-            if event.type == pygame.MOUSEMOTION:
-                mouse_pos = pygame.mouse.get_pos()
-                is_mouse_over_button[0] = check_mouse(
-                    pos["leaderboard_menu"]["button1_pos"], button_size, mouse_pos
-                )
-                is_mouse_over_button[1] = check_mouse(
-                    pos["leaderboard_menu"]["button2_pos"], button_size, mouse_pos
-                )
+                case pygame.MOUSEMOTION:
+                    for button in button_list:
+                        button.mouse_over = button.check_mouse_over(mouse_pos)
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if is_mouse_over_button[0]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        running = False
-                    if is_mouse_over_button[1]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        scoreboard = []
-                        with open(SCOREBOARD_FILE, "wb") as stream:
-                            pickle.dump(scoreboard, stream)
-                        running = False
+                case pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for button in button_list:
+                            clicked = button.react()
+                            if clicked:
+                                break
 
-        counter = 0
-        for mouse_over, text in zip(is_mouse_over_button, button_texts):
-            button = button_aimed if mouse_over else button_free
-            button = pygame.transform.scale(button, button_size)
-            position = pos["leaderboard_menu"][f"button{counter+1}_pos"]
-            screen.blit(button, position)
-            text_rect = text.get_rect()
-            text_rect.center = (
-                position[0] + (button_size[0] // 2),
-                position[1] + (button_size[1] // 2),
-            )
-            screen.blit(text, text_rect)
-            counter += 1
+        match clicked:
+            case "back":
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                running = False
+            case "reset":
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                scoreboard = []
+                with open(SCOREBOARD_FILE, "wb") as stream:
+                    pickle.dump(scoreboard, stream)
+                running = False
 
         height, counter1, counter2 = pos["leaderboard_menu"]["height"], 0, 1
-        for token in scoreboard[:TOTAL_SCORES_FOR_DISPLAY]:
+        for name, score in scoreboard[:TOTAL_SCORES_FOR_DISPLAY]:
             counter1 += 1
-            name, score = token[0].capitalize(), token[1]
             score_text = text_font.render(
-                f"{counter1:2}. {name:<12}{score}", True, RGB_COLORS["white"]
+                f"{counter1:2}. {name.capitalize():<12}{score}", True, RGB_COLORS["white"]
             )
             screen.blit(
                 score_text, (pos["leaderboard_menu"][f"score_x{counter2}"], height)
@@ -612,6 +656,8 @@ def leaderboard_menu(
             if counter1 in [10, 20]:
                 counter2 += 1
                 height = pos["leaderboard_menu"]["height"]
+        for button in button_list:
+            button.draw()
 
         pygame.display.flip()
         clock.tick(CLOCK)
@@ -641,16 +687,12 @@ def settings_menu(
     clock = pygame.time.Clock()
     new_settings = settings.copy()
     background_image = pygame.transform.scale(BACKGROUND_2, (resolution))
-    button_free = BUTTON_TYPE_FREE
-    button_aimed = BUTTON_TYPE_AIMED
-    button_lock = BUTTON_TYPE_LOCKED
     description_button_font = pygame.font.Font(
         COMMON_FONT_PATH, pos["settings_menu"]["desk_font"]
     )
     button_font = pygame.font.Font(
         COMMON_FONT_PATH, pos["settings_menu"]["button_font"]
     )
-    is_mouse_over_button = [False] * 17
     languages = ["polish", "english"]
 
     language_index = 0
@@ -661,34 +703,42 @@ def settings_menu(
         else:
             language_index += 1
 
-    texts_to_display = [
-        "800:600",
-        "1200:800",
-        f"{strings['fullscreen']}",
-        "1920:1080",
-        "1280:720",
-        f"{strings['window']}",
-        f"{strings['music']}",
-        "+",
-        "-",
-        f"{strings['sound']}",
-        "+",
-        "-",
-        "<-",
-        None,
-        "->",
-        f"{strings['back']}",
-        f"{strings['save']}",
+    button_list = []
+    button_elements = [
+        ("800:600", "800:600", 1),
+        ("1200:800", "1200:800", 1),
+        (f"{strings['fullscreen']}", "fullscreen", 1),
+        ("1920:1080","1920:1080", 1),
+        ("1280:720","1280:720", 1),
+        (f"{strings['window']}","window", 1),
+        (f"{strings['music']}","music", 3),
+        ("+", "music_up", 2),
+        ("-", "music_down", 2),
+        (f"{strings['sound']}", "sound", 3),
+        ("+", "sound_up", 2),
+        ("-", "sound_down", 2),
+        ("<-", "previous_language", 2),
+        (None,"language", 3),
+        ("->", "next_language", 2),
+        (f"{strings['back']}", "back", 3),
+        (f"{strings['save']}", "save", 3),
     ]
-    rendered_text = []
-    button_standards = [1, 1, 1, 1, 1, 1, 3, 2, 2, 3, 2, 2, 2, 3, 2, 3, 3]
-    description_texts = [strings['resolution'], strings['sound'], strings['language']]
-
-    for text in texts_to_display:
-        rendered_text.append(button_font.render(text, True, RGB_COLORS["black"]))
-
+    counter = 1
+    for string, name, size in button_elements:
+        Button(button_name=name, 
+                button_list=button_list, 
+                position=pos["settings_menu"][f"button_{counter}"],
+                size=pos["settings_menu"][f"button_size_{size}"], 
+                mouse_over=False,
+                screen=screen,
+                lock=False, 
+                text=string, 
+                text_color=RGB_COLORS["black"], 
+                font_size=pos["settings_menu"]["button_font"])
+        counter += 1
+    description_texts = [strings["resolution"], strings["sound"], strings["language"]]
     description_button = pygame.transform.scale(
-        button_lock, pos["settings_menu"]["button_size_4"]
+        BUTTON_TYPE_LOCKED, pos["settings_menu"]["button_size_4"]
     )
 
     screen.blit(background_image, (0, 0))
@@ -701,7 +751,10 @@ def settings_menu(
         counter += 1
 
     running = True
+    
     while running:
+        clicked = None
+
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
@@ -712,13 +765,11 @@ def settings_menu(
         else:
             sound_volume = f"{strings['off']}"
 
-        rendered_text[6] = button_font.render(
-            f"{strings['music']}: {music_volume}", True, RGB_COLORS["black"]
-        )
-        rendered_text[9] = button_font.render(
-            f"{strings['sound']}: {sound_volume}", True, RGB_COLORS["black"]
-        )
-
+        button_list[6].rendered_text = button_font.render(
+            f"{strings['music']}: {music_volume}", True, RGB_COLORS["black"])
+        button_list[9].rendered_text = button_font.render(
+            f"{strings['sound']}: {sound_volume}", True, RGB_COLORS["black"])
+        button_list[13].rendered_text = button_font.render(strings["languages_list"][language_index],True, RGB_COLORS["black"])
         if new_settings["play_music"]:
             music_channel.set_volume(new_settings["music_volume"] / 200)
         else:
@@ -732,135 +783,118 @@ def settings_menu(
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
             mouse_pos = pygame.mouse.get_pos()
-            if event.type == pygame.MOUSEMOTION:
-                counter = 0
-                for mouse_over, standard in zip(is_mouse_over_button, button_standards):
-                    mouse_over = check_mouse(
-                        pos["settings_menu"][f"button_{counter+1}"],
-                        pos["settings_menu"][f"button_size_{standard}"],
-                        mouse_pos,
-                    )
-                    is_mouse_over_button[counter] = True if mouse_over else False
-                    counter += 1
+            match event.type:
+                case pygame.MOUSEMOTION:
+                    for button in button_list:
+                        button.mouse_over = button.check_mouse_over(mouse_pos)
+                case pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for button in button_list:
+                            clicked = button.react()
+                            if clicked:
+                                break
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if is_mouse_over_button[0]:
-                        if new_settings["resolution"] != [800, 600]:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["resolution"] = [800, 600]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-                    if is_mouse_over_button[1]:
-                        if new_settings["resolution"] != [1200, 800]:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["resolution"] = [1200, 800]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
+        match clicked:
+            case "800:600":
+                if new_settings["resolution"] != [800, 600]:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["resolution"] = [800, 600]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "1200:800":
+                if new_settings["resolution"] != [1200, 800]:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["resolution"] = [1200, 800]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "fullscreen":
+                if new_settings["fullscreen"] == False:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["fullscreen"] = True
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "1920:1080":
+                if new_settings["resolution"] != [1920, 1080]:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["resolution"] = [1920, 1080]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "1280:720":
+                if new_settings["resolution"] != [1280, 720]:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["resolution"] = [1280, 720]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "window":
+                if new_settings["fullscreen"] == True:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["fullscreen"] = False
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"]) 
+            case "music":               
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                if new_settings["play_music"] == False:
+                    new_settings["play_music"] = True
+                elif new_settings["play_music"] == True:
+                    new_settings["play_music"] = False
+            case "music_up":
+                if new_settings["music_volume"] < 100:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["music_volume"] += 10
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])  
+            case "music_down":
+                if new_settings["music_volume"] > 0:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    new_settings["music_volume"] -= 10
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])     
+            case "sound":           
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                if new_settings["play_sound"] == False:
+                    new_settings["play_sound"] = True
+                elif new_settings["play_sound"] == True:
+                    new_settings["play_sound"] = False
+            case "sound_up":
+                if new_settings["sound_volume"] < 100:
+                    new_settings["sound_volume"] += 10
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "sound_down":
+                if new_settings["sound_volume"] > 0:
+                    new_settings["sound_volume"] -= 10
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "previous_language" : 
+                if language_index > 0:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    language_index -= 1
+                    new_settings["language"] = languages[language_index]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "language":
+                pass
+            case "next_language":
+                if language_index < len(languages) - 1:
+                    sound_channel.play(SOUND_EFFECTS["beep"])
+                    language_index += 1
+                    new_settings["language"] = languages[language_index]
+                else:
+                    sound_channel.play(SOUND_EFFECTS["error"])
+            case "back":
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                return False
+            case "save":
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                try:
+                    with open(SETTINGS_FILE, "wb") as stream:
+                        pickle.dump(new_settings, stream)
+                    return True
+                except:
+                    print("Something went wrong")                
 
-                    if is_mouse_over_button[2]:
-                        if new_settings["fullscreen"] == False:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["fullscreen"] = True
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[3]:
-                        if new_settings["resolution"] != [1920, 1080]:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["resolution"] = [1920, 1080]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[4]:
-                        if new_settings["resolution"] != [1280, 720]:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["resolution"] = [1280, 720]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[5]:
-                        if new_settings["fullscreen"] == True:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["fullscreen"] = False
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[6]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        if new_settings["play_music"] == False:
-                            new_settings["play_music"] = True
-                        elif new_settings["play_music"] == True:
-                            new_settings["play_music"] = False
-
-                    if is_mouse_over_button[7]:
-                        if new_settings["music_volume"] < 100:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["music_volume"] += 10
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[8]:
-                        if new_settings["music_volume"] > 0:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            new_settings["music_volume"] -= 10
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[9]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        if new_settings["play_sound"] == False:
-                            new_settings["play_sound"] = True
-                        elif new_settings["play_sound"] == True:
-                            new_settings["play_sound"] = False
-
-                    if is_mouse_over_button[10]:
-                        if new_settings["sound_volume"] < 100:
-                            new_settings["sound_volume"] += 10
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[11]:
-                        if new_settings["sound_volume"] > 0:
-                            new_settings["sound_volume"] -= 10
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[12]:
-                        if language_index > 0:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            language_index -= 1
-                            new_settings["language"] = languages[language_index]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[13]:
-                        pass
-
-                    if is_mouse_over_button[14]:
-                        if language_index < len(languages) - 1:
-                            sound_channel.play(SOUND_EFFECTS["beep"])
-                            language_index += 1
-                            new_settings["language"] = languages[language_index]
-                        else:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                    if is_mouse_over_button[15]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        return False
-
-                    if is_mouse_over_button[16]:
-                        sound_channel.play(SOUND_EFFECTS["beep"])
-                        try:
-                            with open(SETTINGS_FILE, "wb") as stream:
-                                pickle.dump(new_settings, stream)
-                            return True
-                        except:
-                            print("Something went wrong")
-
-        buttons = [None] * 17
         button_lock_condidions = [
             (new_settings["resolution"] == [800, 600]),
             (new_settings["resolution"] == [1200, 800]),
@@ -880,34 +914,16 @@ def settings_menu(
         ]
 
         counter = 0
-        for condition in button_lock_condidions:
+        for condition, button in zip(button_lock_condidions, button_list):
             if condition:
-                buttons[counter] = button_lock
+                button.lock = True
+            else:
+                button.lock = False
             counter += 1
 
-        rendered_text[13] = button_font.render(
-            strings['languages_list'][language_index], True, RGB_COLORS["black"]
-        )
-        counter = 0
-        for button, mouse_over, standard, text in zip(
-            buttons, is_mouse_over_button, button_standards, rendered_text
-        ):
-            if button == None:
-                if mouse_over:
-                    buttons[counter] = button = button_aimed
-                else:
-                    buttons[counter] = button = button_free
-            current_standard = pos["settings_menu"][f"button_size_{standard}"]
-            position = pos["settings_menu"][f"button_{counter+1}"]
-            button = pygame.transform.scale(button, current_standard)
-            screen.blit(button, position)
-            text_rect = text.get_rect()
-            text_rect.center = (
-                position[0] + (current_standard[0] // 2),
-                position[1] + (current_standard[1] // 2) + 2,
-            )
-            screen.blit(text, text_rect)
-            counter += 1
+        
+        for button in button_list:
+            button.draw()
 
         pygame.display.flip()
         clock.tick(CLOCK)
@@ -933,7 +949,7 @@ def game_round(
         int: The score obtained in the game round.
 
     Description:
-        This function runs a game round where the player guesses letters to complete a word. 
+        This function runs a game round where the player guesses letters to complete a word.
         If the player guesses an incorrect letter, the gallow image is updated to reflect the number of incorrect attempts.
     """
     background_image = pygame.transform.scale(BACKGROUND_4, resolution)
@@ -990,9 +1006,7 @@ def game_round(
                     attempts += 1
                 provided_letters.update(provided_keys)
         # Display content on screen
-        description_font = pygame.font.Font(
-            COMMON_FONT_PATH, pos["game_round"]["font"]
-        )
+        description_font = pygame.font.Font(COMMON_FONT_PATH, pos["game_round"]["font"])
         category = description_font.render(
             f"{strings['category']} {category_name.upper()}", True, RGB_COLORS["green"]
         )
@@ -1001,10 +1015,17 @@ def game_round(
         )
         try:
             gallow_image = pygame.image.load(
-                os.path.join(os.path.dirname(__file__), 'data', 'images', f'gallow_{attempts}.png')
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "data",
+                    "images",
+                    f"gallow_{attempts}.png",
+                )
             )
         except FileNotFoundError:
-            gallow_image = os.path.join(os.path.dirname(__file__), 'data', 'images', f'gallow_12.png')
+            gallow_image = os.path.join(
+                os.path.dirname(__file__), "data", "images", f"gallow_12.png"
+            )
         gallow_image = pygame.transform.scale(
             gallow_image, pos["game_round"]["gallow_size"]
         )
@@ -1050,26 +1071,39 @@ def main() -> False:
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
-        file_with_numbers = (
-            os.path.join(os.path.dirname(__file__), 'data', 'resolutions', f'{resolution_x}_{resolution_y}.json')
+        file_with_numbers = os.path.join(
+            os.path.dirname(__file__),
+            "data",
+            "resolutions",
+            f"{resolution_x}_{resolution_y}.json",
         )
 
         with open(file_with_numbers, "r") as stream:
             pos = json.load(stream)
         language = settings["language"]
         with open(
-            os.path.join(os.path.dirname(__file__), 'data', 'text', f'{language}_strings.json'), "r", encoding="utf-8"
+            os.path.join(
+                os.path.dirname(__file__), "data", "text", f"{language}_strings.json"
+            ),
+            "r",
+            encoding="utf-8",
         ) as stream:
             strings = json.load(stream)
         with open(
-            os.path.join(os.path.dirname(__file__), 'data', 'text', f'{language}_key_words.json'), "r", encoding="utf-8"
+            os.path.join(
+                os.path.dirname(__file__), "data", "text", f"{language}_key_words.json"
+            ),
+            "r",
+            encoding="utf-8",
         ) as stream:
             words_base = json.load(stream)
 
         screen = create_screen(resolution, settings["fullscreen"])
-        
+
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), 'data', 'soundeffects', 'music.mp3'))
+        music = pygame.mixer.Sound(
+            os.path.join(os.path.dirname(__file__), "data", "soundeffects", "music.mp3")
+        )
         music_channel.set_volume(settings["music_volume"] / 200)
 
         sound_channel = pygame.mixer.Channel(1)
@@ -1086,46 +1120,48 @@ def main() -> False:
             else:
                 music_channel.stop()
             clicked = game_menu(screen, sound_channel, resolution, pos, strings)
-            if clicked == "new_game":
-                score = 0
-                while True:
-                    the_word, category_name = get_random_word(words_base)
-                    new_score = game_round(
+            match clicked:
+                case "new_game":
+                    score = 0
+                    while True:
+                        the_word, category_name = get_random_word(words_base)
+                        new_score = game_round(
+                            screen,
+                            the_word,
+                            category_name,
+                            score,
+                            sound_channel,
+                            resolution,
+                            pos,
+                            strings,
+                        )
+                        if new_score:
+                            score += new_score
+                        else:
+                            break
+                    play_outro(screen, score, resolution, pos, sound_channel, strings)
+                case "options":
+                    save_changes = settings_menu(
                         screen,
-                        the_word,
-                        category_name,
-                        score,
+                        settings,
                         sound_channel,
                         resolution,
+                        music_channel,
                         pos,
                         strings,
                     )
-                    if new_score:
-                        score += new_score
-                    else:
+                    if save_changes:
+                        pygame.display.quit()
+                        time.sleep(SOUND_EFFECTS["beep"].get_length())
                         break
-                play_outro(screen, score, resolution, pos, sound_channel, strings)
-            elif clicked == "settings":
-                save_changes = settings_menu(
-                    screen,
-                    settings,
-                    sound_channel,
-                    resolution,
-                    music_channel,
-                    pos,
-                    strings,
-                )
-                if save_changes:
-                    pygame.display.quit()
-                    time.sleep(SOUND_EFFECTS["beep"].get_length())
+                case "top_scores":
+                    leaderboard_menu(screen, sound_channel, resolution, pos, strings)
+                case "exit":
                     break
-            elif clicked == "scoreboard":
-                leaderboard_menu(screen, sound_channel, resolution, pos, strings)
-            elif clicked == "exit":
-                break
         if clicked == "exit":
             time.sleep(SOUND_EFFECTS["beep"].get_length())
             break
+
 
 if __name__ == "__main__":
     main()
