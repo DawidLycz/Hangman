@@ -126,7 +126,6 @@ class Button:
     def __init__(
         self,
         button_name: str,
-        button_list: list[any],
         position: Coordinates,
         size: Coordinates,
         mouse_over: bool,
@@ -146,7 +145,6 @@ class Button:
         self.text_color = text_color
         self.font_size = font_size
         
-        button_list.append(self)
         font = pygame.font.Font(COMMON_FONT_PATH, font_size)
         rendered_text = font.render(text, True, text_color)
         self.rendered_text = rendered_text
@@ -211,7 +209,7 @@ def play_intro(
     screen: pygame.surface.Surface,
     resolution: Coordinates,
     pos: Scene,
-    strings: list[str],
+    strings: dict[str,str],
     sound_channel: pygame.mixer.Channel,
 ) -> None:
     """Initial function for whole game. Displays welcome messege in the surface provided in argument"""
@@ -294,8 +292,7 @@ def play_outro(
     button_elements = ["back", "save",]
     counter = 1
     for name in button_elements:
-        Button(button_name=name, 
-                button_list=button_list, 
+        button = Button(button_name=name, 
                 position=pos["outro"][f"button{counter}_pos"],
                 size=pos["outro"]["button_size"], 
                 mouse_over=False,
@@ -305,6 +302,8 @@ def play_outro(
                 text_color=RGB_COLORS["black"], 
                 font_size=pos["outro"]["button_font"])
         counter += 1
+        button_list.append(button)
+
 
     name_latters = []
     running = True
@@ -381,12 +380,10 @@ def display_letters(
     """Render and display already provided letters of a word on the screen.
     Parameters:
         - word : The word to be displayed.
-        - provided_letters : A set of letters that are already provided.
         - height : level on which letters suppose to be displayed on the screen
 
     Description:
         If the letter is not in the provided_letters set, it is replaced with an underscore ('_').
-        If the letter is a space, it is replaced with a ('-').
     """
 
     letter_font = pygame.font.Font(COMMON_FONT_PATH, pos["display_letters"]["font"])
@@ -408,14 +405,14 @@ def victory_failure_display(
     sound_channel: pygame.mixer.Channel,
     pos: Scene,
     success: bool,
-    strings: list[str],
+    strings: dict[str, str],
 ) -> None:
     """
     Display victory or failure message on the screen.
 
     Parameters:
         - success : A boolean indicating whether it is a victory (True) or failure (False).
-        - strings : A list containing text strings used for displaying texts on the screen.
+        - strings : A dictionary containing text strings used for displaying texts on the screen.
 
     """
     clock = pygame.time.Clock()
@@ -473,7 +470,7 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
     Get a random word from the given words_base.
 
     Returns:
-        tuple[str]: A tuple containing the randomly selected word and its category name.
+        tuple: A tuple containing the randomly selected word and its category name.
 
     """
 
@@ -494,13 +491,13 @@ def game_menu(
     sound_channel: pygame.mixer.Channel,
     resolution: Coordinates,
     pos: Scene,
-    strings: list[str],
+    strings:dict[str, str],
 ) -> str:
     """
     Display the game menu and handle user interactions.
 
     Parameters:
-        - strings : A list of string values for different menu options and texts.
+        - strings : A dictionary of string values for different menu options and texts.
 
     Returns:
         str: The selected option from the game menu. One of : "new_game", "settings", "scoreboard", "exit"
@@ -516,8 +513,7 @@ def game_menu(
     button_list = []
     counter = 1
     for name in button_elements:
-        Button(button_name=name, 
-                button_list=button_list, 
+        button = Button(button_name=name, 
                 position=pos["game_menu"][f"button{counter}_pos"],
                 size=pos["game_menu"]["button_size"], 
                 mouse_over=False,
@@ -527,6 +523,7 @@ def game_menu(
                 text_color=RGB_COLORS["black"], 
                 font_size=pos["game_menu"]["font"])
         counter += 1
+        button_list.append(button)
     running = True
     while running:
         clicked = None
@@ -562,13 +559,13 @@ def leaderboard_menu(
     sound_channel: pygame.mixer.Channel,
     resolution: Coordinates,
     pos: Scene,
-    strings: list[str],
+    strings: dict[str, str],
 ) -> None:
     """
     Display the leaderboard menu and handle user interactions.
 
     Parameters:
-        - strings : A list of string values for different menu options and texts.
+        - strings : A dictionary of string values for different menu options and texts.
 
     Description:
 
@@ -601,8 +598,7 @@ def leaderboard_menu(
     button_elements = ["back", "reset",]
     counter = 1
     for name in button_elements:
-        Button(button_name=name, 
-                button_list=button_list, 
+        button = Button(button_name=name, 
                 position=pos["leaderboard_menu"][f"button{counter}_pos"],
                 size=pos["leaderboard_menu"]["button_size"], 
                 mouse_over=False,
@@ -612,6 +608,7 @@ def leaderboard_menu(
                 text_color=RGB_COLORS["black"], 
                 font_size=pos["leaderboard_menu"]["text_font"])
         counter += 1
+        button_list.append(button)
 
     running = True
     while running:
@@ -670,14 +667,14 @@ def settings_menu(
     resolution: Coordinates,
     music_channel: pygame.mixer.Channel,
     pos: Scene,
-    strings: list[str],
+    strings: dict[str, str],
 ) -> bool:
     """
     Display and handle the settings menu screen.
 
     Parameters:
         - settings : The current settings of the game.
-        - strings : The list of strings containing text for localization.
+        - strings : The dictionary of strings containing text for localization.
 
     Returns:
         bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving.
@@ -725,8 +722,7 @@ def settings_menu(
     ]
     counter = 1
     for string, name, size in button_elements:
-        Button(button_name=name, 
-                button_list=button_list, 
+        button = Button(button_name=name, 
                 position=pos["settings_menu"][f"button_{counter}"],
                 size=pos["settings_menu"][f"button_size_{size}"], 
                 mouse_over=False,
@@ -736,6 +732,7 @@ def settings_menu(
                 text_color=RGB_COLORS["black"], 
                 font_size=pos["settings_menu"]["button_font"])
         counter += 1
+        button_list.append(button)
     description_texts = [strings["resolution"], strings["sound"], strings["language"]]
     description_button = pygame.transform.scale(
         BUTTON_TYPE_LOCKED, pos["settings_menu"]["button_size_4"]
@@ -937,13 +934,13 @@ def game_round(
     sound_channel: pygame.mixer.Channel,
     resolution: Coordinates,
     pos: Scene,
-    strings: list[str],
+    strings: dict[str, str],
 ) -> int:
     """
     Run a game round where the player guesses letters to complete a word.
 
     Parameters:
-        strings : The list of strings containing text for localization.
+        strings : The dictionary of strings containing text for localization.
 
     Returns:
         int: The score obtained in the game round.
