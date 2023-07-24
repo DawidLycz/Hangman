@@ -130,13 +130,13 @@ def play_intro(
         if ticks == 110:
             description_font = pygame.font.Font(None, pos["intro"]["font2"])
             description_text_1 = description_font.render(
-                f"{strings[0]}", True, (255, 255, 255)
+                f"{strings['welcome_1']}", True, (255, 255, 255)
             )
             screen.blit(description_text_1, pos["intro"]["text2"])
 
         if ticks == 160:
             description_text_2 = description_font.render(
-                f"{strings[1]}", True, (255, 255, 255)
+                f"{strings['welcome_2']}", True, (255, 255, 255)
             )
             screen.blit(description_text_2, pos["intro"]["text3"])
             
@@ -174,8 +174,8 @@ def play_outro(
     button_size = pos["outro"]["button_size"]
     button_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["button_font"])
 
-    button_1_text = button_font.render(f"{strings[2]}", True, (0, 0, 0))
-    button_2_text = button_font.render(f"{strings[3]}", True, (0, 0, 0))
+    button_1_text = button_font.render(f"{strings['back']}", True, (0, 0, 0))
+    button_2_text = button_font.render(f"{strings['save']}", True, (0, 0, 0))
     button_1_text_rect = button_1_text.get_rect()
     button_2_text_rect = button_2_text.get_rect()
     button_1_text_rect.center = (
@@ -201,11 +201,11 @@ def play_outro(
         COMMON_FONT_PATH, pos["outro"]["name_font"]
     )
 
-    main_title = title_font.render(strings[24], True, (0, 0, 255))
+    main_title = title_font.render(strings['game_over'], True, (0, 0, 255))
     description_score = description_font.render(
-        f"{strings[4]} {score} ", True, (255, 255, 255)
+        f"{strings['congrats']} {score} ", True, (255, 255, 255)
     )
-    description_name = description_font.render(f"{strings[5]}", True, (255, 255, 255))
+    description_name = description_font.render(f"{strings['enter name']}", True, (255, 255, 255))
 
     name_latters = []
     running = True
@@ -283,11 +283,13 @@ def display_letters(
     provided_letters: list[str],
     screen: pygame.surface.Surface,
     pos: Scene,
+    height: int
 ) -> None:
     """Render and display already provided letters of a word on the screen.
     Parameters:
         - word : The word to be displayed.
         - provided_letters : A set of letters that are already provided.
+        - height : level on which letters suppose to be displayed on the screen
 
     Description:
         If the letter is not in the provided_letters set, it is replaced with an underscore ('_'). 
@@ -304,7 +306,7 @@ def display_letters(
         if letter == " ":
             letter = "-"
         letter_for_print = letter_font.render(f"{letter.upper()}", True, (0, 255, 0))
-        screen.blit(letter_for_print, (int(distance), pos["game_round"]["height"]))
+        screen.blit(letter_for_print, (int(distance), height))
         distance += pos["display_letters"]["distance"]
 
 
@@ -327,10 +329,10 @@ def victory_failure_display(
         COMMON_FONT_PATH, pos["victory_failure_display"]["title_font"]
     )
     if success:
-        text, ticks_to_wait, color = f"{strings[6]}", 4000, (0, 0, 255)
+        text, ticks_to_wait, color = f"{strings['success']}", 4000, (0, 0, 255)
         sound_channel.play(SOUND_EFFECTS["success"])
     else:
-        text, ticks_to_wait, color = f"{strings[7]}", 10000, (255, 0, 0)
+        text, ticks_to_wait, color = f"{strings['failure']}", 10000, (255, 0, 0)
         sound_channel.play(SOUND_EFFECTS["failure"]),
     main_title = title_font.render(text, True, color)
     running = True
@@ -431,10 +433,10 @@ def game_menu(
     ]
     buttons = [button_free] * 4
     button_texts = [
-        (strings[8], pos["game_menu"]["button1_text_pos"]),
-        (strings[9], pos["game_menu"]["button2_text_pos"]),
-        (strings[10], pos["game_menu"]["button3_text_pos"]),
-        (strings[11], pos["game_menu"]["button4_text_pos"]),
+        (strings['new game'], pos["game_menu"]["button1_text_pos"]),
+        (strings['options'], pos["game_menu"]["button2_text_pos"]),
+        (strings['top scores'], pos["game_menu"]["button3_text_pos"]),
+        (strings['exit'], pos["game_menu"]["button4_text_pos"]),
     ]
     options = ["new_game", "settings", "scoreboard", "exit"]
     button_size = pos["game_menu"]["button_size"]
@@ -518,15 +520,15 @@ def leaderboard_menu(
         COMMON_FONT_PATH, pos["leaderboard_menu"]["text_font"]
     )
 
-    description_text = description_font.render(f"{strings[10]}", True, (255, 100, 0))
+    description_text = description_font.render(f"{strings['top scores']}", True, (255, 100, 0))
     description_text_rect = description_text.get_rect()
     description_text_rect.center = (
         resolution[0] // 2,
         pos["leaderboard_menu"]["desc_pos"][1] * 3,
     )
     button_texts = [
-        text_font.render(f"{strings[2]}", True, (0, 0, 0)),
-        text_font.render(f"{strings[12]}", True, (0, 0, 0)),
+        text_font.render(f"{strings['back']}", True, (0, 0, 0)),
+        text_font.render(f"{strings['reset']}", True, (0, 0, 0)),
     ]
 
     with open(SCOREBOARD_FILE, "rb") as stream:
@@ -643,25 +645,25 @@ def settings_menu(
     texts_to_display = [
         "800:600",
         "1200:800",
-        f"{strings[13]}",
+        f"{strings['fullscreen']}",
         "1920:1080",
         "1280:720",
-        f"{strings[14]}",
-        f"{strings[15]}",
+        f"{strings['window']}",
+        f"{strings['music']}",
         "+",
         "-",
-        f"{strings[16]}",
+        f"{strings['sound']}",
         "+",
         "-",
         "<-",
         None,
         "->",
-        f"{strings[2]}",
-        f"{strings[3]}",
+        f"{strings['back']}",
+        f"{strings['save']}",
     ]
     rendered_text = []
     button_standards = [1, 1, 1, 1, 1, 1, 3, 2, 2, 3, 2, 2, 2, 3, 2, 3, 3]
-    description_texts = [strings[19], strings[16], strings[20]]
+    description_texts = [strings['resolution'], strings['sound'], strings['language']]
 
     for text in texts_to_display:
         rendered_text.append(button_font.render(text, True, (0, 0, 0)))
@@ -684,18 +686,18 @@ def settings_menu(
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
-            music_volume = f"{strings[21]}"
+            music_volume = f"{strings['off']}"
 
         if new_settings["play_sound"] == True:
             sound_volume = str(new_settings["sound_volume"]) + "%"
         else:
-            sound_volume = f"{strings[21]}"
+            sound_volume = f"{strings['off']}"
 
         rendered_text[6] = button_font.render(
-            f"{strings[15]}: {music_volume}", True, (0, 0, 0)
+            f"{strings['music']}: {music_volume}", True, (0, 0, 0)
         )
         rendered_text[9] = button_font.render(
-            f"{strings[16]}: {sound_volume}", True, (0, 0, 0)
+            f"{strings['sound']}: {sound_volume}", True, (0, 0, 0)
         )
 
         if new_settings["play_music"]:
@@ -865,7 +867,7 @@ def settings_menu(
             counter += 1
 
         rendered_text[13] = button_font.render(
-            strings[17][language_index], True, (0, 0, 0)
+            strings['languages_list'][language_index], True, (0, 0, 0)
         )
         counter = 0
         for button, mouse_over, standard, text in zip(
@@ -972,10 +974,10 @@ def game_round(
             COMMON_FONT_PATH, pos["game_round"]["font"]
         )
         category = description_font.render(
-            f"{strings[22]} {category_name.upper()}", True, (0, 255, 0)
+            f"{strings['category']} {category_name.upper()}", True, (0, 255, 0)
         )
         score_description = description_font.render(
-            f"{strings[23]} {score}", True, (0, 255, 0)
+            f"{strings['score']} {score}", True, (0, 255, 0)
         )
         try:
             gallow_image = pygame.image.load(
@@ -996,7 +998,7 @@ def game_round(
 
         # Check win or lose conditions
         for word in password_words:
-            display_letters(word, provided_letters, screen, height, pos)
+            display_letters(word, provided_letters, screen, pos, height)
             height += pos["game_round"]["height"]
         if set(password_letters) <= correct_letters:
             success = True
