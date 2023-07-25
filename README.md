@@ -8,10 +8,18 @@ You can find more information about Pygame at: [pygame.org](https://www.pygame.o
 
 ## Instalation
 
-To download the game, please click on the link below:
+To download the game installer, please click on the link below:
 ## [DOWNLOAD](https://github.com/DawidLycz/Hangman/raw/main/hangman_setup.exe)
 Once the download is complete, run the installation file. To install the game, follow the on-screen instructions.
 
+There is also option for pip download. In order to do that, please paste to terminal command below:
+```bash
+pip install git+https://github.com/DawidLycz/Hangman
+```
+After installation, game can be initiated by command:
+```bash
+python -m hangman
+```
 ## User tips
 
 When game is runned, an intro message is displayed, followed by the main menu. The menu offers four options:
