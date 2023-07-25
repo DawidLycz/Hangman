@@ -767,6 +767,7 @@ def settings_menu(
         button_list[9].rendered_text = button_font.render(
             f"{strings['sound']}: {sound_volume}", True, RGB_COLORS["black"])
         button_list[13].rendered_text = button_font.render(strings["languages_list"][language_index],True, RGB_COLORS["black"])
+        
         if new_settings["play_music"]:
             music_channel.set_volume(new_settings["music_volume"] / 200)
         else:
@@ -893,21 +894,21 @@ def settings_menu(
                     print("Something went wrong")                
 
         button_lock_condidions = [
-            (new_settings["resolution"] == [800, 600]),
-            (new_settings["resolution"] == [1200, 800]),
-            (new_settings["fullscreen"] == True),
-            (new_settings["resolution"] == [1920, 1080]),
-            (new_settings["resolution"] == [1280, 720]),
-            (new_settings["fullscreen"] == False),
-            (new_settings["play_music"] == False),
-            (new_settings["music_volume"] == 100),
-            (new_settings["music_volume"] == 0),
-            (new_settings["play_sound"] == False),
-            (new_settings["sound_volume"] == 100),
-            (new_settings["sound_volume"] == 0),
-            (language_index == 0),
-            (True),
-            (language_index == len(languages) - 1),
+            new_settings["resolution"] == [800, 600],
+            new_settings["resolution"] == [1200, 800],
+            new_settings["fullscreen"] == True,
+            new_settings["resolution"] == [1920, 1080],
+            new_settings["resolution"] == [1280, 720],
+            new_settings["fullscreen"] == False,
+            new_settings["play_music"] == False,
+            new_settings["music_volume"] == 100,
+            new_settings["music_volume"] == 0,
+            new_settings["play_sound"] == False,
+            new_settings["sound_volume"] == 100,
+            new_settings["sound_volume"] == 0,
+            language_index == 0,
+            True,
+            language_index == len(languages) - 1,
         ]
 
         counter = 0
