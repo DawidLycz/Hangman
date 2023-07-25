@@ -440,7 +440,6 @@ def victory_failure_display(
         if ticks == ticks_to_wait:
             running = False
         clock.tick(CLOCK)
-        print(ticks)
 
 
 def check_mouse(
