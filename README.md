@@ -1,52 +1,49 @@
-# Hangman
+# Hangman - Word Guessing Game
+Hangman is a classic and highly popular word guessing game. The objective is to guess a word by providing individual letters. At the beginning of the game, certain letters of the word are hidden behind "_" signs. The player must guess a letter, and if the word contains that letter, it will be revealed on the screen. If the guessed letter is not part of the word, the player loses a turn. The game continues until the player either successfully guesses the word or runs out of turns.
 
-"Hangman" is a highly popular game where the objective is to guess a word by providing individual letters. Initially, certain letters of the word are hidden behind "_" signs. The user must provide a letter, and if the word contains that letter, it will be revealed on the screen. Otherwise, the user will lose a turn. If the user loses 12 turns, they lose the game.
+## Game Description
+Hangman is implemented using Pygame, an open-source library for creating video games and multimedia applications in Python. Pygame provides powerful functionality for handling graphics, sound, and user input, making it an excellent choice for game development.
 
-The game utilizes Pygame, an open-source library for creating video games and multimedia applications in Python. Pygame provides functionality for handling graphics, sound, and user input, making it a powerful tool for game development.
+For more information about Pygame, visit: pygame.org
 
-You can find more information about Pygame at: [pygame.org](https://www.pygame.org/wiki/about)
+## Installation
+To play the game, you can choose one of the following options:
 
-## Instalation
+Game Installer: Download the game installer from the link below and run it to install the game.
 
-To download the game installer, please click on the link below:
-## [DOWNLOAD](https://github.com/DawidLycz/Hangman/raw/main/hangman_setup.exe)
-Once the download is complete, run the installation file. To install the game, follow the on-screen instructions.
+# [DOWNLOAD](https://github.com/DawidLycz/Hangman/raw/main/hangman_setup.exe)
 
-There is also option for pip download. In order to do that, please paste to terminal command below:
+Pip Installation: If you prefer installing the game using pip, run the following command in your terminal or command prompt:
+
 ```bash
 pip install git+https://github.com/DawidLycz/Hangman
 ```
-After installation, game can be initiated by command:
+After installation, you can initiate the game by executing the following command:
+
 ```bash
 python -m hangman
 ```
-## User tips
+## How to Play
+When you launch the game, an introduction message is displayed, followed by the main menu with four options:
 
-When game is runned, an intro message is displayed, followed by the main menu. The menu offers four options:
+New Game: Start a new game where you need to guess the word by providing letters via the keyboard. If you correctly guess a letter in the word, it will be revealed. Otherwise, you lose a turn. The game ends if you run out of turns (12 attempts). Successfully guessing the word rewards you with points, and a new round begins. You can quit the game anytime by pressing the "ESC" key. At the end of the game, you have the option to save your score on the leaderboard by providing your name.
 
-1. "New Game": Starts a new game where the user must provide letters (via the keyboard) to guess the password. Incorrect letters result in the loss of an attempt, and when the user reaches 12 unsuccessful attempts, they lose the game. If the user correctly guesses all the letters in the password, they win the round, and the remaining attempts are converted into points that are added to the total score. A new round begins. The game continues until the user loses or presses the "ESC" key. After the game ends, the option to save the score appears on the screen. Users can provide their name to save the score to the leaderboard or skip this step. Finally, the main menu appears again.
+Options: Open the "Options" menu to customize game settings. You can change the window resolution, enable fullscreen mode, adjust music and sound volume, and select the game language. After making your preferred settings, click the "Save" button to apply the changes. The game will restart with your chosen settings.
 
-2. "Options": Opens the "Options" menu where users can modify game settings to their preference. They can change the window resolution, enable fullscreen mode, adjust music and sound volume, and select the game language. To apply changes, users click on their preferred settings and then click the "Save" button in the bottom right corner. This will modify the "settings.db" file, restart the script, and display the main menu with the preferred settings.
+Top Scores: View the leaderboard by loading the "scoreboard.db" file. It displays scores sorted by the highest points. If desired, you can reset the leaderboard, which clears all previous scores.
 
-3. "Top Scores": Displays the leaderboard by loading the "scoreboard.db" file. The leaderboard shows the contents of "scoreboard.db" sorted by score. There is also an option to reset the leaderboard, which simply overwrites "scoreboard.db" with an empty file.
+Exit: End the game altogether.
 
-4. "Exit": Ends the script altogether.
+## Code Description
+The game script is "hangman.py," comprising 13 functions, each thoroughly documented within the script.
 
-## Code description
+The "resolution" directory contains files with coordinates for various screen surfaces. You can modify these files using a text editor to adjust the display elements.
 
-Game is already exported to executive file, but python scrip can still be found in reposytory.
+The "text" directory contains strings used in the game, translated into multiple languages. Similarly, you can modify these files to customize in-game text.
 
-The main script is "hangman.py", which consists of 13 functions that are described in detail in the script's documentation.
-
-The files in "resolution" directory contain coordinates for each surface to be displayed on the screen. These files can be reviewed and modified using text editor.
-
-The files in "text" direcotory contain every string used in game in multiple languages. These files can also be reviewed and modified using text editor.
-
-The "settings.db" file is a dictionary that contains various settings. Users can modify these settings directly in game menu under the "settings" section.
-
+The "settings.db" file stores various user settings that can be adjusted from within the game's "Options" menu.
 
 ## License
+This project is licensed under the MIT License. For detailed information, refer to the LICENSE.txt file.
 
-This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
-
-I hope this provides a comprehensive overview of the Hangman game and its functionality. Enjoy playing!
+Enjoy playing Hangman, and have fun guessing words!
