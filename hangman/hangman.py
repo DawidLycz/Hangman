@@ -436,6 +436,10 @@ def victory_failure_display(
     sound_channel.play(SOUND_EFFECTS[sound]),
     
     main_title = title_font.render(text, True, color)
+    text_rect = main_title.get_rect()
+    width, height = screen.get_size()
+    text_rect.center = (width // 2, height // 2)
+
     running = True
     ticks = 0
     while running:
@@ -445,7 +449,7 @@ def victory_failure_display(
                 sound_channel.stop()
                 running = False 
         ticks += 1
-        screen.blit(main_title, (pos["victory_failure_display"]["title"]))
+        screen.blit(main_title, text_rect)
         pygame.display.flip()
         if ticks == ticks_to_wait:
             running = False
