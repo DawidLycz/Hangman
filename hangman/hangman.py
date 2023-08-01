@@ -117,52 +117,52 @@ RGB_COLORS = {
     "orange": (255, 100, 0),
 }
 
-
+RGB_Color = Tuple[int, int, int]
 Coordinates = Tuple[int, int]
 Position = Dict[str, Coordinates]
 Scene = Dict[str, Position]
+
 
 class Button:
     def __init__(
         self,
         button_name: str,
         position: Coordinates,
-        size: Coordinates,
-        mouse_over: bool,
+        size: Coordinates,        
         screen: pygame.surface.Surface,
-        lock:  bool,
         text: str,
-        text_color: tuple[int, int, int],
-        font_size: int
+        font_size: int,
+        arguments = None,
+        functionality: callable = None ,
+        text_color: RGB_Color = RGB_COLORS["black"],
+        mouse_over: bool = False,
+        disabled: bool =  False,        
     ):
         self.button_name = button_name
         self.position = position
         self.size = size
         self.mouse_over = mouse_over
         self.screen = screen
-        self.lock = lock
+        self.disabled = disabled
         self.text = text
         self.text_color = text_color
         self.font_size = font_size
+        self.functionality = functionality
+        self.arguments = arguments
         
         font = pygame.font.Font(COMMON_FONT_PATH, font_size)
         rendered_text = font.render(text, True, text_color)
         self.rendered_text = rendered_text
 
     def check_mouse_over(self, mouse_position):
-        if (
-            self.position[0] <= mouse_position[0] <= self.position[0] + self.size[0]
-            and self.position[1] <= mouse_position[1] <= self.position[1] + self.size[1]
-        ):
-            return True
-        return False
+        return self.position[0] <= mouse_position[0] <= self.position[0] + self.size[0] and self.position[1] <= mouse_position[1] <= self.position[1] + self.size[1]
     
     def react(self):
         if self.mouse_over:
             return self.button_name
 
     def draw(self):
-        if self.lock:
+        if self.disabled:
             image = BUTTON_TYPE_LOCKED
         else:
             if self.mouse_over:
@@ -177,6 +177,13 @@ class Button:
                 )
         self.screen.blit(image, self.position,)
         self.screen.blit(self.rendered_text, text_rect)
+
+    def execute(self):
+        if callable(self.functionality) and not self.functionality == None:
+            if self.arguments:
+                return self.functionality(*self.arguments)
+            else:
+                return self.functionality()
 
 
 def skip_leave_action(
@@ -264,6 +271,24 @@ def play_outro(
     Description:
         Displays outro, and provides user possibility to save his game score in the "scoreboard.db" file.
     """
+    def button_back():
+        sound_channel.play(SOUND_EFFECTS["beep"])
+        return True
+    
+    def button_save(name_letters, score, scoreboard,):
+        if len(name_letters) > 0:
+            sound_channel.play(SOUND_EFFECTS["beep"])
+            name = "".join(name_letters)
+            object_to_save = (name, score)
+            scoreboard.append(object_to_save)
+            scoreboard = sorted(
+                scoreboard[:TOTAL_SCORES_FOR_DISPLAY], key=lambda x: x[1], reverse=True
+            )
+            with open(SCOREBOARD_FILE, "wb") as stream:
+                pickle.dump(scoreboard, stream)
+            return True
+        else:
+            sound_channel.play(SOUND_EFFECTS["error"])
 
     clock = pygame.time.Clock()
     pygame.mixer.music.load(
@@ -288,41 +313,43 @@ def play_outro(
     description_name = description_font.render(
         f"{strings['enter_name']}", True, RGB_COLORS["white"]
     )
+    name_letters = []
     button_list = []
-    button_elements = ["back", "save",]
+    button_elements = [("back", button_back, ()),
+                       ("save", button_save, (name_letters, score, scoreboard)),]
+    
     counter = 1
-    for name in button_elements:
+    for name, functionality, arguments in button_elements:
         button = Button(button_name=name, 
                 position=pos["outro"][f"button{counter}_pos"],
                 size=pos["outro"]["button_size"], 
-                mouse_over=False,
                 screen=screen,
-                lock=False, 
                 text=strings[name], 
-                text_color=RGB_COLORS["black"], 
-                font_size=pos["outro"]["button_font"])
+                font_size=pos["outro"]["button_font"],
+                functionality=functionality,
+                arguments=arguments)        
         counter += 1
         button_list.append(button)
-
-
-    name_latters = []
+ 
     running = True
     while running:
-        clicked = None
+        name_for_display = "".join(name_letters)
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
             mouse_pos = pygame.mouse.get_pos()
             
+
             match event.type:
                 case pygame.KEYDOWN:
-                    if len(name_latters) < 11:
+                    if len(name_letters) < 11:
                         for key in KEYBOARD_INPUT:
                             if key == event.key:
                                 sound_channel.play(SOUND_EFFECTS["beep"])
-                                name_latters.append(KEYBOARD_INPUT[key][0])
+                                name_letters.append(KEYBOARD_INPUT[key][0])
+                                
                     if event.key == pygame.K_BACKSPACE:
                         try:
-                            del name_latters[-1]
+                            del name_letters[-1]
                             sound_channel.play(SOUND_EFFECTS["wrong"])
                         except:
                             sound_channel.play(SOUND_EFFECTS["error"])
@@ -334,30 +361,11 @@ def play_outro(
                 case pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for button in button_list:
-                            clicked = button.react()
-                            if clicked:
-                                break
-
-        match clicked:
-            case "back":
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                running = False
-            case "save":
-                if len(name_latters) > 0:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    to_save = (name, score)
-                    scoreboard.append(to_save)
-                    scoreboard = sorted(
-                        scoreboard[:30], key=lambda x: x[1], reverse=True
-                    )
-                    with open(SCOREBOARD_FILE, "wb") as stream:
-                        pickle.dump(scoreboard, stream)
-                    return None
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-
-        name = "".join(name_latters)
-        name_title = name_font.render(f"{name.upper()}", True, RGB_COLORS["green"])
+                            break_loop = button.execute()
+                            if break_loop:
+                                running = False
+        
+        name_title = name_font.render(f"{name_for_display.upper()}", True, RGB_COLORS["green"])
 
         for button in button_list:
             button.draw()
@@ -421,10 +429,12 @@ def victory_failure_display(
     )
     if success:
         text, ticks_to_wait, color = f"{strings['success']}", 180, RGB_COLORS["blue"]
-        sound_channel.play(SOUND_EFFECTS["success"])
+        sound = "success"
     else:
         text, ticks_to_wait, color = f"{strings['failure']}", 450, RGB_COLORS["red"]
-        sound_channel.play(SOUND_EFFECTS["failure"]),
+        sound = "failure"
+    sound_channel.play(SOUND_EFFECTS[sound]),
+    
     main_title = title_font.render(text, True, color)
     running = True
     ticks = 0
@@ -432,8 +442,8 @@ def victory_failure_display(
         for event in pygame.event.get():
             skip_leave_action(event, sound_channel)
             if event.type == pygame.KEYDOWN:
-                running = False
                 sound_channel.stop()
+                running = False 
         ticks += 1
         screen.blit(main_title, (pos["victory_failure_display"]["title"]))
         pygame.display.flip()
@@ -481,7 +491,7 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
 
 def create_screen(resolution: Coordinates, fullscreen: bool) -> pygame.surface.Surface:
     return pygame.display.set_mode(
-        size=(resolution), flags=pygame.FULLSCREEN if fullscreen else 0
+        size=resolution, flags=pygame.FULLSCREEN if fullscreen else 0
     )
 
 
@@ -515,11 +525,8 @@ def game_menu(
         button = Button(button_name=name, 
                 position=pos["game_menu"][f"button{counter}_pos"],
                 size=pos["game_menu"]["button_size"], 
-                mouse_over=False,
                 screen=screen,
-                lock=False, 
-                text=strings[name], 
-                text_color=RGB_COLORS["black"], 
+                text=strings[name],  
                 font_size=pos["game_menu"]["font"])
         counter += 1
         button_list.append(button)
@@ -570,6 +577,17 @@ def leaderboard_menu(
 
         Displays to user content of "scoreboard.db" file and allows to clean it.
     """
+    def button_back():
+        sound_channel.play(SOUND_EFFECTS["beep"])
+        return True
+    
+    def button_reset():
+        sound_channel.play(SOUND_EFFECTS["beep"])
+        scoreboard = []
+        with open(SCOREBOARD_FILE, "wb") as stream:
+            pickle.dump(scoreboard, stream)
+        return True
+
     with open(SCOREBOARD_FILE, "rb") as stream:
         scoreboard = pickle.load(stream)
     scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
@@ -594,24 +612,22 @@ def leaderboard_menu(
 
     screen.blit(description_text, description_text_rect)
     button_list = []
-    button_elements = ["back", "reset",]
+    button_elements = [("back", button_back), ("reset", button_reset),]
     counter = 1
-    for name in button_elements:
+    for name, functionality in button_elements:
         button = Button(button_name=name, 
                 position=pos["leaderboard_menu"][f"button{counter}_pos"],
                 size=pos["leaderboard_menu"]["button_size"], 
-                mouse_over=False,
-                screen=screen,
-                lock=False, 
-                text=strings[name], 
-                text_color=RGB_COLORS["black"], 
-                font_size=pos["leaderboard_menu"]["text_font"])
+                screen=screen, 
+                text=strings[name],  
+                font_size=pos["leaderboard_menu"]["text_font"],
+                functionality=functionality,
+        )
         counter += 1
         button_list.append(button)
 
     running = True
     while running:
-        clicked = None
         for event in pygame.event.get():
             running = skip_leave_action(event, sound_channel)
             mouse_pos = pygame.mouse.get_pos()
@@ -624,33 +640,23 @@ def leaderboard_menu(
                 case pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for button in button_list:
-                            clicked = button.react()
-                            if clicked:
-                                break
+                            break_loop = button.execute()
+                            if break_loop:
+                                running = False
 
-        match clicked:
-            case "back":
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                running = False
-            case "reset":
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                scoreboard = []
-                with open(SCOREBOARD_FILE, "wb") as stream:
-                    pickle.dump(scoreboard, stream)
-                running = False
 
-        height, counter1, counter2 = pos["leaderboard_menu"]["height"], 0, 1
+        height, slot, column = pos["leaderboard_menu"]["height"], 0, 1
         for name, score in scoreboard[:TOTAL_SCORES_FOR_DISPLAY]:
-            counter1 += 1
+            slot += 1
             score_text = text_font.render(
-                f"{counter1:2}. {name.capitalize():<12}{score}", True, RGB_COLORS["white"]
+                f"{slot:2}. {name.capitalize():<12}{score}", True, RGB_COLORS["white"]
             )
             screen.blit(
-                score_text, (pos["leaderboard_menu"][f"score_x{counter2}"], height)
+                score_text, (pos["leaderboard_menu"][f"score_x{column}"], height)
             )
             height += pos["leaderboard_menu"]["height_change"]
-            if counter1 in [10, 20]:
-                counter2 += 1
+            if slot in [10, 20]:
+                column += 1
                 height = pos["leaderboard_menu"]["height"]
         for button in button_list:
             button.draw()
@@ -680,7 +686,7 @@ def settings_menu(
 
     Description:
         Function allows user to edit "settings.db" via game interface."""
-    clock = pygame.time.Clock()
+    
     new_settings = settings.copy()
     background_image = pygame.transform.scale(BACKGROUND_2, (resolution))
     description_button_font = pygame.font.Font(
@@ -691,47 +697,101 @@ def settings_menu(
     )
     languages = ["polish", "english"]
 
-    language_index = 0
-
-    for language in languages:
-        if language == new_settings["language"]:
-            break
+    def button_swich_on_off(new_settings, setting_key, setting):
+        if new_settings[setting_key] != setting:
+            sound_channel.play(SOUND_EFFECTS["beep"])
+            new_settings[setting_key] = setting
         else:
-            language_index += 1
+            sound_channel.play(SOUND_EFFECTS["error"])
+        return new_settings
+    
+    def button_swich_yes_or_no(new_settings, setting_key,):
+        sound_channel.play(SOUND_EFFECTS["beep"])
+        if new_settings[setting_key] == False:
+            new_settings[setting_key] = True
+        elif new_settings[setting_key] == True:
+            new_settings[setting_key] = False
+        return new_settings
+    
+    def button_sound_change(new_settings, setting_key, increase):
+        if increase:
+            if new_settings[setting_key] < 100:
+                new_settings[setting_key] += 10
+                sound_channel.play(SOUND_EFFECTS["beep"])
+            else:
+                sound_channel.play(SOUND_EFFECTS["error"])
+        else:
+            if new_settings[setting_key] > 0:
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                new_settings[setting_key] -= 10
+            else:
+                sound_channel.play(SOUND_EFFECTS["error"])
+        return new_settings
+    
+    def button_language_change(new_settings, languages, decrease):
+        language_index = languages.index(new_settings["language"])
+        if decrease:
+            if language_index > 0:
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                language_index -= 1
+                new_settings["language"] = languages[language_index]
+            else:
+                sound_channel.play(SOUND_EFFECTS["error"])
+        else:
+            print (language_index, 12222222 , len(languages) - 1)
+            if language_index < len(languages) - 1:
+                sound_channel.play(SOUND_EFFECTS["beep"])
+                language_index += 1
+                new_settings["language"] = languages[language_index]
+            else:
+                sound_channel.play(SOUND_EFFECTS["error"])
+        return new_settings
+
+    def button_back():
+        sound_channel.play(SOUND_EFFECTS["beep"])
+    
+    def button_save():
+        sound_channel.play(SOUND_EFFECTS["beep"])
+        try:
+            with open(SETTINGS_FILE, "wb") as stream:
+                pickle.dump(new_settings, stream)
+        except:
+            print("Something went wrong") 
 
     button_list = []
     button_elements = [
-        ("800:600", "800:600", 1),
-        ("1200:800", "1200:800", 1),
-        (f"{strings['fullscreen']}", "fullscreen", 1),
-        ("1920:1080","1920:1080", 1),
-        ("1280:720","1280:720", 1),
-        (f"{strings['window']}","window", 1),
-        (f"{strings['music']}","music", 3),
-        ("+", "music_up", 2),
-        ("-", "music_down", 2),
-        (f"{strings['sound']}", "sound", 3),
-        ("+", "sound_up", 2),
-        ("-", "sound_down", 2),
-        ("<-", "previous_language", 2),
-        (None,"language", 3),
-        ("->", "next_language", 2),
-        (f"{strings['back']}", "back", 3),
-        (f"{strings['save']}", "save", 3),
+        ("800:600", "800:600", 1, button_swich_on_off, (new_settings, "resolution", [800, 600],)),
+        ("1200:800", "1200:800", 1, button_swich_on_off, (new_settings, "resolution", [1200, 800],)),
+        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_on_off, (new_settings, "fullscreen", True)),
+        ("1920:1080","1920:1080", 1, button_swich_on_off, (new_settings, "resolution", [1920, 1080])),
+        ("1280:720","1280:720", 1, button_swich_on_off, (new_settings, "resolution", [1280, 720])),
+        (f"{strings['window']}","window", 1, button_swich_on_off, (new_settings, "fullscreen", False)),
+        (f"{strings['music']}","music", 3, button_swich_yes_or_no, (new_settings, "play_music",)),
+        ("+", "music_up", 2, button_sound_change, (new_settings, "music_volume", True)),
+        ("-", "music_down", 2, button_sound_change, (new_settings, "music_volume", False)),
+        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, (new_settings, "play_sound",)),
+        ("+", "sound_up", 2, button_sound_change, (new_settings, "sound_volume", True)),
+        ("-", "sound_down", 2, button_sound_change, (new_settings, "sound_volume", False)),
+        ("<-", "previous_language", 2, button_language_change, (new_settings, languages, True)),
+        (None,"language", 3, None, None),
+        ("->", "next_language", 2, button_language_change, (new_settings, languages, False)),
+        (f"{strings['back']}", "back", 3, button_back, None),
+        (f"{strings['save']}", "save", 3, button_save, None),
     ]
     counter = 1
-    for string, name, size in button_elements:
+    for string, name, size, functionality, arguments in button_elements:
         button = Button(button_name=name, 
                 position=pos["settings_menu"][f"button_{counter}"],
                 size=pos["settings_menu"][f"button_size_{size}"], 
-                mouse_over=False,
                 screen=screen,
-                lock=False, 
-                text=string, 
-                text_color=RGB_COLORS["black"], 
-                font_size=pos["settings_menu"]["button_font"])
+                text=string,  
+                font_size=pos["settings_menu"]["button_font"],
+                functionality=functionality,
+                arguments=arguments)
         counter += 1
         button_list.append(button)
+
+
     description_texts = [strings["resolution"], strings["sound"], strings["language"]]
     description_button = pygame.transform.scale(
         BUTTON_TYPE_LOCKED, pos["settings_menu"]["button_size_4"]
@@ -746,10 +806,9 @@ def settings_menu(
         screen.blit(text, pos["settings_menu"][f"desc_text_{counter}"])
         counter += 1
 
-    running = True
-    
+    clock = pygame.time.Clock()
+    running = True    
     while running:
-        clicked = None
 
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
@@ -760,6 +819,8 @@ def settings_menu(
             sound_volume = str(new_settings["sound_volume"]) + "%"
         else:
             sound_volume = f"{strings['off']}"
+        
+        language_index = languages.index(new_settings["language"])
 
         button_list[6].rendered_text = button_font.render(
             f"{strings['music']}: {music_volume}", True, RGB_COLORS["black"])
@@ -787,110 +848,12 @@ def settings_menu(
                 case pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for button in button_list:
-                            clicked = button.react()
-                            if clicked:
-                                break
-
-        match clicked:
-            case "800:600":
-                if new_settings["resolution"] != [800, 600]:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["resolution"] = [800, 600]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "1200:800":
-                if new_settings["resolution"] != [1200, 800]:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["resolution"] = [1200, 800]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "fullscreen":
-                if new_settings["fullscreen"] == False:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["fullscreen"] = True
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "1920:1080":
-                if new_settings["resolution"] != [1920, 1080]:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["resolution"] = [1920, 1080]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "1280:720":
-                if new_settings["resolution"] != [1280, 720]:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["resolution"] = [1280, 720]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "window":
-                if new_settings["fullscreen"] == True:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["fullscreen"] = False
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"]) 
-            case "music":               
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                if new_settings["play_music"] == False:
-                    new_settings["play_music"] = True
-                elif new_settings["play_music"] == True:
-                    new_settings["play_music"] = False
-            case "music_up":
-                if new_settings["music_volume"] < 100:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["music_volume"] += 10
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])  
-            case "music_down":
-                if new_settings["music_volume"] > 0:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    new_settings["music_volume"] -= 10
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])     
-            case "sound":           
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                if new_settings["play_sound"] == False:
-                    new_settings["play_sound"] = True
-                elif new_settings["play_sound"] == True:
-                    new_settings["play_sound"] = False
-            case "sound_up":
-                if new_settings["sound_volume"] < 100:
-                    new_settings["sound_volume"] += 10
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "sound_down":
-                if new_settings["sound_volume"] > 0:
-                    new_settings["sound_volume"] -= 10
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "previous_language" : 
-                if language_index > 0:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    language_index -= 1
-                    new_settings["language"] = languages[language_index]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "language":
-                pass
-            case "next_language":
-                if language_index < len(languages) - 1:
-                    sound_channel.play(SOUND_EFFECTS["beep"])
-                    language_index += 1
-                    new_settings["language"] = languages[language_index]
-                else:
-                    sound_channel.play(SOUND_EFFECTS["error"])
-            case "back":
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                return False
-            case "save":
-                sound_channel.play(SOUND_EFFECTS["beep"])
-                try:
-                    with open(SETTINGS_FILE, "wb") as stream:
-                        pickle.dump(new_settings, stream)
-                    return True
-                except:
-                    print("Something went wrong")                
+                            if button.mouse_over:
+                                new_settings = button.execute()
+                                if button.button_name == "back":
+                                    return False
+                                if button.button_name == "save":
+                                    return True
 
         button_lock_condidions = [
             new_settings["resolution"] == [800, 600],
@@ -910,13 +873,11 @@ def settings_menu(
             language_index == len(languages) - 1,
         ]
 
-        counter = 0
         for condition, button in zip(button_lock_condidions, button_list):
             if condition:
-                button.lock = True
+                button.disabled = True
             else:
-                button.lock = False
-            counter += 1
+                button.disabled = False
 
         
         for button in button_list:

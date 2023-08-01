@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
 import glob
-import os
 
 data_files = glob.glob('hangman\\data\\**\\*', recursive=True)
-selected_files = [file.split('hangman\\', 1)[-1] for file in data_files]
+selected_files = [file.removeprefix("hangman\\") for file in data_files] 
+
+with open('requirements.txt') as f:
+    requirements = [line.strip() for line in f]
 
 setup(
     description='Simple but popular game in hangman',
@@ -16,9 +18,7 @@ setup(
     license='MIT',
     author='Dawid Lycz',
     author_email='mamnie986@gmail.com',
-    install_requires=[
-        'pygame',
-    ],
+    install_requires=requirements,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Other Environment',
