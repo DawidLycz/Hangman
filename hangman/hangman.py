@@ -251,6 +251,39 @@ class Button:
                 return self.functionality()
 
 
+class Gallow:
+    def __init__(
+            self,
+            background_size : Coordinates,
+            background_position : Coordinates,
+            gallow_size: Coordinates,
+            gallow_position: Coordinates,
+            screen: pygame.surface.Surface,
+            stage: int = 0
+            ):
+        self.background_size = background_size
+        self.background_position = background_position
+        self.gallow_size = gallow_size
+        self.gallow_position = gallow_position
+        self.screen = screen
+        self.stage = stage
+        self.images = []
+        for num in range(13):
+            gallow_image = pygame.image.load(PATH( DIRNAME, "data", "images", f"gallow_{num}.png",))
+            gallow_image = pygame.transform.scale(gallow_image, (self.gallow_size))
+            self.images.append(gallow_image)
+        self.background_image = pygame.transform.scale(BACKGROUND_5, (self.background_size))
+
+    def draw(self):
+        to_draw = self.images[self.stage]
+        self.screen.blit(self.background_image, self.background_position)
+        try:
+            self.screen.blit(to_draw, self.gallow_position)
+        except:
+            self.screen.blit(self.images[-1], self.gallow_position)
+    
+    def increase(self):
+        self.stage += 1
 
 def skip_leave_action(
     event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None
@@ -1009,14 +1042,9 @@ def game_round(
     """
     background_image = pygame.transform.scale(BACKGROUND_4, resolution)
 
-    gallow_background_image = pygame.transform.scale(
-        BACKGROUND_5, pos["game_round"]["gallow_background_size"]
-    )
-
     screen.blit(background_image, (0, 0))
 
     provided_letters = set()
-    incorrect_letters = set()
     correct_letters = set()
     password_words = the_word.split()
     password_letters = [letter for letter in the_word.upper()]
@@ -1031,8 +1059,13 @@ def game_round(
                             (f"{strings['score']} {score}", pos["game_round"]["score_info"]))
     for text, position in inscription_elements:
         inscription = Inscription(text, RGB_COLORS["green"], position, pos["game_round"]["font"], screen, COMMON_FONT_PATH)
-        inscription_list.append(inscription
-                                )
+        inscription_list.append(inscription)
+    
+    gallow = Gallow(pos["game_round"]["gallow_background_size"],
+                    pos["game_round"]["gallow_background_pos"],
+                    pos["game_round"]["gallow_size"],
+                    pos["game_round"]["gallow_pos"],
+                    screen)
     while running:
         # Forms word for print, hides unknown letters
 
@@ -1053,36 +1086,19 @@ def game_round(
                 else:
                     sound_channel.play(SOUND_EFFECTS["wrong"])
                     attempts += 1
+                    gallow.increase()
             if any(letter.upper() not in provided_letters for letter in provided_keys):
                 if any(letter.upper() in password_letters for letter in provided_keys):
                     sound_channel.play(SOUND_EFFECTS["correct"])
                     correct_letters.update(provided_keys)
                 else:
                     sound_channel.play(SOUND_EFFECTS["wrong"])
-                    incorrect_letters.update(provided_keys)
                     attempts += 1
+                    gallow.increase()
                 provided_letters.update(provided_keys)
 
         # Display content on screen
-        try:
-            gallow_image = pygame.image.load(
-                PATH(
-                    DIRNAME,
-                    "data",
-                    "images",
-                    f"gallow_{attempts}.png",
-                )
-            )
-        except FileNotFoundError:
-            gallow_image = PATH(
-                DIRNAME, "data", "images", f"gallow_12.png"
-            )
-        gallow_image = pygame.transform.scale(
-            gallow_image, pos["game_round"]["gallow_size"]
-        )
-
-        screen.blit(gallow_background_image, pos["game_round"]["gallow_background_pos"])
-        screen.blit(gallow_image, pos["game_round"]["gallow_pos"])
+        gallow.draw()
 
         for insc in inscription_list:
             insc.draw()
@@ -1152,10 +1168,7 @@ def main() -> False:
         screen = create_screen(resolution, settings["fullscreen"])
 
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound(
-            PATH(DIRNAME, "data",
-                         "soundeffects", "music.mp3")
-        )
+        music = pygame.mixer.Sound(PATH(DIRNAME, "data", "soundeffects", "music.mp3"))
         music_channel.set_volume(settings["music_volume"] / 200)
 
         sound_channel = pygame.mixer.Channel(1)
