@@ -16,45 +16,22 @@ TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
 CLOCK = 60
 LANGUAGES = ["polish", "english"]
-SETTINGS_FILE = os.path.join(
-    os.path.dirname(__file__), "data", "databases", "settings.db"
-)
-SCOREBOARD_FILE = os.path.join(
-    os.path.dirname(__file__), "data", "databases", "scoreboard.db"
-)
+PATH = os.path.join
+DIRNAME = os.path.dirname(__file__)
+SETTINGS_FILE = PATH( DIRNAME, "data", "databases", "settings.db")
+SCOREBOARD_FILE = PATH(DIRNAME, "data", "databases", "scoreboard.db")
 
-BUTTON_TYPE_FREE = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data", "images", "button_1.png")
-)
-BUTTON_TYPE_AIMED = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data", "images", "button_2.png")
-)
-BUTTON_TYPE_LOCKED = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data", "images", "button_3.png")
-)
+BUTTON_TYPE_FREE = pygame.image.load(PATH(DIRNAME, "data", "images", "button_1.png"))
+BUTTON_TYPE_AIMED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_2.png"))
+BUTTON_TYPE_LOCKED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_3.png"))
 
-BACKGROUND_1 = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data",
-                 "images", "intro_background.jpg")
-)
-BACKGROUND_2 = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data",
-                 "images", "menu_background.jpg")
-)
-BACKGROUND_3 = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data", "images", "background.jpg")
-)
-BACKGROUND_4 = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data",
-                 "images", "background_2.jpg")
-)
-BACKGROUND_5 = pygame.image.load(
-    os.path.join(os.path.dirname(__file__), "data",
-                 "images", "gallow_background.jpg")
-)
+BACKGROUND_1 = pygame.image.load(PATH(DIRNAME, "data", "images", "intro_background.jpg"))
+BACKGROUND_2 = pygame.image.load(PATH(DIRNAME, "data", "images", "menu_background.jpg"))
+BACKGROUND_3 = pygame.image.load(PATH(DIRNAME, "data", "images", "background.jpg"))
+BACKGROUND_4 = pygame.image.load(PATH(DIRNAME, "data", "images", "background_2.jpg"))
+BACKGROUND_5 = pygame.image.load(PATH(DIRNAME, "data", "images", "gallow_background.jpg"))
 
-COMMON_FONT_PATH = os.path.join(os.path.dirname(
-    __file__), "data", "fonts", "font.ttf")
+COMMON_FONT_PATH = PATH( DIRNAME, "data", "fonts", "font.ttf")
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -87,35 +64,35 @@ KEYBOARD_INPUT = {
 
 SOUND_EFFECTS = {
     "wrong": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "wrong.mp3")
     ),
     "correct": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "correct.mp3")
     ),
     "error": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "error.mp3")
     ),
     "success": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "success.mp3")
     ),
     "failure": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "game_over.mp3")
     ),
     "beep": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "beep.mp3")
     ),
     "intro": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "intro.mp3")
     ),
     "outro": pygame.mixer.Sound(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "outro.mp3")
     ),
 }
@@ -387,7 +364,7 @@ def play_outro(
 
     clock = pygame.time.Clock()
     pygame.mixer.music.load(
-        os.path.join(os.path.dirname(__file__), "data",
+        PATH(DIRNAME, "data",
                      "soundeffects", "outro.mp3")
     )
     pygame.mixer.music.play()
@@ -1089,16 +1066,16 @@ def game_round(
         # Display content on screen
         try:
             gallow_image = pygame.image.load(
-                os.path.join(
-                    os.path.dirname(__file__),
+                PATH(
+                    DIRNAME,
                     "data",
                     "images",
                     f"gallow_{attempts}.png",
                 )
             )
         except FileNotFoundError:
-            gallow_image = os.path.join(
-                os.path.dirname(__file__), "data", "images", f"gallow_12.png"
+            gallow_image = PATH(
+                DIRNAME, "data", "images", f"gallow_12.png"
             )
         gallow_image = pygame.transform.scale(
             gallow_image, pos["game_round"]["gallow_size"]
@@ -1148,8 +1125,8 @@ def main() -> False:
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
-        file_with_numbers = os.path.join(
-            os.path.dirname(__file__),
+        file_with_numbers = PATH(
+            DIRNAME,
             "data",
             "resolutions",
             f"{resolution_x}_{resolution_y}.json",
@@ -1159,18 +1136,13 @@ def main() -> False:
             pos = json.load(stream)
         language = settings["language"]
         with open(
-            os.path.join(
-                os.path.dirname(
-                    __file__), "data", "text", f"{language}_strings.json"
-            ),
+            PATH( DIRNAME, "data", "text", f"{language}_strings.json"),
             "r",
             encoding="utf-8",
         ) as stream:
             strings = json.load(stream)
         with open(
-            os.path.join(
-                os.path.dirname(
-                    __file__), "data", "text", f"{language}_key_words.json"
+            PATH( DIRNAME, "data", "text", f"{language}_key_words.json"
             ),
             "r",
             encoding="utf-8",
@@ -1181,7 +1153,7 @@ def main() -> False:
 
         music_channel = pygame.mixer.Channel(0)
         music = pygame.mixer.Sound(
-            os.path.join(os.path.dirname(__file__), "data",
+            PATH(DIRNAME, "data",
                          "soundeffects", "music.mp3")
         )
         music_channel.set_volume(settings["music_volume"] / 200)
