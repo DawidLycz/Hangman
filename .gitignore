@@ -2,3 +2,4 @@ __pycache__/
 build/
 Hangman.egg-info/
 dist/
+.vscode/

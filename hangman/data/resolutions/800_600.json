@@ -9,15 +9,15 @@
     "outro": {
         "button_font": 30,
         "button_size": [150,60],
-        "description_font": 50,
-        "title_font": 150,
-        "name_font": 100,
+        "font1": 50,
+        "font2": 150,
+        "font3": 100,
         "button1_pos": [30,530],
         "button2_pos": [620,530],
-        "title_pos": [50,30],
-        "score_pos": [50,220],
-        "desc_pos": [50,300],
-        "name_pos": [50,360]
+        "text1_pos": [50,30],
+        "text2_pos": [50,220],
+        "text3_pos": [50,300],
+        "text4_pos": [50,360]
 
     },
     "victory_failure_display": {
