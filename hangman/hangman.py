@@ -19,17 +19,17 @@ LANGUAGES = ["polish", "english"]
 PATH = os.path.join
 DIRNAME = os.path.dirname(__file__)
 SETTINGS_FILE = PATH( DIRNAME, "data", "databases", "settings.db")
-SCOREBOARD_FILE = PATH(DIRNAME, "data", "databases", "scoreboard.db")
+SCOREBOARD_FILE = PATH( DIRNAME, "data", "databases", "scoreboard.db")
 
-BUTTON_TYPE_FREE = pygame.image.load(PATH(DIRNAME, "data", "images", "button_1.png"))
-BUTTON_TYPE_AIMED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_2.png"))
-BUTTON_TYPE_LOCKED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_3.png"))
+BUTTON_TYPE_FREE = pygame.image.load( PATH( DIRNAME, "data", "images", "button_1.png"))
+BUTTON_TYPE_AIMED = pygame.image.load( PATH( DIRNAME, "data", "images", "button_2.png"))
+BUTTON_TYPE_LOCKED = pygame.image.load (PATH( DIRNAME, "data", "images", "button_3.png"))
 
-BACKGROUND_1 = pygame.image.load(PATH(DIRNAME, "data", "images", "intro_background.jpg"))
-BACKGROUND_2 = pygame.image.load(PATH(DIRNAME, "data", "images", "menu_background.jpg"))
-BACKGROUND_3 = pygame.image.load(PATH(DIRNAME, "data", "images", "background.jpg"))
-BACKGROUND_4 = pygame.image.load(PATH(DIRNAME, "data", "images", "background_2.jpg"))
-BACKGROUND_5 = pygame.image.load(PATH(DIRNAME, "data", "images", "gallow_background.jpg"))
+BACKGROUND_1 = pygame.image.load( PATH( DIRNAME, "data", "images", "intro_background.jpg"))
+BACKGROUND_2 = pygame.image.load( PATH( DIRNAME, "data", "images", "menu_background.jpg"))
+BACKGROUND_3 = pygame.image.load( PATH( DIRNAME, "data", "images", "background.jpg"))
+BACKGROUND_4 = pygame.image.load( PATH( DIRNAME, "data", "images", "background_2.jpg"))
+BACKGROUND_5 = pygame.image.load( PATH( DIRNAME, "data", "images", "gallow_background.jpg"))
 
 COMMON_FONT_PATH = PATH( DIRNAME, "data", "fonts", "font.ttf")
 
@@ -1067,7 +1067,6 @@ def game_round(
                     pos["game_round"]["gallow_pos"],
                     screen)
     while running:
-        # Forms word for print, hides unknown letters
 
         provided_keys = False
         for event in pygame.event.get():
@@ -1078,24 +1077,17 @@ def game_round(
                         provided_keys = KEYBOARD_INPUT[key]
                         provided_keys = [key.upper() for key in provided_keys]
 
-        # Check if provided letter is in password. If it is, adds it to correct_letters set
         if provided_keys:
             if any(letter.upper() in provided_letters for letter in provided_keys):
-                if any(letter.upper() in password_letters for letter in provided_keys):
-                    sound_channel.play(SOUND_EFFECTS["error"])
-                else:
-                    sound_channel.play(SOUND_EFFECTS["wrong"])
-                    attempts += 1
-                    gallow.increase()
-            if any(letter.upper() not in provided_letters for letter in provided_keys):
-                if any(letter.upper() in password_letters for letter in provided_keys):
-                    sound_channel.play(SOUND_EFFECTS["correct"])
-                    correct_letters.update(provided_keys)
-                else:
-                    sound_channel.play(SOUND_EFFECTS["wrong"])
-                    attempts += 1
-                    gallow.increase()
+                sound_channel.play(SOUND_EFFECTS["error"])
+            elif any(letter.upper() in password_letters for letter in provided_keys):
+                sound_channel.play(SOUND_EFFECTS["correct"])
+                correct_letters.update(provided_keys)
                 provided_letters.update(provided_keys)
+            else:
+                sound_channel.play(SOUND_EFFECTS["wrong"])
+                attempts += 1
+                gallow.increase() 
 
         # Display content on screen
         gallow.draw()
@@ -1111,14 +1103,12 @@ def game_round(
         # Check win or lose conditions
         if set(password_letters) <= correct_letters:
             success = True
-            victory_failure_display(
-                screen, sound_channel, pos, success, strings)
+            victory_failure_display(screen, sound_channel, pos, success, strings)
             score = TOTAL_ATTEMTPS - attempts
             return score
         if attempts == TOTAL_ATTEMTPS:
             success = False
-            victory_failure_display(
-                screen, sound_channel, pos, success, strings)
+            victory_failure_display(screen, sound_channel, pos, success, strings)
             break
 
         pygame.display.flip()
