@@ -18,18 +18,17 @@ CLOCK = 60
 LANGUAGES = ["polish", "english"]
 PATH = os.path.join
 DIRNAME = os.path.dirname(__file__)
-SETTINGS_FILE = PATH( DIRNAME, "data", "databases", "settings.db")
-SCOREBOARD_FILE = PATH( DIRNAME, "data", "databases", "scoreboard.db")
+SETTINGS_FILE = PATH( DIRNAME, "data", "settings.json")
+SCOREBOARD_FILE = PATH( DIRNAME, "data", "scoreboard.json")
+BUTTON_TYPE_FREE = pygame.image.load(PATH(DIRNAME, "data", "images", "button_1.png"))
+BUTTON_TYPE_AIMED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_2.png"))
+BUTTON_TYPE_LOCKED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_3.png"))
 
-BUTTON_TYPE_FREE = pygame.image.load( PATH( DIRNAME, "data", "images", "button_1.png"))
-BUTTON_TYPE_AIMED = pygame.image.load( PATH( DIRNAME, "data", "images", "button_2.png"))
-BUTTON_TYPE_LOCKED = pygame.image.load (PATH( DIRNAME, "data", "images", "button_3.png"))
-
-BACKGROUND_1 = pygame.image.load( PATH( DIRNAME, "data", "images", "intro_background.jpg"))
-BACKGROUND_2 = pygame.image.load( PATH( DIRNAME, "data", "images", "menu_background.jpg"))
-BACKGROUND_3 = pygame.image.load( PATH( DIRNAME, "data", "images", "background.jpg"))
-BACKGROUND_4 = pygame.image.load( PATH( DIRNAME, "data", "images", "background_2.jpg"))
-BACKGROUND_5 = pygame.image.load( PATH( DIRNAME, "data", "images", "gallow_background.jpg"))
+BACKGROUND_1 = pygame.image.load(PATH(DIRNAME, "data", "images", "intro_background.jpg"))
+BACKGROUND_2 = pygame.image.load(PATH(DIRNAME, "data", "images", "menu_background.jpg"))
+BACKGROUND_3 = pygame.image.load(PATH(DIRNAME, "data", "images", "background.jpg"))
+BACKGROUND_4 = pygame.image.load(PATH(DIRNAME, "data", "images", "background_2.jpg"))
+BACKGROUND_5 = pygame.image.load(PATH(DIRNAME, "data", "images", "gallow_background.jpg"))
 
 COMMON_FONT_PATH = PATH( DIRNAME, "data", "fonts", "font.ttf")
 
@@ -389,8 +388,8 @@ def play_outro(
             scoreboard = sorted(
                 scoreboard[:TOTAL_SCORES_FOR_DISPLAY], key=lambda x: x[1], reverse=True
             )
-            with open(SCOREBOARD_FILE, "wb") as stream:
-                pickle.dump(scoreboard, stream)
+            with open(SCOREBOARD_FILE, "w") as stream:
+                json.dump(scoreboard, stream)
             return True
         else:
             sound_channel.play(SOUND_EFFECTS["error"])
@@ -402,8 +401,8 @@ def play_outro(
     )
     pygame.mixer.music.play()
 
-    with open(SCOREBOARD_FILE, "rb") as stream:
-        scoreboard = pickle.load(stream)
+    with open(SCOREBOARD_FILE, "r") as stream:
+        scoreboard = json.load(stream)
 
     background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
     screen.blit(background_image, (0, 0))
@@ -709,12 +708,12 @@ def leaderboard_menu(
     def button_reset():
         sound_channel.play(SOUND_EFFECTS["beep"])
         scoreboard = []
-        with open(SCOREBOARD_FILE, "wb") as stream:
-            pickle.dump(scoreboard, stream)
+        with open(SCOREBOARD_FILE, "w") as stream:
+            json.dump(scoreboard, stream)
         return True
 
-    with open(SCOREBOARD_FILE, "rb") as stream:
-        scoreboard = pickle.load(stream)
+    with open(SCOREBOARD_FILE, "r") as stream:
+        scoreboard = json.load(stream)
     scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
 
     clock = pygame.time.Clock()
@@ -868,8 +867,8 @@ def settings_menu(
     def button_save():
         sound_channel.play(SOUND_EFFECTS["beep"])
         try:
-            with open(SETTINGS_FILE, "wb") as stream:
-                pickle.dump(new_settings, stream)
+            with open(SETTINGS_FILE, "w") as stream:
+                json.dump(new_settings, stream)
         except:
             print("Something went wrong")
 
@@ -1126,8 +1125,8 @@ def main() -> False:
     """
     show_intro = True
     while True:
-        with open(SETTINGS_FILE, "rb") as stream:
-            settings = pickle.load(stream)
+        with open(SETTINGS_FILE, "r") as stream:
+            settings = json.load(stream)
 
         resolution = settings["resolution"]
         resolution_x, resolution_y = resolution
