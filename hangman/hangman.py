@@ -1,7 +1,5 @@
-from enum import Enum, auto
 import json
 import os
-import pickle
 import random
 import sys
 import time
@@ -375,11 +373,7 @@ def play_outro(
         sound_channel.play(SOUND_EFFECTS["beep"])
         return True
 
-    def button_save(
-        name_letters,
-        score,
-        scoreboard,
-    ):
+    def button_save(name_letters: list[str], score: int, scoreboard: list):
         if len(name_letters) > 0:
             sound_channel.play(SOUND_EFFECTS["beep"])
             name = "".join(name_letters)
@@ -809,7 +803,7 @@ def settings_menu(
         COMMON_FONT_PATH, pos["settings_menu"]["button_font"]
     )
 
-    def button_swich_this_or_other(new_settings, setting_key, setting):
+    def button_swich_this_or_other(new_settings: dict[str, any], setting_key: str, setting: any):
         if new_settings[setting_key] != setting:
             sound_channel.play(SOUND_EFFECTS["beep"])
             new_settings[setting_key] = setting
@@ -817,10 +811,7 @@ def settings_menu(
             sound_channel.play(SOUND_EFFECTS["error"])
         return new_settings
 
-    def button_swich_yes_or_no(
-        new_settings,
-        setting_key,
-    ):
+    def button_swich_yes_or_no(new_settings: dict[str, any], setting_key: str):
         sound_channel.play(SOUND_EFFECTS["beep"])
         if new_settings[setting_key] == False:
             new_settings[setting_key] = True
@@ -828,7 +819,7 @@ def settings_menu(
             new_settings[setting_key] = False
         return new_settings
 
-    def button_sound_change(new_settings, setting_key, increase):
+    def button_sound_change(new_settings: dict[str, any], setting_key: str, increase: bool):
         if increase:
             if new_settings[setting_key] < 100:
                 new_settings[setting_key] += 10
@@ -843,7 +834,7 @@ def settings_menu(
                 sound_channel.play(SOUND_EFFECTS["error"])
         return new_settings
 
-    def button_language_change(new_settings, languages, decrease):
+    def button_language_change(new_settings: dict[str, any], languages: list[str], decrease: bool):
         language_index = languages.index(new_settings["language"])
         if decrease:
             if language_index > 0:
@@ -1076,17 +1067,17 @@ def game_round(
                         provided_keys = KEYBOARD_INPUT[key]
                         provided_keys = [key.upper() for key in provided_keys]
 
-        if provided_keys:
-            if any(letter.upper() in provided_letters for letter in provided_keys):
-                sound_channel.play(SOUND_EFFECTS["error"])
-            elif any(letter.upper() in password_letters for letter in provided_keys):
-                sound_channel.play(SOUND_EFFECTS["correct"])
-                correct_letters.update(provided_keys)
-                provided_letters.update(provided_keys)
-            else:
-                sound_channel.play(SOUND_EFFECTS["wrong"])
-                attempts += 1
-                gallow.increase() 
+        # if provided_keys:
+                        if any(letter.upper() in provided_letters for letter in provided_keys):
+                            sound_channel.play(SOUND_EFFECTS["error"])
+                        elif any(letter.upper() in password_letters for letter in provided_keys):
+                            sound_channel.play(SOUND_EFFECTS["correct"])
+                            correct_letters.update(provided_keys)
+                            provided_letters.update(provided_keys)
+                        else:
+                            sound_channel.play(SOUND_EFFECTS["wrong"])
+                            attempts += 1
+                            gallow.increase() 
 
         # Display content on screen
         gallow.draw()
