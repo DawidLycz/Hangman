@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import random
 import sys
 import time
@@ -9,26 +10,25 @@ from typing import Dict, Tuple
 import pygame
 
 pygame.init()
-
 TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
 CLOCK = 60
 LANGUAGES = ["polish", "english"]
-PATH = os.path.join
-DIRNAME = os.path.dirname(__file__)
-SETTINGS_FILE = PATH(DIRNAME, "data", "settings.json")
-SCOREBOARD_FILE = PATH(DIRNAME, "data", "scoreboard.json")
-BUTTON_TYPE_FREE = pygame.image.load(PATH(DIRNAME, "data", "images", "button_1.png"))
-BUTTON_TYPE_AIMED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_2.png"))
-BUTTON_TYPE_LOCKED = pygame.image.load(PATH(DIRNAME, "data", "images", "button_3.png"))
+DIRNAME = Path(os.path.dirname(__file__))
 
-BACKGROUND_1 = pygame.image.load(PATH(DIRNAME, "data", "images", "intro_background.jpg"))
-BACKGROUND_2 = pygame.image.load(PATH(DIRNAME, "data", "images", "menu_background.jpg"))
-BACKGROUND_3 = pygame.image.load(PATH(DIRNAME, "data", "images", "background.jpg"))
-BACKGROUND_4 = pygame.image.load(PATH(DIRNAME, "data", "images", "background_2.jpg"))
-BACKGROUND_5 = pygame.image.load(PATH(DIRNAME, "data", "images", "gallow_background.jpg"))
+COMMON_FONT_PATH = DIRNAME / "data/fonts/font.ttf"
+SETTINGS_FILE = DIRNAME / "data/settings.json"
+TEMP_SETTING_FILE = DIRNAME / "data/temp_settings.json"
+SCOREBOARD_FILE = DIRNAME / "data/scoreboard.json"
+BUTTON_TYPE_FREE = pygame.image.load(DIRNAME / "data/images/button_1.png")
+BUTTON_TYPE_AIMED = pygame.image.load(DIRNAME / "data/images/button_2.png")
+BUTTON_TYPE_LOCKED = pygame.image.load(DIRNAME / "data/images/button_3.png")
+BACKGROUND_1 = pygame.image.load(DIRNAME / "data/images/intro_background.jpg")
+BACKGROUND_2 = pygame.image.load(DIRNAME / "data/images/menu_background.jpg")
+BACKGROUND_3 = pygame.image.load(DIRNAME / "data/images/background.jpg")
+BACKGROUND_4 = pygame.image.load(DIRNAME / "data/images/background_2.jpg")
+BACKGROUND_5 = pygame.image.load(DIRNAME / "data/images/gallow_background.jpg")
 
-COMMON_FONT_PATH = PATH( DIRNAME, "data", "fonts", "font.ttf")
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -60,38 +60,14 @@ KEYBOARD_INPUT = {
 }
 
 SOUND_EFFECTS = {
-    "wrong": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "wrong.mp3")
-    ),
-    "correct": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "correct.mp3")
-    ),
-    "error": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "error.mp3")
-    ),
-    "success": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "success.mp3")
-    ),
-    "failure": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "game_over.mp3")
-    ),
-    "beep": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "beep.mp3")
-    ),
-    "intro": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "intro.mp3")
-    ),
-    "outro": pygame.mixer.Sound(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "outro.mp3")
-    ),
+    "wrong": pygame.mixer.Sound(DIRNAME / "data/soundeffects/wrong.mp3"),
+    "correct": pygame.mixer.Sound(DIRNAME / "data/soundeffects/correct.mp3"),
+    "error": pygame.mixer.Sound(DIRNAME / "data/soundeffects/error.mp3"),
+    "success": pygame.mixer.Sound(DIRNAME / "data/soundeffects/success.mp3"),
+    "failure": pygame.mixer.Sound(DIRNAME / "data/soundeffects/game_over.mp3"),
+    "beep": pygame.mixer.Sound(DIRNAME / "data/soundeffects/beep.mp3"),
+    "intro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/intro.mp3"),
+    "outro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/outro.mp3")
 }
 
 RGB_COLORS = {
@@ -118,9 +94,9 @@ class Inscription:
         position: Coordinates,
         font_size: int,
         screen: pygame.surface.Surface,
-        font_path=None,
-        background=None,
-        background_size=None,
+        font_path: str=None,
+        background: pygame.surface.Surface=None,
+        background_size: Coordinates=None,
     ):
         self.text = text
         self.color = color
@@ -188,7 +164,7 @@ class Button:
         text: str,
         font_size: int,
         arguments=None,
-        functionality: callable = None,
+        callback: callable = None,
         text_color: RGB_Color = RGB_COLORS["black"],
         mouse_over: bool = False,
         disabled: bool = False,
@@ -202,11 +178,14 @@ class Button:
         self.text = text
         self.text_color = text_color
         self.font_size = font_size
-        self.functionality = functionality
+        self.callback = callback
         self.arguments = arguments
 
         font = pygame.font.Font(COMMON_FONT_PATH, font_size)
         self.rendered_text = font.render(text, True, text_color)
+
+        if self.arguments and not self.callback:
+            raise ValueError
 
         
         
@@ -232,20 +211,16 @@ class Button:
         self.text_rect = self.rendered_text.get_rect()
         self.text_rect.center = (
             self.position[0] + (self.size[0] // 2),
-            self.position[1] + (self.size[1] // 2),
-        )
-        self.screen.blit(
-            image,
-            self.position,
-        )
+            self.position[1] + (self.size[1] // 2),)
+        self.screen.blit(image, self.position)
         self.screen.blit(self.rendered_text, self.text_rect)
 
     def execute(self):
-        if callable(self.functionality) and not self.functionality == None:
+        if callable(self.callback) and self.callback is not None:
             if self.arguments:
-                return self.functionality(*self.arguments)
+                return self.callback(*self.arguments)
             else:
-                return self.functionality()
+                return self.callback()
 
 
 class Gallow:
@@ -266,7 +241,7 @@ class Gallow:
         self.stage = stage
         self.images = []
         for num in range(13):
-            gallow_image = pygame.image.load(PATH( DIRNAME, "data", "images", f"gallow_{num}.png",))
+            gallow_image = pygame.image.load(DIRNAME / f"data/images/gallow_{num}.png")
             gallow_image = pygame.transform.scale(gallow_image, (self.gallow_size))
             self.images.append(gallow_image)
         self.background_image = pygame.transform.scale(BACKGROUND_5, (self.background_size))
@@ -282,7 +257,112 @@ class Gallow:
     def increase(self):
         self.stage += 1
 
-def skip_leave_action(
+
+class Text_box:
+    def __init__(
+            self,
+            position: Coordinates,
+            font_size: int,
+            screen: pygame.surface.Surface,
+            sound_channel: pygame.mixer.Channel,
+            color: RGB_Color=RGB_COLORS["green"],
+            text: str="",
+            font_path: str=None,
+            char_limit: int=12,
+    ):
+        self.position = position
+        self.font_size = font_size
+        self.screen = screen
+        self.sound_channel = sound_channel
+        self.color = color
+        self.text = text
+        self.font_path = font_path
+        self.char_limit = char_limit
+        self.font = pygame.font.Font(font_path, font_size)
+        self.rendered_text = self.font.render(text, True, color)
+
+    def __str__(self):
+        return f"{self.text.capitalize()}"   
+    
+    def draw(self):
+        self.screen.blit(self.rendered_text, self.position)
+    
+    def modify(self, new_letter: str):
+        if len(new_letter) == 1:
+            if len(self.text) <= 12:
+                self.sound_channel.play(SOUND_EFFECTS["beep"])
+                self.text = self.text.capitalize() + new_letter
+                self.rendered_text = self.font.render(self.text, True, self.color)
+            else:
+                self.sound_channel.play(SOUND_EFFECTS["error"])
+
+    def backspace(self):
+        try:
+            self.text = self.text[:-1].capitalize()
+            self.rendered_text = self.font.render(self.text, True, self.color)
+            self.sound_channel.play(SOUND_EFFECTS["wrong"])
+        except:
+            self.sound_channel.play(SOUND_EFFECTS["error"])
+
+
+# class Hangman_keyword_box:
+#     def __init__(
+#             self,
+#             keyword: list[str],
+#             position: Coordinates,
+#             height_change: int,
+#             font_size: int,
+#             screen: pygame.surface.Surface,
+#             sound_channel: pygame.mixer.Channel,
+#             provided_keys: set[str],
+#             color: RGB_Color=RGB_COLORS,
+#             font_path: str=None,
+#     ):
+#         self.keyword = keyword
+#         self.position = position
+#         self.height_change = height_change
+#         self.font_size = font_size
+#         self.screen = screen
+#         self.sound_channel = sound_channel
+#         self.provided_keys = provided_keys
+#         self.color = color
+#         self.font_path= font_path
+#         self.font = pygame.font.Font(self.font_path, self.font_size) 
+
+#     def __str__(self):
+#         return(self.keyword)
+    
+#     def draw(self):
+#         x, y = self.position
+#         for word in self.keyword():
+#             for letter in word:
+#                 if letter.upper() not in self.provided_keys:
+#                     letter = "_"
+#                 if letter == " ":
+#                     letter = "-"
+#                 letter_for_print = self.font.render(f"{letter.upper()}", True, RGB_COLORS["green"])
+#                 self.screen.blit(letter_for_print, (x, y))
+#                 x += 10
+#             y += self.height_change
+    
+#     def modify(self, new_letter: list[str]):
+#         for letter in new_letter:
+#             if letter in self.keyword:
+#                 self.provided_keys.update(letter)
+            
+
+
+class Background:
+    def __init__(self, screen: pygame.surface.Surface, resolution: Coordinates , image:pygame.surface.Surface):
+        self.screen = screen
+        self.resolution = resolution
+        self.image = pygame.transform.scale(image, (resolution))
+    
+    def draw(self):
+        self.screen.blit(self.image, (0, 0))
+
+
+def skip_leave_action(  
     event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None
 ) -> bool:
     """Function to handle skip or leave actions in a game.
@@ -306,7 +386,41 @@ def skip_leave_action(
                 return True
         case _:
             return True
+        
+def roll_the_scene(element_list, sound_channel) -> bool:
 
+    for event in pygame.event.get():
+
+        mouse_pos = pygame.mouse.get_pos()
+        match event.type:
+            case pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            case pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return True
+                for element in element_list:
+                    if type(element) is Text_box:
+                        for key in KEYBOARD_INPUT:
+                            if key == event.key:
+                                element.modify(KEYBOARD_INPUT[key][0])
+                        if event.key == pygame.K_BACKSPACE:
+                            element.backspace()
+
+            case pygame.MOUSEMOTION:
+                for element in element_list:
+                    if type(element) is Button:
+                        element.mouse_over = element.check_mouse_over(mouse_pos)
+            case pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    for element in element_list:
+                        if type(element) is Button:
+                            if element.mouse_over:
+                                return element.execute()
+
+        for element in element_list:
+            element.draw()
+        pygame.display.flip()
 
 def play_intro(
     screen: pygame.surface.Surface,
@@ -373,15 +487,13 @@ def play_outro(
         sound_channel.play(SOUND_EFFECTS["beep"])
         return True
 
-    def button_save(name_letters: list[str], score: int, scoreboard: list):
-        if len(name_letters) > 0:
+    def button_save(name: Text_box, score: int, scoreboard: list):
+        if len(name.text) > 0:
             sound_channel.play(SOUND_EFFECTS["beep"])
-            name = "".join(name_letters)
-            object_to_save = (name, score)
+            object_to_save = (name.text, score)
             scoreboard.append(object_to_save)
             scoreboard = sorted(
-                scoreboard[:TOTAL_SCORES_FOR_DISPLAY], key=lambda x: x[1], reverse=True
-            )
+                scoreboard[:TOTAL_SCORES_FOR_DISPLAY], key=lambda x: x[1], reverse=True)
             with open(SCOREBOARD_FILE, "w") as stream:
                 json.dump(scoreboard, stream)
             return True
@@ -389,24 +501,18 @@ def play_outro(
             sound_channel.play(SOUND_EFFECTS["error"])
 
     clock = pygame.time.Clock()
-    pygame.mixer.music.load(
-        PATH(DIRNAME, "data",
-                     "soundeffects", "outro.mp3")
-    )
+    pygame.mixer.music.load(DIRNAME / "data/soundeffects/outro.mp3")
     pygame.mixer.music.play()
 
     with open(SCOREBOARD_FILE, "r") as stream:
         scoreboard = json.load(stream)
 
-    background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
-    screen.blit(background_image, (0, 0))
-    name_font = pygame.font.Font(COMMON_FONT_PATH, pos["outro"]["font3"])
-    name_letters = []
-    button_list = []
-    inscription_list = []
+    element_list = [Background(screen, resolution, BACKGROUND_1),
+                    Text_box(pos["outro"]["text4_pos"],pos["outro"]["font3"], screen, sound_channel, font_path=COMMON_FONT_PATH)]
+
     button_elements = [
         ("back", button_back, ()),
-        ("save", button_save, (name_letters, score, scoreboard)),
+        ("save", button_save, (element_list[1], score, scoreboard)),
     ]
     inscription_elements = [
         (strings["game_over"], RGB_COLORS["blue"], 2),
@@ -427,10 +533,9 @@ def play_outro(
             font_path=COMMON_FONT_PATH,
         )
         inscription.center_x()
-        inscription_list.append(inscription)
-
+        element_list.append(inscription)
     counter = 1
-    for name, functionality, arguments in button_elements:
+    for name, callback, arguments in button_elements:
         button = Button(
             button_name=name,
             position=pos["outro"][f"button{counter}_pos"],
@@ -438,58 +543,17 @@ def play_outro(
             screen=screen,
             text=strings[name],
             font_size=pos["outro"]["button_font"],
-            functionality=functionality,
+            callback=callback,
             arguments=arguments,
         )
         counter += 1
-        button_list.append(button)
-
+        element_list.append(button)
     break_loop, running = False, True
+    
     while running:
-        name_for_display = "".join(name_letters)
-        for event in pygame.event.get():
-            running = skip_leave_action(event, sound_channel)
-            mouse_pos = pygame.mouse.get_pos()
-
-            match event.type:
-                case pygame.KEYDOWN:
-                    if len(name_letters) < 11:
-                        for key in KEYBOARD_INPUT:
-                            if key == event.key:
-                                sound_channel.play(SOUND_EFFECTS["beep"])
-                                name_letters.append(KEYBOARD_INPUT[key][0])
-
-                    if event.key == pygame.K_BACKSPACE:
-                        try:
-                            del name_letters[-1]
-                            sound_channel.play(SOUND_EFFECTS["wrong"])
-                        except:
-                            sound_channel.play(SOUND_EFFECTS["error"])
-
-                case pygame.MOUSEMOTION:
-                    for button in button_list:
-                        button.mouse_over = button.check_mouse_over(mouse_pos)
-
-                case pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in button_list:
-                            if button.mouse_over:
-                                break_loop = button.execute()
-                            if break_loop:
-                                running = False
-
-        name_title = name_font.render(
-            f"{name_for_display.upper()}", True, RGB_COLORS["green"]
-        )
-
-        for button in button_list:
-            button.draw()
-
-        for inscription in inscription_list:
-            inscription.draw()
-        screen.blit(name_title, pos["outro"]["text4_pos"])
-
-        pygame.display.flip()
+        break_loop = roll_the_scene(element_list, sound_channel)
+        if break_loop:
+            running = False
         clock.tick(CLOCK)
 
 
@@ -711,18 +775,15 @@ def leaderboard_menu(
     scoreboard = sorted(scoreboard, key=lambda x: x[1], reverse=True)
 
     clock = pygame.time.Clock()
-    background_image = pygame.transform.scale(BACKGROUND_1, resolution)
-    screen.blit(background_image, (0, 0))
-
-    button_list = []
-    inscription_list = [Inscription(strings['top_scores'], RGB_COLORS["orange"], pos["leaderboard_menu"]["desc_pos"], pos["leaderboard_menu"]["desc_font"], screen, COMMON_FONT_PATH)] 
-    inscription_list[0].center_x()
-    button_elements = [
-        ("back", button_back),
-        ("reset", button_reset),
-    ]
+    
+    element_list = [
+        Background(screen, resolution, BACKGROUND_1),
+        Inscription(strings['top_scores'], RGB_COLORS["orange"], pos["leaderboard_menu"]["desc_pos"], pos["leaderboard_menu"]["desc_font"], screen, COMMON_FONT_PATH)
+        ]
+    element_list[1].center_x()
+    button_elements = [("back", button_back),("reset", button_reset),]
     counter = 1
-    for name, functionality in button_elements:
+    for name, callback in button_elements:
         button = Button(
             button_name=name,
             position=pos["leaderboard_menu"][f"button{counter}_pos"],
@@ -730,10 +791,10 @@ def leaderboard_menu(
             screen=screen,
             text=strings[name],
             font_size=pos["leaderboard_menu"]["text_font"],
-            functionality=functionality,
+            callback=callback,
         )
         counter += 1
-        button_list.append(button)
+        element_list.append(button)
     
     height, height_change = pos["leaderboard_menu"]["height"], pos["leaderboard_menu"]["height_change"]
     height_max = pos["leaderboard_menu"]["height"] + 10 *  pos["leaderboard_menu"]["height_change"]
@@ -746,32 +807,13 @@ def leaderboard_menu(
         text = f"{counter:>2}. {score[0].capitalize()}: {score[1]}"
         position = (width, height)
         inscription = Inscription(text, RGB_COLORS["white"], position, pos["leaderboard_menu"]["text_font"], screen, COMMON_FONT_PATH)
-        inscription_list.append(inscription)
+        element_list.append(inscription)
 
     break_loop, running = False, True
     while running:
-        for event in pygame.event.get():
-            running = skip_leave_action(event, sound_channel)
-            mouse_pos = pygame.mouse.get_pos()
-            match event.type:
-                case pygame.MOUSEMOTION:
-                    for button in button_list:
-                        button.mouse_over = button.check_mouse_over(mouse_pos)
-
-                case pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in button_list:
-                            if button.mouse_over:
-                                break_loop = button.execute()
-                            if break_loop:
-                                running = False
-        
-        for button in button_list:
-            button.draw()
-        for insc in inscription_list:
-            insc.draw()
-
-        pygame.display.flip()
+        break_loop = roll_the_scene(element_list, sound_channel)
+        if break_loop:
+            running = False
         clock.tick(CLOCK)
 
 
@@ -797,11 +839,9 @@ def settings_menu(
     Description:
         Function allows user to edit "settings.db" via game interface."""
 
-    new_settings = settings.copy()
-    background_image = pygame.transform.scale(BACKGROUND_2, (resolution))
-    button_font = pygame.font.Font(
-        COMMON_FONT_PATH, pos["settings_menu"]["button_font"]
-    )
+    def make_changes(new_settings: dict[str, any]):
+        with open (TEMP_SETTING_FILE, "w") as stream:
+            json.dump(new_settings, stream)        
 
     def button_swich_this_or_other(new_settings: dict[str, any], setting_key: str, setting: any):
         if new_settings[setting_key] != setting:
@@ -809,7 +849,7 @@ def settings_menu(
             new_settings[setting_key] = setting
         else:
             sound_channel.play(SOUND_EFFECTS["error"])
-        return new_settings
+        make_changes(new_settings)
 
     def button_swich_yes_or_no(new_settings: dict[str, any], setting_key: str):
         sound_channel.play(SOUND_EFFECTS["beep"])
@@ -817,7 +857,7 @@ def settings_menu(
             new_settings[setting_key] = True
         elif new_settings[setting_key] == True:
             new_settings[setting_key] = False
-        return new_settings
+        make_changes(new_settings)
 
     def button_sound_change(new_settings: dict[str, any], setting_key: str, increase: bool):
         if increase:
@@ -832,7 +872,7 @@ def settings_menu(
                 new_settings[setting_key] -= 10
             else:
                 sound_channel.play(SOUND_EFFECTS["error"])
-        return new_settings
+        make_changes(new_settings)
 
     def button_language_change(new_settings: dict[str, any], languages: list[str], decrease: bool):
         language_index = languages.index(new_settings["language"])
@@ -850,10 +890,12 @@ def settings_menu(
                 new_settings["language"] = languages[language_index]
             else:
                 sound_channel.play(SOUND_EFFECTS["error"])
-        return new_settings
+        make_changes(new_settings)
 
     def button_back():
         sound_channel.play(SOUND_EFFECTS["beep"])
+        os.remove(TEMP_SETTING_FILE)
+        return True
 
     def button_save():
         sound_channel.play(SOUND_EFFECTS["beep"])
@@ -862,43 +904,35 @@ def settings_menu(
                 json.dump(new_settings, stream)
         except:
             print("Something went wrong")
+        return True
 
-    button_list = []
+    new_settings = settings.copy()
+    with open (TEMP_SETTING_FILE, "w") as stream:
+        json.dump(new_settings, stream)
+    
+    button_font = pygame.font.Font(COMMON_FONT_PATH, pos["settings_menu"]["button_font"])
+    element_list = [Background(screen, resolution, BACKGROUND_2)]
     button_elements = [
-        ("800:600", "800:600", 1, button_swich_this_or_other,
-         (new_settings, "resolution", [800, 600])),
-        ("1200:800", "1200:800", 1, button_swich_this_or_other,
-         (new_settings, "resolution", [1200, 800])),
-        (f"{strings['fullscreen']}", "fullscreen", 1,
-         button_swich_this_or_other, (new_settings, "fullscreen", True)),
-        ("1920:1080", "1920:1080", 1, button_swich_this_or_other,
-         (new_settings, "resolution", [1920, 1080]),),
-        ("1280:720", "1280:720", 1, button_swich_this_or_other,
-         (new_settings, "resolution", [1280, 720]),),
-        (f"{strings['window']}", "window", 1, button_swich_this_or_other,
-         (new_settings, "fullscreen", False)),
-        (f"{strings['music']}", "music", 3,
-         button_swich_yes_or_no, (new_settings, "play_music")),
-        ("+", "music_up", 2, button_sound_change,
-         (new_settings, "music_volume", True)),
-        ("-", "music_down", 2, button_sound_change,
-         (new_settings, "music_volume", False)),
-        (f"{strings['sound']}", "sound", 3,
-         button_swich_yes_or_no, (new_settings, "play_sound",)),
-        ("+", "sound_up", 2, button_sound_change,
-         (new_settings, "sound_volume", True)),
-        ("-", "sound_down", 2, button_sound_change,
-         (new_settings, "sound_volume", False)),
-        ("<-", "previous_language", 2, button_language_change,
-         (new_settings, LANGUAGES, True)),
+        ("800:600", "800:600", 1, button_swich_this_or_other, (new_settings, "resolution", [800, 600])),
+        ("1200:800", "1200:800", 1, button_swich_this_or_other, (new_settings, "resolution", [1200, 800])),
+        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_this_or_other, (new_settings, "fullscreen", True)),
+        ("1920:1080", "1920:1080", 1, button_swich_this_or_other, (new_settings, "resolution", [1920, 1080])),
+        ("1280:720", "1280:720", 1, button_swich_this_or_other, (new_settings, "resolution", [1280, 720])),
+        (f"{strings['window']}", "window", 1, button_swich_this_or_other, (new_settings, "fullscreen", False)),
+        (f"{strings['music']}", "music", 3, button_swich_yes_or_no, (new_settings, "play_music")),
+        ("+", "music_up", 2, button_sound_change, (new_settings, "music_volume", True)),
+        ("-", "music_down", 2, button_sound_change, (new_settings, "music_volume", False)),
+        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, (new_settings, "play_sound",)),
+        ("+", "sound_up", 2, button_sound_change, (new_settings, "sound_volume", True)),
+        ("-", "sound_down", 2, button_sound_change, (new_settings, "sound_volume", False)),
+        ("<-", "previous_language", 2, button_language_change, (new_settings, LANGUAGES, True)),
         (None, "language", 3, None, None),
-        ("->", "next_language", 2, button_language_change,
-         (new_settings, LANGUAGES, False)),
+        ("->", "next_language", 2, button_language_change, (new_settings, LANGUAGES, False)),
         (f"{strings['back']}", "back", 3, button_back, None),
         (f"{strings['save']}", "save", 3, button_save, None),
     ]
     counter = 1
-    for string, name, size, functionality, arguments in button_elements:
+    for string, name, size, callback, arguments in button_elements:
         button = Button(
             button_name=name,
             position=pos["settings_menu"][f"button_{counter}"],
@@ -906,27 +940,30 @@ def settings_menu(
             screen=screen,
             text=string,
             font_size=pos["settings_menu"]["button_font"],
-            functionality=functionality,
+            callback=callback,
             arguments=arguments,
         )
         counter += 1
-        button_list.append(button)
+        element_list.append(button)
 
     description_texts = [strings["resolution"],strings["sound"], strings["language"]]
-
-    screen.blit(background_image, (0, 0))
     counter = 1
     for text in description_texts:
         position = pos["settings_menu"][f"desc_text_{counter}"]
         background_size = pos["settings_menu"]["button_size_4"]
         inscription = Inscription(text, RGB_COLORS["orange"], position, pos["settings_menu"]["desk_font"], screen, COMMON_FONT_PATH, BUTTON_TYPE_LOCKED, background_size)
         inscription.center_x()
-        inscription.draw()
+        element_list.append(inscription)
         counter += 1
 
     clock = pygame.time.Clock()
     running = True
     while running:
+        try:
+            with open(TEMP_SETTING_FILE, "r") as stream:
+                new_settings = json.load(stream)
+        except:
+            pass
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
@@ -939,13 +976,13 @@ def settings_menu(
 
         language_index = LANGUAGES.index(new_settings["language"])
 
-        button_list[6].rendered_text = button_font.render(
+        element_list[7].rendered_text = button_font.render(
             f"{strings['music']}: {music_volume}", True, RGB_COLORS["black"]
         )
-        button_list[9].rendered_text = button_font.render(
+        element_list[10].rendered_text = button_font.render(
             f"{strings['sound']}: {sound_volume}", True, RGB_COLORS["black"]
         )
-        button_list[13].rendered_text = button_font.render(
+        element_list[14].rendered_text = button_font.render(
             strings["languages_list"][language_index], True, RGB_COLORS["black"]
         )
 
@@ -958,23 +995,6 @@ def settings_menu(
             sound_channel.set_volume(new_settings["sound_volume"] / 100)
         else:
             sound_channel.set_volume(0)
-
-        for event in pygame.event.get():
-            running = skip_leave_action(event, sound_channel)
-            mouse_pos = pygame.mouse.get_pos()
-            match event.type:
-                case pygame.MOUSEMOTION:
-                    for button in button_list:
-                        button.mouse_over = button.check_mouse_over(mouse_pos)
-                case pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in button_list:
-                            if button.mouse_over:
-                                new_settings = button.execute()
-                                if button.button_name == "back":
-                                    return False
-                                if button.button_name == "save":
-                                    return True
 
         button_lock_condidions = [
             new_settings["resolution"] == [800, 600],
@@ -994,16 +1014,15 @@ def settings_menu(
             language_index == len(LANGUAGES) - 1,
         ]
 
-        for condition, button in zip(button_lock_condidions, button_list):
+        for condition, button in zip(button_lock_condidions, element_list[1:15]):
             if condition:
                 button.disabled = True
             else:
                 button.disabled = False
 
-        for button in button_list:
-            button.draw()
-
-        pygame.display.flip()
+        break_loop = roll_the_scene(element_list, sound_channel)
+        if break_loop:
+            return False
         clock.tick(CLOCK)
 
 
@@ -1066,8 +1085,6 @@ def game_round(
                     if key == event.key:
                         provided_keys = KEYBOARD_INPUT[key]
                         provided_keys = [key.upper() for key in provided_keys]
-
-        # if provided_keys:
                         if any(letter.upper() in provided_letters for letter in provided_keys):
                             sound_channel.play(SOUND_EFFECTS["error"])
                         elif any(letter.upper() in password_letters for letter in provided_keys):
@@ -1120,35 +1137,21 @@ def main() -> False:
             settings = json.load(stream)
 
         resolution = settings["resolution"]
-        resolution_x, resolution_y = resolution
-        file_with_numbers = PATH(
-            DIRNAME,
-            "data",
-            "resolutions",
-            f"{resolution_x}_{resolution_y}.json",
-        )
+        res_for_path = f"{resolution[0]}_{resolution[1]}"
+        file_with_numbers = DIRNAME / f"data/resolutions/{res_for_path}.json"
 
         with open(file_with_numbers, "r") as stream:
             pos = json.load(stream)
         language = settings["language"]
-        with open(
-            PATH( DIRNAME, "data", "text", f"{language}_strings.json"),
-            "r",
-            encoding="utf-8",
-        ) as stream:
+        with open(DIRNAME / f"data/text/{language}_strings.json", "r", encoding="utf-8") as stream:
             strings = json.load(stream)
-        with open(
-            PATH( DIRNAME, "data", "text", f"{language}_key_words.json"
-            ),
-            "r",
-            encoding="utf-8",
-        ) as stream:
+        with open(DIRNAME / f"data/text/{language}_key_words.json", "r", encoding="utf-8") as stream:
             words_base = json.load(stream)
 
         screen = create_screen(resolution, settings["fullscreen"])
 
         music_channel = pygame.mixer.Channel(0)
-        music = pygame.mixer.Sound(PATH(DIRNAME, "data", "soundeffects", "music.mp3"))
+        music = pygame.mixer.Sound(DIRNAME / "data/soundeffects/music.mp3")
         music_channel.set_volume(settings["music_volume"] / 200)
 
         sound_channel = pygame.mixer.Channel(1)
@@ -1185,10 +1188,9 @@ def main() -> False:
                             score += new_score
                         else:
                             break
-                    play_outro(screen, score, resolution,
-                               pos, sound_channel, strings)
+                    play_outro(screen, score, resolution, pos, sound_channel, strings)
                 case "options":
-                    save_changes = settings_menu(
+                    settings_menu(
                         screen,
                         settings,
                         sound_channel,
@@ -1197,13 +1199,13 @@ def main() -> False:
                         pos,
                         strings,
                     )
-                    if save_changes:
+                    if Path(TEMP_SETTING_FILE).exists():
                         pygame.display.quit()
+                        os.remove(TEMP_SETTING_FILE)
                         time.sleep(SOUND_EFFECTS["beep"].get_length())
                         break
                 case "top_scores":
-                    leaderboard_menu(screen, sound_channel,
-                                     resolution, pos, strings)
+                    leaderboard_menu(screen, sound_channel, resolution, pos, strings)
                 case "exit":
                     break
         if clicked == "exit":
