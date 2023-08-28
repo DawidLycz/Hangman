@@ -6,8 +6,10 @@ import sys
 import time
 from typing import Dict, Tuple
 
-
 import pygame
+
+
+import intro
 
 pygame.init()
 TOTAL_ATTEMTPS = 12
@@ -28,7 +30,6 @@ BACKGROUND_2 = pygame.image.load(DIRNAME / "data/images/menu_background.jpg")
 BACKGROUND_3 = pygame.image.load(DIRNAME / "data/images/background.jpg")
 BACKGROUND_4 = pygame.image.load(DIRNAME / "data/images/background_2.jpg")
 BACKGROUND_5 = pygame.image.load(DIRNAME / "data/images/gallow_background.jpg")
-
 
 KEYBOARD_INPUT = {
     pygame.K_a: ["a", "ą"],
@@ -67,7 +68,7 @@ SOUND_EFFECTS = {
     "failure": pygame.mixer.Sound(DIRNAME / "data/soundeffects/game_over.mp3"),
     "beep": pygame.mixer.Sound(DIRNAME / "data/soundeffects/beep.mp3"),
     "intro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/intro.mp3"),
-    "outro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/outro.mp3")
+    "outro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/outro.mp3"),
 }
 
 RGB_COLORS = {
@@ -87,6 +88,8 @@ Scene = Dict[str, Position]
 
 
 class Inscription:
+    '''Class represents various not interactive texts displayed on the screen.
+    It has ability to change its color, font, and possibliy of background'''
     def __init__(
         self,
         text: str,
@@ -129,7 +132,7 @@ class Inscription:
             self.background_rect.center = self.text_rect.center
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Text: {self.name}"
 
     def draw(self):
@@ -137,7 +140,8 @@ class Inscription:
             self.screen.blit(self.scaled_background_image, self.background_rect)
         self.screen.blit(self.rendered_text, self.position)
 
-    def center_x(self):
+    def center_x(self) -> None:
+        '''Adjust text directly in to middle of screen in x axis, helpfull when text is changable'''
         resolution = self.screen.get_size()
         middle_width = resolution[0] // 2
         new_width = middle_width - self.text_size[0] // 2 
@@ -145,7 +149,8 @@ class Inscription:
         if self.background:
             self.background_rect.center = (middle_width, self.position[1] + self.text_size[1] // 2)
 
-    def center_y(self):
+    def center_y(self) -> None:
+        '''Adjust text directly in to middle of screen in y axis, helpfull when text is changable'''
         resolution = self.screen.get_size()
         middle_height = resolution[1] // 2
         new_height = middle_height - self.text_size[1] // 2
@@ -155,6 +160,8 @@ class Inscription:
 
 
 class Button:
+    '''Class represents GUI buttons in game. Main feature is "callback" argument, which takes function.
+    This function can be later executed by "execute" method'''
     def __init__(
         self,
         button_name: str,
@@ -189,17 +196,17 @@ class Button:
 
         
         
-    def check_mouse_over(self, mouse_position):
+    def check_mouse_over(self, mouse_position: Coordinates) -> bool:
         return (
             self.position[0] <= mouse_position[0] <= self.position[0] + self.size[0]
             and self.position[1] <= mouse_position[1] <= self.position[1] + self.size[1]
         )
 
-    def react(self):
+    def react(self) -> str:
         if self.mouse_over:
             return self.button_name
 
-    def draw(self):
+    def draw(self) ->  None:
         if self.disabled:
             image = BUTTON_TYPE_LOCKED
         else:
@@ -215,7 +222,7 @@ class Button:
         self.screen.blit(image, self.position)
         self.screen.blit(self.rendered_text, self.text_rect)
 
-    def execute(self):
+    def execute(self) -> any:
         if callable(self.callback) and self.callback is not None:
             if self.arguments:
                 return self.callback(*self.arguments)
@@ -224,6 +231,7 @@ class Button:
 
 
 class Gallow:
+    '''Class represents gallow used in actuall game, it has ability to represent player progress by displaing correct image'''
     def __init__(
             self,
             background_size : Coordinates,
@@ -246,7 +254,7 @@ class Gallow:
             self.images.append(gallow_image)
         self.background_image = pygame.transform.scale(BACKGROUND_5, (self.background_size))
 
-    def draw(self):
+    def draw(self) -> None:
         to_draw = self.images[self.stage]
         self.screen.blit(self.background_image, self.background_position)
         try:
@@ -254,11 +262,12 @@ class Gallow:
         except:
             self.screen.blit(self.images[-1], self.gallow_position)
     
-    def increase(self):
+    def increase(self) -> None:
         self.stage += 1
 
 
 class Text_box:
+    '''Class provide possibility to provide text, for example name, which can be used by script later'''
     def __init__(
             self,
             position: Coordinates,
@@ -281,22 +290,22 @@ class Text_box:
         self.font = pygame.font.Font(font_path, font_size)
         self.rendered_text = self.font.render(text, True, color)
 
-    def __str__(self):
+    def __str__(self) -> None:
         return f"{self.text.capitalize()}"   
     
-    def draw(self):
+    def draw(self) -> None:
         self.screen.blit(self.rendered_text, self.position)
     
-    def modify(self, new_letter: str):
+    def modify(self, new_letter: str) -> None:
         if len(new_letter) == 1:
-            if len(self.text) <= 12:
+            if len(self.text) <= self.char_limit:
                 self.sound_channel.play(SOUND_EFFECTS["beep"])
                 self.text = self.text.capitalize() + new_letter
                 self.rendered_text = self.font.render(self.text, True, self.color)
             else:
                 self.sound_channel.play(SOUND_EFFECTS["error"])
 
-    def backspace(self):
+    def backspace(self) -> None:
         try:
             self.text = self.text[:-1].capitalize()
             self.rendered_text = self.font.render(self.text, True, self.color)
@@ -305,66 +314,19 @@ class Text_box:
             self.sound_channel.play(SOUND_EFFECTS["error"])
 
 
-# class Hangman_keyword_box:
-#     def __init__(
-#             self,
-#             keyword: list[str],
-#             position: Coordinates,
-#             height_change: int,
-#             font_size: int,
-#             screen: pygame.surface.Surface,
-#             sound_channel: pygame.mixer.Channel,
-#             provided_keys: set[str],
-#             color: RGB_Color=RGB_COLORS,
-#             font_path: str=None,
-#     ):
-#         self.keyword = keyword
-#         self.position = position
-#         self.height_change = height_change
-#         self.font_size = font_size
-#         self.screen = screen
-#         self.sound_channel = sound_channel
-#         self.provided_keys = provided_keys
-#         self.color = color
-#         self.font_path= font_path
-#         self.font = pygame.font.Font(self.font_path, self.font_size) 
-
-#     def __str__(self):
-#         return(self.keyword)
-    
-#     def draw(self):
-#         x, y = self.position
-#         for word in self.keyword():
-#             for letter in word:
-#                 if letter.upper() not in self.provided_keys:
-#                     letter = "_"
-#                 if letter == " ":
-#                     letter = "-"
-#                 letter_for_print = self.font.render(f"{letter.upper()}", True, RGB_COLORS["green"])
-#                 self.screen.blit(letter_for_print, (x, y))
-#                 x += 10
-#             y += self.height_change
-    
-#     def modify(self, new_letter: list[str]):
-#         for letter in new_letter:
-#             if letter in self.keyword:
-#                 self.provided_keys.update(letter)
-            
-
-
 class Background:
-    def __init__(self, screen: pygame.surface.Surface, resolution: Coordinates , image:pygame.surface.Surface):
+    '''Class provides ability to blit background image in to screen. 
+    Its usefull becouse it has "draw" method, just like other custom classes, so it can be blit alltogheter in "for" loop.'''
+    def __init__(self, screen: pygame.surface.Surface, resolution: Coordinates , image:pygame.surface.Surface) -> None:
         self.screen = screen
         self.resolution = resolution
         self.image = pygame.transform.scale(image, (resolution))
     
-    def draw(self):
+    def draw(self) -> None:
         self.screen.blit(self.image, (0, 0))
 
 
-def skip_leave_action(  
-    event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None
-) -> bool:
+def skip_leave_action(event: pygame.event.Event, sound_channel: pygame.mixer.Channel = None) -> bool:
     """Function to handle skip or leave actions in a game.
     Parameters:
         event : The event object representing the user input event.
@@ -386,11 +348,20 @@ def skip_leave_action(
                 return True
         case _:
             return True
-        
-def roll_the_scene(element_list, sound_channel) -> bool:
+
+
+def roll_the_scene(element_list: list[any]) -> bool:
+    ''' Function is designed to work in while loop.
+        Handle game events based on a list of interactive elements.
+
+        This function analyzes events generated by the Pygame library and
+        responds to various player actions such as key presses, mouse movement,
+        and mouse clicks. Depending on the event type and the types of elements
+        present in the `element_list`, it performs appropriate actions.
+
+        At the end it displays every element which has "draw" method'''
 
     for event in pygame.event.get():
-
         mouse_pos = pygame.mouse.get_pos()
         match event.type:
             case pygame.QUIT:
@@ -400,72 +371,29 @@ def roll_the_scene(element_list, sound_channel) -> bool:
                 if event.key == pygame.K_ESCAPE:
                     return True
                 for element in element_list:
-                    if type(element) is Text_box:
+                    if isinstance(element, Text_box):
                         for key in KEYBOARD_INPUT:
                             if key == event.key:
                                 element.modify(KEYBOARD_INPUT[key][0])
                         if event.key == pygame.K_BACKSPACE:
                             element.backspace()
-
             case pygame.MOUSEMOTION:
                 for element in element_list:
-                    if type(element) is Button:
+                    if isinstance(element, Button):
                         element.mouse_over = element.check_mouse_over(mouse_pos)
             case pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for element in element_list:
-                        if type(element) is Button:
+                        if isinstance(element, Button):
                             if element.mouse_over:
                                 return element.execute()
 
         for element in element_list:
-            element.draw()
+            try:
+                element.draw()
+            except:
+                pass
         pygame.display.flip()
-
-def play_intro(
-    screen: pygame.surface.Surface,
-    resolution: Coordinates,
-    pos: Scene,
-    strings: dict[str, str],
-    sound_channel: pygame.mixer.Channel,
-) -> None:
-    """Initial function for whole game. Displays welcome messege in the surface provided in argument"""
-
-    background_image = pygame.transform.scale(BACKGROUND_1, (resolution))
-    screen.blit(background_image, (0, 0))
-    clock = pygame.time.Clock()
-    ticks = 0
-    sound_channel.play(SOUND_EFFECTS["intro"])
-    running = True
-    while running:
-        ticks += 1
-        for event in pygame.event.get():
-            running = skip_leave_action(event, sound_channel)
-
-        if ticks == 55:
-            title_font = pygame.font.Font(
-                COMMON_FONT_PATH, pos["intro"]["font1"])
-            main_title = title_font.render("Hangman", True, RGB_COLORS["cyan"])
-            screen.blit(main_title, pos["intro"]["text1"])
-
-        if ticks == 110:
-            description_font = pygame.font.Font(None, pos["intro"]["font2"])
-            description_text_1 = description_font.render(
-                f"{strings['welcome_1']}", True, RGB_COLORS["white"]
-            )
-            screen.blit(description_text_1, pos["intro"]["text2"])
-
-        if ticks == 160:
-            description_text_2 = description_font.render(
-                f"{strings['welcome_2']}", True, RGB_COLORS["white"]
-            )
-            screen.blit(description_text_2, pos["intro"]["text3"])
-
-        if ticks == 500:
-            return None
-        clock.tick(CLOCK)
-        pygame.display.flip()
-    pygame.mixer.music.stop()
 
 
 def play_outro(
@@ -483,11 +411,11 @@ def play_outro(
         Displays outro, and provides user possibility to save his game score in the "scoreboard.db" file.
     """
 
-    def button_back():
+    def button_back() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
         return True
 
-    def button_save(name: Text_box, score: int, scoreboard: list):
+    def button_save(name: Text_box, score: int, scoreboard: list) -> bool:
         if len(name.text) > 0:
             sound_channel.play(SOUND_EFFECTS["beep"])
             object_to_save = (name.text, score)
@@ -551,7 +479,7 @@ def play_outro(
     break_loop, running = False, True
     
     while running:
-        break_loop = roll_the_scene(element_list, sound_channel)
+        break_loop = roll_the_scene(element_list)
         if break_loop:
             running = False
         clock.tick(CLOCK)
@@ -670,9 +598,11 @@ def get_random_word(words_base: list[list[str]]) -> tuple[str, str]:
 
 
 def create_screen(resolution: Coordinates, fullscreen: bool) -> pygame.surface.Surface:
-    return pygame.display.set_mode(
+    screen = pygame.display.set_mode(
         size=resolution, flags=pygame.FULLSCREEN if fullscreen else 0
     )
+    pygame.display.set_caption("Hangman")
+    return screen
 
 
 def game_menu(
@@ -698,6 +628,7 @@ def game_menu(
 
     background_image = pygame.transform.scale(BACKGROUND_2, resolution)
     screen.blit(background_image, (0, 0))
+
     button_elements = ["new_game", "options", "top_scores", "exit"]
     button_list = []
     counter = 1
@@ -759,11 +690,11 @@ def leaderboard_menu(
         Displays to user content of "scoreboard.db" file and allows to clean it.
     """
 
-    def button_back():
+    def button_back() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
         return True
 
-    def button_reset():
+    def button_reset() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
         scoreboard = []
         with open(SCOREBOARD_FILE, "w") as stream:
@@ -811,7 +742,7 @@ def leaderboard_menu(
 
     break_loop, running = False, True
     while running:
-        break_loop = roll_the_scene(element_list, sound_channel)
+        break_loop = roll_the_scene(element_list)
         if break_loop:
             running = False
         clock.tick(CLOCK)
@@ -839,11 +770,11 @@ def settings_menu(
     Description:
         Function allows user to edit "settings.db" via game interface."""
 
-    def make_changes(new_settings: dict[str, any]):
+    def make_changes(new_settings: dict[str, any]) -> None:
         with open (TEMP_SETTING_FILE, "w") as stream:
             json.dump(new_settings, stream)        
 
-    def button_swich_this_or_other(new_settings: dict[str, any], setting_key: str, setting: any):
+    def button_swich_this_or_other(new_settings: dict[str, any], setting_key: str, setting: any) -> None:
         if new_settings[setting_key] != setting:
             sound_channel.play(SOUND_EFFECTS["beep"])
             new_settings[setting_key] = setting
@@ -851,7 +782,7 @@ def settings_menu(
             sound_channel.play(SOUND_EFFECTS["error"])
         make_changes(new_settings)
 
-    def button_swich_yes_or_no(new_settings: dict[str, any], setting_key: str):
+    def button_swich_yes_or_no(new_settings: dict[str, any], setting_key: str) -> None:
         sound_channel.play(SOUND_EFFECTS["beep"])
         if new_settings[setting_key] == False:
             new_settings[setting_key] = True
@@ -859,7 +790,7 @@ def settings_menu(
             new_settings[setting_key] = False
         make_changes(new_settings)
 
-    def button_sound_change(new_settings: dict[str, any], setting_key: str, increase: bool):
+    def button_sound_change(new_settings: dict[str, any], setting_key: str, increase: bool) -> None:
         if increase:
             if new_settings[setting_key] < 100:
                 new_settings[setting_key] += 10
@@ -874,7 +805,7 @@ def settings_menu(
                 sound_channel.play(SOUND_EFFECTS["error"])
         make_changes(new_settings)
 
-    def button_language_change(new_settings: dict[str, any], languages: list[str], decrease: bool):
+    def button_language_change(new_settings: dict[str, any], languages: list[str], decrease: bool) -> bool:
         language_index = languages.index(new_settings["language"])
         if decrease:
             if language_index > 0:
@@ -892,12 +823,12 @@ def settings_menu(
                 sound_channel.play(SOUND_EFFECTS["error"])
         make_changes(new_settings)
 
-    def button_back():
+    def button_back() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
         os.remove(TEMP_SETTING_FILE)
         return True
 
-    def button_save():
+    def button_save() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
         try:
             with open(SETTINGS_FILE, "w") as stream:
@@ -1014,13 +945,13 @@ def settings_menu(
             language_index == len(LANGUAGES) - 1,
         ]
 
-        for condition, button in zip(button_lock_condidions, element_list[1:15]):
+        for condition, button in zip(button_lock_condidions, element_list[1:16]):
             if condition:
                 button.disabled = True
             else:
                 button.disabled = False
 
-        break_loop = roll_the_scene(element_list, sound_channel)
+        break_loop = roll_the_scene(element_list)
         if break_loop:
             return False
         clock.tick(CLOCK)
@@ -1109,13 +1040,11 @@ def game_round(
 
         # Check win or lose conditions
         if set(password_letters) <= correct_letters:
-            success = True
-            victory_failure_display(screen, sound_channel, pos, success, strings)
+            victory_failure_display(screen, sound_channel, pos, True, strings)
             score = TOTAL_ATTEMTPS - attempts
             return score
         if attempts == TOTAL_ATTEMTPS:
-            success = False
-            victory_failure_display(screen, sound_channel, pos, success, strings)
+            victory_failure_display(screen, sound_channel, pos, False, strings)
             break
 
         pygame.display.flip()
@@ -1131,7 +1060,7 @@ def main() -> False:
     Than it "initialize" game screen with parameters based on constant mentionet above.
     And at last it enters inner loop. Which is based on "main_menu" function, and based on what this function returns, it runs certain operations.
     """
-    show_intro = True
+
     while True:
         with open(SETTINGS_FILE, "r") as stream:
             settings = json.load(stream)
@@ -1159,16 +1088,13 @@ def main() -> False:
             sound_channel.set_volume(settings["sound_volume"] / 100)
         else:
             sound_channel.set_volume(0)
-        if show_intro:
-            play_intro(screen, resolution, pos, strings, sound_channel)
-            show_intro = False
+
         while True:
             if settings["play_music"] == True:
                 music_channel.play(music)
             else:
                 music_channel.stop()
-            clicked = game_menu(screen, sound_channel,
-                                resolution, pos, strings)
+            clicked = game_menu(screen, sound_channel, resolution, pos, strings)
             match clicked:
                 case "new_game":
                     score = 0
