@@ -257,10 +257,9 @@ class Gallow:
         self.background_image = pygame.transform.scale(BACKGROUND_5, (self.background_size))
 
     def draw(self) -> None:
-        to_draw = self.images[self.stage]
         self.screen.blit(self.background_image, self.background_position)
         try:
-            self.screen.blit(to_draw, self.gallow_position)
+            self.screen.blit(self.images[self.stage], self.gallow_position)
         except:
             self.screen.blit(self.images[-1], self.gallow_position)
     
@@ -300,7 +299,7 @@ class Text_box:
     
     def modify(self, new_letter: str) -> None:
         if len(new_letter) == 1:
-            if len(self.text) <= self.char_limit:
+            if len(self.text) < self.char_limit:
                 self.sound_channel.play(SOUND_EFFECTS["beep"])
                 self.text = self.text.capitalize() + new_letter
                 self.rendered_text = self.font.render(self.text, True, self.color)
@@ -562,9 +561,7 @@ def victory_failure_display(
         clock.tick(CLOCK)
 
 
-def check_mouse(
-    position: Coordinates, area: Coordinates, mouse_pos: Coordinates
-) -> bool:
+def check_mouse(position: Coordinates, area: Coordinates, mouse_pos: Coordinates) -> bool:
     """
     Check if the mouse position is within the specified button area.
 

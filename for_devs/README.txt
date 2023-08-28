@@ -5,6 +5,12 @@ pip changes:
 
         python setup.py bdist_wheel
 
+    You can check if everythig works as i should by quicly install wheel with command:
+    
+        pip install dist\Hangman-1.0-py3-none-any.whl
+
+    After that, you can push reposytory to Github
+
 python to exe conversion:
 
     After building the wheel, you should export the project to the .exe extension. 

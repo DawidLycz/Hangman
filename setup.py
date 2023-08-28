@@ -33,7 +33,3 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
 )
-
-
-#$ python setup.py bdist_wheel
-#$ pip install dist\Hangman-1.0-py3-none-any.whl
