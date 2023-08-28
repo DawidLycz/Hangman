@@ -1,0 +1,4 @@
+pygame
+moviepy
+auto-py-to-exe
+pytest

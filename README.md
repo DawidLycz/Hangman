@@ -24,7 +24,7 @@ After installation, you can initiate the game by executing the following command
 python -m hangman
 ```
 
-There is also option to clone reposytory, in order to have full source code. In order to do that, please input following command:
+There is also option to clone whole reposytory, to have full source code. In order to do that, please input following command:
 
 ```bash
 git clone https://github.com/DawidLycz/Hangman
