@@ -6,11 +6,11 @@ selected_files = [file.removeprefix("hangman\\") for file in data_files]
 
 with open('requirements.txt') as f:
     requirements = [line.strip() for line in f]
-
+print (find_packages())
 setup(
     description='Simple but popular game in hangman',
     name='hangman',
-    version='0.1',
+    version='1.0',
     packages=find_packages(),
     url='https://github.com/DawidLycz/Hungman',
     package_data={
@@ -36,4 +36,4 @@ setup(
 
 
 #$ python setup.py bdist_wheel
-#$ pip install dist\Hangman-0.1-py3-none-any.whl
+#$ pip install dist\Hangman-1.0-py3-none-any.whl

@@ -11,7 +11,7 @@ To play the game, you can choose one of the following options:
 
 Game Installer: Download the game installer from the link below and run it to install the game.
 
-# [DOWNLOAD](https://github.com/DawidLycz/Hangman/releases/download/game/hangman_setup.exe)
+# [DOWNLOAD](https://github.com/DawidLycz/Hangman/releases/download/game/Hangman-setup.exe)
 
 Pip Installation: If you prefer installing the game using pip, run the following command in your terminal or command prompt:
 

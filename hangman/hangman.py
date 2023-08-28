@@ -8,9 +8,11 @@ from typing import Dict, Tuple
 
 import pygame
 
-
-import intro
-
+try:
+    from hangman import intro
+except:
+    import intro
+    
 pygame.init()
 TOTAL_ATTEMTPS = 12
 TOTAL_SCORES_FOR_DISPLAY = 30
