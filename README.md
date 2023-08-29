@@ -49,6 +49,29 @@ The "text" directory contains strings used in the game, translated into multiple
 
 The "settings.db" file stores various user settings that can be adjusted from within the game's "Options" menu.
 
+## For recruitment
+In the case that you are reviewing this repository for recruitment purposes, I would like to efficiently highlight the most advanced features of the entire project.
+
+Executable File (exe)
+The game includes a generated executable file (exe), enabling easy execution on various operating systems. This means that players can quickly launch the game without the need for any additional setup.
+
+Pygame Framework
+Hangman is built on the Pygame library, a versatile tool that allows for the creation of interactive and graphical games using Python. Pygame provides a range of functionalities to manage graphics, sound, and user input, contributing to the immersive gaming experience.
+
+Microframework for GUI
+The script functions as a microframework for the game's graphical user interface (GUI). This approach simplifies the creation of user interactions within the game. By offering a lightweight GUI solution, players can engage with the game's interface seamlessly.
+
+Event-Driven Programming
+The game mechanics are driven by event-based programming. This methodology enables the game to respond dynamically to player actions in real time. Events trigger reactions, allowing for an engaging and interactive gameplay experience.
+
+Intro with PyMovie
+Hangman features an engaging intro sequence that enhances the player's experience. This intro is played using the PyMovie library, allowing for the playback of video content within the game. The intro sets the tone for the game and adds an extra layer of excitement.
+
+Adherence to Best Practices
+Throughout the development process, the project followed industry best practices. These practices include writing readable and maintainable code, designing modular components, and providing comprehensive documentation. By adhering to these standards, the project is structured for both efficient development and potential future enhancements.
+
+Thank you for your interest in the Hangman game and its underlying technologies!
+
 ## License
 This project is licensed under the MIT License. For detailed information, refer to the LICENSE.txt file.
 
