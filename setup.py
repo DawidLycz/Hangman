@@ -6,7 +6,6 @@ selected_files = [file.removeprefix("hangman\\") for file in data_files]
 
 with open('requirements.txt') as f:
     requirements = [line.strip() for line in f]
-print (find_packages())
 setup(
     description='Simple but popular game in hangman',
     name='hangman',

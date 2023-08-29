@@ -9,13 +9,25 @@ pip changes:
     
         pip install dist\Hangman-1.0-py3-none-any.whl
 
-    After that, you can push reposytory to Github
+    After that, you can push reposytory to Github and you can export project to the .exe extension.
 
-python to exe conversion:
+python to exe conversion (no new files):
 
-    After building the wheel, you should export the project to the .exe extension. 
+    Assuming there is no new files outside of data directory, it can be converted based on Hangman.spec file.
+    Tool that might be used for that is pyinstaller, that can be simply obtained by command:
+
+        pip install pyinstaller
+
+    After that, game can be simply input following command to terminal:
+
+        pyinstaller Hangman.spec 
+
+    If everything went well, game directory should appear in dist directory.
+
+python to exe conversion (new files):
+
+    However, if game now contains new files, for example new modules, it is necessery to convert it manually.
     There are multiple ways to do this, but I recommend using the "auto-py-to-exe" module.
-
     You can easily obtain it by installing it through pip: 
 
         pip install auto-py-to-exe
@@ -24,12 +36,10 @@ python to exe conversion:
 
         auto-py-to-exe
 
-    Once the application window pops up, you just need to input the appropriate data and start the conversion process. 
-    However, you can simplify this process significantly. The application provides pre-made conversion scripts.
-    One such script has already been created and can be found in this folder. 
-    Before it's ready to use, you'll need to make a few modifications. 
-    Open the .json file and replace "[PATH TO FILE]" with the path to the repository.
-    Next, in the application window, open the "Settings" tab. There is an option there to import a JSON file. 
-    Use it to input the initial parameters. In the same tab, further up, you can input a custom output. 
-    Then, all that's left is to initiate the conversion.
+    Once the application window pops up, you just need to input the correct data and start the conversion process. 
 
+Installer creation:
+
+    When game is already in .exe format. You might want to create installer. 
+    Tool that might help with this process is Inno Setup Complier.
+    You can find more information about it here: https://jrsoftware.org/isdl.php
