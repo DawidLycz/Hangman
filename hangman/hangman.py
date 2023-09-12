@@ -125,9 +125,6 @@ def roll_the_scene(element_list: list[any]) -> bool:
     
     for event in pygame.event.get():
         mouse_pos = pygame.mouse.get_pos()
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
         for element in element_list:
             try:
                 break_loop = element.react_to_event(event, mouse_pos)
@@ -135,11 +132,11 @@ def roll_the_scene(element_list: list[any]) -> bool:
                     return True
             except AttributeError:
                 pass
-        match event.type:
-            case pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return True
 
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+            
     for element in element_list:
         try:
             element.draw()
@@ -191,8 +188,8 @@ def play_outro(
                     TextBox(pos["outro"]["text4_pos"],pos["outro"]["font3"], screen, sound_channel, font_path=COMMON_FONT_PATH)]
 
     button_elements = [
-        ("back", button_back, ()),
-        ("save", button_save, (element_list[1], score, scoreboard)),
+        ("back", button_back, (), pygame.K_ESCAPE),
+        ("save", button_save, (element_list[1], score, scoreboard), pygame.K_RETURN),
     ]
     inscription_elements = [
         (strings["game_over"], RGB_COLORS["blue"], 2),
@@ -215,7 +212,7 @@ def play_outro(
         inscription.center_x()
         element_list.append(inscription)
     counter = 1
-    for name, callback, arguments in button_elements:
+    for name, callback, arguments, key in button_elements:
         button = Button(
             button_name=name,
             position=pos["outro"][f"button{counter}_pos"],
@@ -225,6 +222,7 @@ def play_outro(
             font_size=pos["outro"]["button_font"],
             callback=callback,
             arguments=arguments,
+            trigger_key=key,
         )
         counter += 1
         element_list.append(button)
@@ -462,9 +460,9 @@ def leaderboard_menu(
         Inscription(strings['top_scores'], RGB_COLORS["orange"], pos["leaderboard_menu"]["desc_pos"], pos["leaderboard_menu"]["desc_font"], screen, COMMON_FONT_PATH)
         ]
     element_list[1].center_x()
-    button_elements = [("back", button_back),("reset", button_reset),]
+    button_elements = [("back", button_back, pygame.K_ESCAPE),("reset", button_reset, pygame.K_DELETE),]
     counter = 1
-    for name, callback in button_elements:
+    for name, callback, key in button_elements:
         button = Button(
             button_name=name,
             position=pos["leaderboard_menu"][f"button{counter}_pos"],
@@ -473,6 +471,7 @@ def leaderboard_menu(
             text=strings[name],
             font_size=pos["leaderboard_menu"]["text_font"],
             callback=callback,
+            trigger_key=key
         )
         counter += 1
         element_list.append(button)
@@ -596,26 +595,26 @@ def settings_menu(
     
     element_list = [Background(screen, resolution, BACKGROUND_2)]
     button_elements = [
-        ("800:600", "800:600", 1, button_swich_this_or_other, ("resolution", [800, 600])),
-        ("1200:800", "1200:800", 1, button_swich_this_or_other, ("resolution", [1200, 800])),
-        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_this_or_other, ("fullscreen", True)),
-        ("1920:1080", "1920:1080", 1, button_swich_this_or_other, ("resolution", [1920, 1080])),
-        ("1280:720", "1280:720", 1, button_swich_this_or_other, ("resolution", [1280, 720])),
-        (f"{strings['window']}", "window", 1, button_swich_this_or_other, ("fullscreen", False)),
-        (f"{strings['music']}", "music", 3, button_swich_yes_or_no, ("play_music",)),
-        ("+", "music_up", 2, button_sound_change, ("music_volume", True)),
-        ("-", "music_down", 2, button_sound_change, ("music_volume", False)),
-        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, ("play_sound",)),
-        ("+", "sound_up", 2, button_sound_change, ("sound_volume", True)),
-        ("-", "sound_down", 2, button_sound_change, ("sound_volume", False)),
-        ("<-", "previous_language", 2, button_language_change, (LANGUAGES, True)),
-        (None, "language", 3, None, None),
-        ("->", "next_language", 2, button_language_change, (LANGUAGES, False)),
-        (f"{strings['back']}", "back", 3, button_back, None),
-        (f"{strings['save']}", "save", 3, button_save, ()),
+        ("800:600", "800:600", 1, button_swich_this_or_other, ("resolution", [800, 600]), None),
+        ("1200:800", "1200:800", 1, button_swich_this_or_other, ("resolution", [1200, 800]), None),
+        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_this_or_other, ("fullscreen", True), None),
+        ("1920:1080", "1920:1080", 1, button_swich_this_or_other, ("resolution", [1920, 1080]), None),
+        ("1280:720", "1280:720", 1, button_swich_this_or_other, ("resolution", [1280, 720]), None),
+        (f"{strings['window']}", "window", 1, button_swich_this_or_other, ("fullscreen", False), None),
+        (f"{strings['music']}", "music", 3, button_swich_yes_or_no, ("play_music",), None),
+        ("+", "music_up", 2, button_sound_change, ("music_volume", True), None),
+        ("-", "music_down", 2, button_sound_change, ("music_volume", False), None),
+        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, ("play_sound",), None),
+        ("+", "sound_up", 2, button_sound_change, ("sound_volume", True), None),
+        ("-", "sound_down", 2, button_sound_change, ("sound_volume", False), None),
+        ("<-", "previous_language", 2, button_language_change, (LANGUAGES, True), None),
+        (None, "language", 3, None, None, None),
+        ("->", "next_language", 2, button_language_change, (LANGUAGES, False), None),
+        (f"{strings['back']}", "back", 3, button_back, None, pygame.K_ESCAPE),
+        (f"{strings['save']}", "save", 3, button_save, (), pygame.K_RETURN),
     ]
     counter = 1
-    for string, name, size, callback, arguments in button_elements:
+    for string, name, size, callback, arguments, key in button_elements:
         button = Button(
             button_name=name,
             position=pos["settings_menu"][f"button_{counter}"],
@@ -625,6 +624,7 @@ def settings_menu(
             font_size=pos["settings_menu"]["button_font"],
             callback=callback,
             arguments=arguments,
+            trigger_key=key
         )
         counter += 1
         element_list.append(button)
@@ -842,31 +842,14 @@ def main() -> False:
                     score = 0
                     while True:
                         the_word, category_name = get_random_word(words_base)
-                        new_score = game_round(
-                            screen,
-                            the_word,
-                            category_name,
-                            score,
-                            sound_channel,
-                            resolution,
-                            pos,
-                            strings,
-                        )
+                        new_score = game_round( screen, the_word, category_name, score, sound_channel, resolution, pos, strings)
                         if new_score:
                             score += new_score
                         else:
                             break
                     play_outro(screen, score, resolution, pos, sound_channel, strings)
                 case "options":
-                    new_settings = settings_menu(
-                        screen,
-                        settings,
-                        sound_channel,
-                        resolution,
-                        music_channel,
-                        pos,
-                        strings,
-                    )
+                    settings_menu(screen, settings, sound_channel, resolution, music_channel, pos, strings)
                     if changes_done:
                         pygame.display.quit()
                         time.sleep(SOUND_EFFECTS["beep"].get_length())
