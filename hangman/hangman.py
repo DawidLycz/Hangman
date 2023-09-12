@@ -10,10 +10,10 @@ import pygame
 
 try:
     from hangman import intro
-    from hangman.hangman_gui import Inscription, Button, Gallow, Text_box, Background
-except:
+    from hangman.hangman_gui import Inscription, Button, Gallow, TextBox, Background
+except ImportError:
     import intro
-    from hangman_gui import Inscription, Button, Gallow, Text_box, Background
+    from hangman_gui import Inscription, Button, Gallow, TextBox, Background
     
 pygame.init()
 TOTAL_ATTEMTPS = 12
@@ -24,7 +24,6 @@ DIRNAME = Path(os.path.dirname(__file__))
 
 COMMON_FONT_PATH = DIRNAME / "data/fonts/font.ttf"
 SETTINGS_FILE = DIRNAME / "data/settings.json"
-TEMP_SETTING_FILE = DIRNAME / "data/temp_settings.json"
 SCOREBOARD_FILE = DIRNAME / "data/scoreboard.json"
 BUTTON_TYPE_FREE = pygame.image.load(DIRNAME / "data/images/button_1.png")
 BUTTON_TYPE_AIMED = pygame.image.load(DIRNAME / "data/images/button_2.png")
@@ -123,38 +122,28 @@ def roll_the_scene(element_list: list[any]) -> bool:
         present in the `element_list`, it performs appropriate actions.
 
         At the end it displays every element which has "draw" method'''
-
+    
     for event in pygame.event.get():
         mouse_pos = pygame.mouse.get_pos()
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        for element in element_list:
+            try:
+                break_loop = element.react_to_event(event, mouse_pos)
+                if break_loop:
+                    return True
+            except AttributeError:
+                pass
         match event.type:
-            case pygame.QUIT:
-                pygame.quit()
-                sys.exit()
             case pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return True
-                for element in element_list:
-                    if isinstance(element, Text_box):
-                        for key in KEYBOARD_INPUT:
-                            if key == event.key:
-                                element.modify(KEYBOARD_INPUT[key][0])
-                        if event.key == pygame.K_BACKSPACE:
-                            element.backspace()
-            case pygame.MOUSEMOTION:
-                for element in element_list:
-                    if isinstance(element, Button):
-                        element.mouse_over = element.check_mouse_over(mouse_pos)
-            case pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    for element in element_list:
-                        if isinstance(element, Button):
-                            if element.mouse_over:
-                                return element.execute()
 
     for element in element_list:
         try:
             element.draw()
-        except:
+        except AttributeError:
             pass
     pygame.display.flip()
 
@@ -178,7 +167,7 @@ def play_outro(
         sound_channel.play(SOUND_EFFECTS["beep"])
         return True
 
-    def button_save(name: Text_box, score: int, scoreboard: list) -> bool:
+    def button_save(name: TextBox, score: int, scoreboard: list) -> bool:
         if len(name.text) > 0:
             sound_channel.play(SOUND_EFFECTS["beep"])
             object_to_save = (name.text, score)
@@ -199,7 +188,7 @@ def play_outro(
         scoreboard = json.load(stream)
 
     element_list = [Background(screen, resolution, BACKGROUND_1),
-                    Text_box(pos["outro"]["text4_pos"],pos["outro"]["font3"], screen, sound_channel, font_path=COMMON_FONT_PATH)]
+                    TextBox(pos["outro"]["text4_pos"],pos["outro"]["font3"], screen, sound_channel, font_path=COMMON_FONT_PATH)]
 
     button_elements = [
         ("back", button_back, ()),
@@ -529,29 +518,24 @@ def settings_menu(
         bool: Returns True if the settings were successfully saved, False if the user chose to exit without saving.
 
     Description:
-        Function allows user to edit "settings.db" via game interface."""
+        Function allows user to edit "settings.db" via game interface."""      
 
-    def make_changes(new_settings: dict[str, any]) -> None:
-        with open (TEMP_SETTING_FILE, "w") as stream:
-            json.dump(new_settings, stream)        
-
-    def button_swich_this_or_other(new_settings: dict[str, any], setting_key: str, setting: any) -> None:
+    def button_swich_this_or_other(setting_key: str, setting: any) -> None:
         if new_settings[setting_key] != setting:
             sound_channel.play(SOUND_EFFECTS["beep"])
             new_settings[setting_key] = setting
         else:
             sound_channel.play(SOUND_EFFECTS["error"])
-        make_changes(new_settings)
 
-    def button_swich_yes_or_no(new_settings: dict[str, any], setting_key: str) -> None:
+
+    def button_swich_yes_or_no(setting_key: str) -> None:
         sound_channel.play(SOUND_EFFECTS["beep"])
         if new_settings[setting_key] == False:
             new_settings[setting_key] = True
         elif new_settings[setting_key] == True:
             new_settings[setting_key] = False
-        make_changes(new_settings)
 
-    def button_sound_change(new_settings: dict[str, any], setting_key: str, increase: bool) -> None:
+    def button_sound_change(setting_key: str, increase: bool) -> None:
         if increase:
             if new_settings[setting_key] < 100:
                 new_settings[setting_key] += 10
@@ -564,9 +548,8 @@ def settings_menu(
                 new_settings[setting_key] -= 10
             else:
                 sound_channel.play(SOUND_EFFECTS["error"])
-        make_changes(new_settings)
 
-    def button_language_change(new_settings: dict[str, any], languages: list[str], decrease: bool) -> bool:
+    def button_language_change(languages: list[str], decrease: bool) -> bool:
         language_index = languages.index(new_settings["language"])
         if decrease:
             if language_index > 0:
@@ -582,11 +565,18 @@ def settings_menu(
                 new_settings["language"] = languages[language_index]
             else:
                 sound_channel.play(SOUND_EFFECTS["error"])
-        make_changes(new_settings)
 
     def button_back() -> bool:
         sound_channel.play(SOUND_EFFECTS["beep"])
-        os.remove(TEMP_SETTING_FILE)
+        if settings["play_music"]:
+            music_channel.set_volume(settings["music_volume"] / 200)
+        else:
+            music_channel.set_volume(0)
+
+        if settings["play_sound"]:
+            sound_channel.set_volume(settings["sound_volume"] / 100)
+        else:
+            sound_channel.set_volume(0)
         return True
 
     def button_save() -> bool:
@@ -594,34 +584,35 @@ def settings_menu(
         try:
             with open(SETTINGS_FILE, "w") as stream:
                 json.dump(new_settings, stream)
-        except:
+            global changes_done
+            changes_done = True
+        except FileNotFoundError:
             print("Something went wrong")
         return True
-
-    new_settings = settings.copy()
-    with open (TEMP_SETTING_FILE, "w") as stream:
-        json.dump(new_settings, stream)
     
-    button_font = pygame.font.Font(COMMON_FONT_PATH, pos["settings_menu"]["button_font"])
+    global changes_done
+    changes_done = False
+    new_settings = settings.copy()
+    
     element_list = [Background(screen, resolution, BACKGROUND_2)]
     button_elements = [
-        ("800:600", "800:600", 1, button_swich_this_or_other, (new_settings, "resolution", [800, 600])),
-        ("1200:800", "1200:800", 1, button_swich_this_or_other, (new_settings, "resolution", [1200, 800])),
-        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_this_or_other, (new_settings, "fullscreen", True)),
-        ("1920:1080", "1920:1080", 1, button_swich_this_or_other, (new_settings, "resolution", [1920, 1080])),
-        ("1280:720", "1280:720", 1, button_swich_this_or_other, (new_settings, "resolution", [1280, 720])),
-        (f"{strings['window']}", "window", 1, button_swich_this_or_other, (new_settings, "fullscreen", False)),
-        (f"{strings['music']}", "music", 3, button_swich_yes_or_no, (new_settings, "play_music")),
-        ("+", "music_up", 2, button_sound_change, (new_settings, "music_volume", True)),
-        ("-", "music_down", 2, button_sound_change, (new_settings, "music_volume", False)),
-        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, (new_settings, "play_sound",)),
-        ("+", "sound_up", 2, button_sound_change, (new_settings, "sound_volume", True)),
-        ("-", "sound_down", 2, button_sound_change, (new_settings, "sound_volume", False)),
-        ("<-", "previous_language", 2, button_language_change, (new_settings, LANGUAGES, True)),
+        ("800:600", "800:600", 1, button_swich_this_or_other, ("resolution", [800, 600])),
+        ("1200:800", "1200:800", 1, button_swich_this_or_other, ("resolution", [1200, 800])),
+        (f"{strings['fullscreen']}", "fullscreen", 1, button_swich_this_or_other, ("fullscreen", True)),
+        ("1920:1080", "1920:1080", 1, button_swich_this_or_other, ("resolution", [1920, 1080])),
+        ("1280:720", "1280:720", 1, button_swich_this_or_other, ("resolution", [1280, 720])),
+        (f"{strings['window']}", "window", 1, button_swich_this_or_other, ("fullscreen", False)),
+        (f"{strings['music']}", "music", 3, button_swich_yes_or_no, ("play_music",)),
+        ("+", "music_up", 2, button_sound_change, ("music_volume", True)),
+        ("-", "music_down", 2, button_sound_change, ("music_volume", False)),
+        (f"{strings['sound']}", "sound", 3, button_swich_yes_or_no, ("play_sound",)),
+        ("+", "sound_up", 2, button_sound_change, ("sound_volume", True)),
+        ("-", "sound_down", 2, button_sound_change, ("sound_volume", False)),
+        ("<-", "previous_language", 2, button_language_change, (LANGUAGES, True)),
         (None, "language", 3, None, None),
-        ("->", "next_language", 2, button_language_change, (new_settings, LANGUAGES, False)),
+        ("->", "next_language", 2, button_language_change, (LANGUAGES, False)),
         (f"{strings['back']}", "back", 3, button_back, None),
-        (f"{strings['save']}", "save", 3, button_save, None),
+        (f"{strings['save']}", "save", 3, button_save, ()),
     ]
     counter = 1
     for string, name, size, callback, arguments in button_elements:
@@ -651,11 +642,7 @@ def settings_menu(
     clock = pygame.time.Clock()
     running = True
     while running:
-        try:
-            with open(TEMP_SETTING_FILE, "r") as stream:
-                new_settings = json.load(stream)
-        except:
-            pass
+
         if new_settings["play_music"] == True:
             music_volume = str(new_settings["music_volume"]) + "%"
         else:
@@ -666,18 +653,6 @@ def settings_menu(
         else:
             sound_volume = f"{strings['off']}"
 
-        language_index = LANGUAGES.index(new_settings["language"])
-
-        element_list[7].rendered_text = button_font.render(
-            f"{strings['music']}: {music_volume}", True, RGB_COLORS["black"]
-        )
-        element_list[10].rendered_text = button_font.render(
-            f"{strings['sound']}: {sound_volume}", True, RGB_COLORS["black"]
-        )
-        element_list[14].rendered_text = button_font.render(
-            strings["languages_list"][language_index], True, RGB_COLORS["black"]
-        )
-
         if new_settings["play_music"]:
             music_channel.set_volume(new_settings["music_volume"] / 200)
         else:
@@ -687,6 +662,12 @@ def settings_menu(
             sound_channel.set_volume(new_settings["sound_volume"] / 100)
         else:
             sound_channel.set_volume(0)
+
+        language_index = LANGUAGES.index(new_settings["language"])
+
+        element_list[7].rerender(f"{strings['music']}: {music_volume}")
+        element_list[10].rerender(f"{strings['sound']}: {sound_volume}")
+        element_list[14].rerender(strings["languages_list"][language_index])
 
         button_lock_condidions = [
             new_settings["resolution"] == [800, 600],
@@ -877,7 +858,7 @@ def main() -> False:
                             break
                     play_outro(screen, score, resolution, pos, sound_channel, strings)
                 case "options":
-                    settings_menu(
+                    new_settings = settings_menu(
                         screen,
                         settings,
                         sound_channel,
@@ -886,9 +867,8 @@ def main() -> False:
                         pos,
                         strings,
                     )
-                    if Path(TEMP_SETTING_FILE).exists():
+                    if changes_done:
                         pygame.display.quit()
-                        os.remove(TEMP_SETTING_FILE)
                         time.sleep(SOUND_EFFECTS["beep"].get_length())
                         break
                 case "top_scores":

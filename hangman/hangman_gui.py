@@ -24,7 +24,34 @@ SOUND_EFFECTS = {
     "intro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/intro.mp3"),
     "outro": pygame.mixer.Sound(DIRNAME / "data/soundeffects/outro.mp3"),
 }
-
+KEYBOARD_INPUT = {
+    pygame.K_a: ["a", "ą"],
+    pygame.K_b: ["b"],
+    pygame.K_c: ["c", "ć"],
+    pygame.K_d: ["d"],
+    pygame.K_e: ["e", "ę"],
+    pygame.K_f: ["f"],
+    pygame.K_g: ["g"],
+    pygame.K_h: ["h"],
+    pygame.K_i: ["i"],
+    pygame.K_j: ["j"],
+    pygame.K_k: ["k"],
+    pygame.K_l: ["l", "ł"],
+    pygame.K_m: ["m"],
+    pygame.K_n: ["n", "ń"],
+    pygame.K_o: ["o", "ó"],
+    pygame.K_p: ["p"],
+    pygame.K_q: ["q"],
+    pygame.K_r: ["r"],
+    pygame.K_s: ["s", "ś"],
+    pygame.K_t: ["t"],
+    pygame.K_u: ["u"],
+    pygame.K_v: ["v"],
+    pygame.K_w: ["w"],
+    pygame.K_x: ["x"],
+    pygame.K_y: ["y"],
+    pygame.K_z: ["z", "ź", "ż"],
+}
 RGB_COLORS = {
     "cyan": (0, 255, 255),
     "white": (255, 255, 255),
@@ -129,6 +156,7 @@ class Button:
         text_color: RGB_Color = RGB_COLORS["black"],
         mouse_over: bool = False,
         disabled: bool = False,
+        trigger_key = None
     ):
         self.button_name = button_name
         self.position = position
@@ -141,9 +169,10 @@ class Button:
         self.font_size = font_size
         self.callback = callback
         self.arguments = arguments
+        self.trigger_key = trigger_key
 
-        font = pygame.font.Font(COMMON_FONT_PATH, font_size)
-        self.rendered_text = font.render(text, True, text_color)
+        self.font = pygame.font.Font(COMMON_FONT_PATH, font_size)
+        self.rendered_text = self.font.render(text, True, text_color)
 
         if self.arguments and not self.callback:
             raise ValueError
@@ -155,6 +184,9 @@ class Button:
             self.position[0] <= mouse_position[0] <= self.position[0] + self.size[0]
             and self.position[1] <= mouse_position[1] <= self.position[1] + self.size[1]
         )
+    
+    def rerender(self, new_text):
+        self.rendered_text = self.font.render(new_text, True, self.text_color)
 
     def react(self) -> str:
         if self.mouse_over:
@@ -182,6 +214,19 @@ class Button:
                 return self.callback(*self.arguments)
             else:
                 return self.callback()
+    
+    def react_to_event(self, event:pygame.event.Event , mouse_position):
+        match event.type:
+            case pygame.KEYDOWN:
+                if event.key == self.trigger_key:                    
+                    return self.execute()
+            case pygame.MOUSEMOTION:
+                self.mouse_over = self.check_mouse_over(mouse_position)
+            case pygame.MOUSEBUTTONDOWN:
+                if event.button == 1 and self.mouse_over:
+                    return self.execute()            
+            case _:
+                return False
 
 
 class Gallow:
@@ -219,7 +264,7 @@ class Gallow:
         self.stage += 1
 
 
-class Text_box:
+class TextBox:
     '''Class provide possibility to provide text, for example name, which can be used by script later'''
     def __init__(
             self,
@@ -231,6 +276,9 @@ class Text_box:
             text: str="",
             font_path: str=None,
             char_limit: int=12,
+            mouse_over: bool=False,
+            active: bool=True,
+            allow_swich: bool= False
     ):
         self.position = position
         self.font_size = font_size
@@ -240,15 +288,25 @@ class Text_box:
         self.text = text
         self.font_path = font_path
         self.char_limit = char_limit
+        self.mouse_over = mouse_over
+        self.active = active
+        self.allow_swich = allow_swich
         self.font = pygame.font.Font(font_path, font_size)
         self.rendered_text = self.font.render(text, True, color)
+
 
     def __str__(self) -> None:
         return f"{self.text.capitalize()}"   
     
     def draw(self) -> None:
         self.screen.blit(self.rendered_text, self.position)
-    
+
+    def check_mouse_over(self, mouse_position: Coordinates) -> bool:
+        size = self.rendered_text.get_size()
+        return (
+            self.position[0] <= mouse_position[0] <= self.position[0] + size[0]
+            and self.position[1] <= mouse_position[1] <= self.position[1] + size[1]
+        )
     def modify(self, new_letter: str) -> None:
         if len(new_letter) == 1:
             if len(self.text) < self.char_limit:
@@ -265,7 +323,27 @@ class Text_box:
             self.sound_channel.play(SOUND_EFFECTS["wrong"])
         except:
             self.sound_channel.play(SOUND_EFFECTS["error"])
+    
+    def react_to_event(self, event: pygame.event.Event, mouse_position):
+        match event.type:
+            case pygame.KEYDOWN:
+                if self.active:
+                    for key in KEYBOARD_INPUT:
+                        if key == event.key:
+                            self.modify(KEYBOARD_INPUT[key][0])
+                    if event.key == pygame.K_BACKSPACE:
+                        self.backspace()
+            case pygame.MOUSEMOTION:
+                self.mouse_over = self.check_mouse_over(mouse_position)
+            case pygame.MOUSEBUTTONDOWN:
+                if self.allow_swich and event.button == 1:
+                    if self.mouse_over:
+                        self.active = True
+                    else:
+                        self.active = False
 
+        return False
+    
 
 class Background:
     '''Class provides ability to blit background image in to screen. 
@@ -277,3 +355,4 @@ class Background:
     
     def draw(self) -> None:
         self.screen.blit(self.image, (0, 0))
+    

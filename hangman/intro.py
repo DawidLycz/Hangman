@@ -5,7 +5,7 @@ from pathlib import Path
 from moviepy.editor import VideoFileClip
 
 DIRNAME = Path(os.path.dirname(__file__))
-INTRO_VIDEO = VideoFileClip(str(DIRNAME/ "data/intro/intro_video.mp4"))
+intro_video = VideoFileClip(str(DIRNAME/ "data/intro/intro_video.mp4"))
 
 def play_intro(video):
     with open (DIRNAME / "data/settings.json", "r") as stream:
@@ -16,4 +16,4 @@ def play_intro(video):
     video.reader.close()
     video.audio.reader.close_proc()
 
-play_intro(INTRO_VIDEO)
+play_intro(intro_video)

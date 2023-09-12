@@ -1,6 +1,0 @@
-pygame
-moviepy
-auto-py-to-exe
-pytest
-pyinstaller
-auto-py-to-exe
