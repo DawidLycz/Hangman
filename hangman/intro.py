@@ -17,4 +17,3 @@ def play_intro(video):
     video.audio.reader.close_proc()
 
 play_intro(INTRO_VIDEO)
-

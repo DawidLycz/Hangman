@@ -151,12 +151,12 @@ def roll_the_scene(element_list: list[any]) -> bool:
                             if element.mouse_over:
                                 return element.execute()
 
-        for element in element_list:
-            try:
-                element.draw()
-            except:
-                pass
-        pygame.display.flip()
+    for element in element_list:
+        try:
+            element.draw()
+        except:
+            pass
+    pygame.display.flip()
 
 
 def play_outro(
