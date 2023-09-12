@@ -1,7 +1,7 @@
 # Hangman - Word Guessing Game
 Hangman is a classic and highly popular word guessing game. The objective is to guess a word by providing individual letters. At the beginning of the game, certain letters of the word are hidden behind "_" signs. The player must guess a letter, and if the word contains that letter, it will be revealed on the screen. If the guessed letter is not part of the word, the player loses a turn. The game continues until the player either successfully guesses the word or runs out of turns.
 
-![gameplay_gif.gif](https://github.com/DawidLycz/Hangman/blob/main/gameplay_gif.gif?raw=true))
+![gameplay_gif.gif](https://github.com/DawidLycz/Hangman/blob/main/gameplay_gif.gif?raw=true)
 
 ## Game Description
 Hangman is implemented using Pygame, an open-source library for creating video games and multimedia applications in Python. Pygame provides powerful functionality for handling graphics, sound, and user input, making it an excellent choice for game development.
