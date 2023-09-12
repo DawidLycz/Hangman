@@ -20,7 +20,7 @@ python to exe conversion (no new files):
 
         pip install pyinstaller
 
-    After that, game can be simply input following command to terminal:
+    After that, game can be simply converted by input off following command to terminal:
 
         pyinstaller Hangman.spec 
 

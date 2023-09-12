@@ -8,7 +8,7 @@ a = Analysis(
     ['hangman\\hangman.py'],
     pathex=[],
     binaries=[],
-    datas=[('hangman/hangman_gui.py', '.'), ('hangman/data', 'data/'), ('hangman/intro.py', '.')],
+    datas=[('hangman/hangman_gui.py', '.'), ('hangman/data', 'hangman/data/'), ('hangman/data', 'data/'), ('hangman/intro.py', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
